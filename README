@@ -1,0 +1,9 @@
+libmnl
+
+Features:
+- Minimalistic Netlink library
+- Low-level: you have to know how Netlink works.
+- Simplicity: as opposed to complexity.
+- Very low abstraction: try to leak as less Netlink details as possible.
+- Decoupling: the main bricks are decoupled to avoid inter-dependencies
+(eg. socket handling and callbacks are not attached).
