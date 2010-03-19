@@ -59,8 +59,10 @@ struct mnl_socket *mnl_socket_open(int unit)
 		return NULL;
 
 	nl->fd = socket(AF_NETLINK, SOCK_RAW, unit);
-	if (nl->fd == -1)
+	if (nl->fd == -1) {
+		free(nl);
 		return NULL;
+	}
 
 	return nl;
 }
