@@ -111,7 +111,6 @@ out:
  * This function returns -1 in case of error, 0 if we have received a
  * NLMSG_DONE message or the callback has explicitly returned MNL_CB_STOP.
  */
-
 int mnl_cb_run(const char *buf, int numbytes, unsigned int seq,
 	       mnl_cb_t cb_data, void *data)
 {

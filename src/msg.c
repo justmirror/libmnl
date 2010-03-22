@@ -164,6 +164,13 @@ struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
 	return (struct nlmsghdr *)((void *)nlh + mnl_align(nlh->nlmsg_len));
 }
 
+/**
+ * mnl_nlmsg_get_tail - get the ending of the netlink message
+ * @nlh: pointer to netlink message
+ *
+ * This function returns a pointer to the netlink message tail. This is useful
+ * to build a message since we continue adding attribute at the end of it.
+ */
 void *mnl_nlmsg_get_tail(const struct nlmsghdr *nlh)
 {
 	return (struct nlmsghdr *)((void *)nlh + mnl_align(nlh->nlmsg_len));
