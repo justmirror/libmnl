@@ -56,8 +56,12 @@ static mnl_cb_t default_cb_array[NLMSG_MIN_TYPE] = {
  * callback handlers, in that case, the parameter cb_ctl_array_len is not
  * checked.
  *
- * This function returns -1 in case of error, 0 if we have received a
- * NLMSG_DONE message or the callback has explicitly returned MNL_CB_STOP.
+ * Your callback may return three possible values:
+ * 	- MNL_CB_ERROR (<=-1): an error has occurred. Stop callback runqueue.
+ * 	- MNL_CB_STOP (=0): stop callback runqueue.
+ *	- MNL_CB_OK (>=1): no problems has occurred.
+ *
+ * This function propagates the callback return value.
  */
 int mnl_cb_run2(const char *buf, int numbytes, unsigned int seq,
 		mnl_cb_t cb_data, void *data,
@@ -94,7 +98,7 @@ int mnl_cb_run2(const char *buf, int numbytes, unsigned int seq,
 		nlh = mnl_nlmsg_next(nlh, &numbytes);
 	}
 out:
-	return ret <= MNL_CB_ERROR ? -1 : 0;
+	return ret;
 }
 
 /**
@@ -108,8 +112,12 @@ out:
  * This function is like mnl_cb_run2() but it does not allow you to set
  * the control callback handlers.
  *
- * This function returns -1 in case of error, 0 if we have received a
- * NLMSG_DONE message or the callback has explicitly returned MNL_CB_STOP.
+ * Your callback may return three possible values:
+ * 	- MNL_CB_ERROR (<=-1): an error has occurred. Stop callback runqueue.
+ * 	- MNL_CB_STOP (=0): stop callback runqueue.
+ *	- MNL_CB_OK (>=1): no problems has occurred.
+ *
+ * This function propagates the callback return value.
  */
 int mnl_cb_run(const char *buf, int numbytes, unsigned int seq,
 	       mnl_cb_t cb_data, void *data)
