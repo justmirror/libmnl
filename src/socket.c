@@ -85,6 +85,7 @@ int mnl_socket_bind(struct mnl_socket *nl, int groups, int pid)
 
 	nl->addr.nl_family = AF_NETLINK;
 	nl->addr.nl_groups = groups;
+	nl->addr.nl_pid = pid;
 
 	ret = bind(nl->fd, (struct sockaddr *) &nl->addr, sizeof (nl->addr));
 	if (ret < 0)
