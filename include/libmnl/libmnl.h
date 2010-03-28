@@ -102,12 +102,12 @@ extern struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len);
 
 typedef int (*mnl_cb_t)(const struct nlmsghdr *nlh, void *data);
 
-extern int mnl_cb_run(const char *buf, int numbytes, unsigned int seq,
+extern int mnl_cb_run(const char *buf, unsigned int numbytes, unsigned int seq,
 		      mnl_cb_t cb_data, void *data);
 
-extern int mnl_cb_run2(const char *buf, int numbytes, unsigned int seq,
-		       mnl_cb_t cb_data, void *data,
-		       mnl_cb_t *cb_ctl_array, int cb_ctl_array_len);
+extern int mnl_cb_run2(const char *buf, unsigned int numbytes,
+		       unsigned int seq, mnl_cb_t cb_data, void *data,
+		       mnl_cb_t *cb_ctl_array, unsigned int cb_ctl_array_len);
 
 /*
  * other declarations
