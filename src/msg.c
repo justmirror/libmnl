@@ -104,7 +104,7 @@ void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, int size)
  * This function returns the length of the netlink message by return the field
  * nlmsg_len of the message.
  */
-u_int16_t mnl_nlmsg_get_len(const struct nlmsghdr *nlh)
+uint16_t mnl_nlmsg_get_len(const struct nlmsghdr *nlh)
 {
 	return nlh->nlmsg_len;
 }

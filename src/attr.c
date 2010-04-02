@@ -26,7 +26,7 @@
  *
  * This function returns the attribute type.
  */
-u_int16_t mnl_attr_get_type(const struct nlattr *attr)
+uint16_t mnl_attr_get_type(const struct nlattr *attr)
 {
 	return attr->nla_type & NLA_TYPE_MASK;
 }
@@ -37,7 +37,7 @@ u_int16_t mnl_attr_get_type(const struct nlattr *attr)
  *
  * This function returns the attribute length, including the attribute header.
  */
-u_int16_t mnl_attr_get_len(const struct nlattr *attr)
+uint16_t mnl_attr_get_len(const struct nlattr *attr)
 {
 	return attr->nla_len;
 }
@@ -48,7 +48,7 @@ u_int16_t mnl_attr_get_len(const struct nlattr *attr)
  *
  * This function returns the attribute payload-value length.
  */
-u_int16_t mnl_attr_get_payload_len(const struct nlattr *attr)
+uint16_t mnl_attr_get_payload_len(const struct nlattr *attr)
 {
 	return attr->nla_len - MNL_ATTR_HDRLEN;
 }
@@ -176,9 +176,9 @@ int mnl_attr_parse_nested(const struct nlattr *nested,
  *
  * This function returns the 8-bit value of a netlink attribute.
  */
-u_int8_t mnl_attr_get_u8(const struct nlattr *attr)
+uint8_t mnl_attr_get_u8(const struct nlattr *attr)
 {
-	return *((u_int8_t *)mnl_attr_get_data(attr));
+	return *((uint8_t *)mnl_attr_get_data(attr));
 }
 
 /**
@@ -187,9 +187,9 @@ u_int8_t mnl_attr_get_u8(const struct nlattr *attr)
  *
  * This function returns the 16-bit value of a netlink attribute.
  */
-u_int16_t mnl_attr_get_u16(const struct nlattr *attr)
+uint16_t mnl_attr_get_u16(const struct nlattr *attr)
 {
-	return *((u_int16_t *)mnl_attr_get_data(attr));
+	return *((uint16_t *)mnl_attr_get_data(attr));
 }
 
 /**
@@ -198,9 +198,9 @@ u_int16_t mnl_attr_get_u16(const struct nlattr *attr)
  *
  * This function returns the 32-bit value of a netlink attribute.
  */
-u_int32_t mnl_attr_get_u32(const struct nlattr *attr)
+uint32_t mnl_attr_get_u32(const struct nlattr *attr)
 {
-	return *((u_int32_t *)mnl_attr_get_data(attr));
+	return *((uint32_t *)mnl_attr_get_data(attr));
 }
 
 /**
@@ -211,9 +211,9 @@ u_int32_t mnl_attr_get_u32(const struct nlattr *attr)
  * is align-safe since accessing 64-bit Netlink attributes is a common
  * source of alignment issues.
  */
-u_int64_t mnl_attr_get_u64(const struct nlattr *attr)
+uint64_t mnl_attr_get_u64(const struct nlattr *attr)
 {
-	u_int64_t tmp;
+	uint64_t tmp;
 	memcpy(&tmp, mnl_attr_get_data(attr), sizeof(tmp));
 	return tmp;
 }
@@ -254,9 +254,9 @@ void mnl_attr_put(struct nlmsghdr *nlh, int type, size_t len, const void *data)
  * @len: netlink attribute payload size
  * @data: 8-bit unsigned integer data that is stored by the new attribute
  */
-void mnl_attr_put_u8(struct nlmsghdr *nlh, int type, u_int8_t data)
+void mnl_attr_put_u8(struct nlmsghdr *nlh, int type, uint8_t data)
 {
-	mnl_attr_put(nlh, type, sizeof(u_int8_t), &data);
+	mnl_attr_put(nlh, type, sizeof(uint8_t), &data);
 }
 
 /**
@@ -265,9 +265,9 @@ void mnl_attr_put_u8(struct nlmsghdr *nlh, int type, u_int8_t data)
  * @type: netlink attribute type
  * @data: 16-bit unsigned integer data that is stored by the new attribute
  */
-void mnl_attr_put_u16(struct nlmsghdr *nlh, int type, u_int16_t data)
+void mnl_attr_put_u16(struct nlmsghdr *nlh, int type, uint16_t data)
 {
-	mnl_attr_put(nlh, type, sizeof(u_int16_t), &data);
+	mnl_attr_put(nlh, type, sizeof(uint16_t), &data);
 }
 
 /**
@@ -276,9 +276,9 @@ void mnl_attr_put_u16(struct nlmsghdr *nlh, int type, u_int16_t data)
  * @type: netlink attribute type
  * @data: 32-bit unsigned integer data that is stored by the new attribute
  */
-void mnl_attr_put_u32(struct nlmsghdr *nlh, int type, u_int32_t data)
+void mnl_attr_put_u32(struct nlmsghdr *nlh, int type, uint32_t data)
 {
-	mnl_attr_put(nlh, type, sizeof(u_int32_t), &data);
+	mnl_attr_put(nlh, type, sizeof(uint32_t), &data);
 }
 
 /**
@@ -287,9 +287,9 @@ void mnl_attr_put_u32(struct nlmsghdr *nlh, int type, u_int32_t data)
  * @type: netlink attribute type
  * @data: 64-bit unsigned integer data that is stored by the new attribute
  */
-void mnl_attr_put_u64(struct nlmsghdr *nlh, int type, u_int64_t data)
+void mnl_attr_put_u64(struct nlmsghdr *nlh, int type, uint64_t data)
 {
-	mnl_attr_put(nlh, type, sizeof(u_int64_t), &data);
+	mnl_attr_put(nlh, type, sizeof(uint64_t), &data);
 }
 
 /**

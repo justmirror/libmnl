@@ -1,6 +1,7 @@
 #ifndef _LIBMNL_H_
 #define _LIBMNL_H_
 
+#include <stdint.h>
 #include <sys/socket.h> /* for sa_family_t */
 #include <linux/netlink.h>
 
@@ -48,7 +49,7 @@ extern struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len);
 extern int mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq);
 
 /* Netlink header getters */
-extern u_int16_t mnl_nlmsg_get_len(const struct nlmsghdr *nlh);
+extern uint16_t mnl_nlmsg_get_len(const struct nlmsghdr *nlh);
 extern void *mnl_nlmsg_get_data(const struct nlmsghdr *nlh);
 extern void *mnl_nlmsg_get_data_offset(const struct nlmsghdr *nlh, int offset);
 extern void *mnl_nlmsg_get_tail(const struct nlmsghdr *nlh);
@@ -62,22 +63,22 @@ extern void mnl_nlmsg_print(const struct nlmsghdr *nlh);
 #define MNL_ATTR_HDRLEN	mnl_align(sizeof(struct nlattr))
 
 /* TLV attribute getters */
-extern u_int16_t mnl_attr_get_type(const struct nlattr *attr);
-extern u_int16_t mnl_attr_get_len(const struct nlattr *attr);
-extern u_int16_t mnl_attr_get_payload_len(const struct nlattr *attr);
+extern uint16_t mnl_attr_get_type(const struct nlattr *attr);
+extern uint16_t mnl_attr_get_len(const struct nlattr *attr);
+extern uint16_t mnl_attr_get_payload_len(const struct nlattr *attr);
 extern void *mnl_attr_get_data(const struct nlattr *attr);
-extern u_int8_t mnl_attr_get_u8(const struct nlattr *attr);
-extern u_int16_t mnl_attr_get_u16(const struct nlattr *attr);
-extern u_int32_t mnl_attr_get_u32(const struct nlattr *attr);
-extern u_int64_t mnl_attr_get_u64(const struct nlattr *attr);
+extern uint8_t mnl_attr_get_u8(const struct nlattr *attr);
+extern uint16_t mnl_attr_get_u16(const struct nlattr *attr);
+extern uint32_t mnl_attr_get_u32(const struct nlattr *attr);
+extern uint64_t mnl_attr_get_u64(const struct nlattr *attr);
 extern const char *mnl_attr_get_str(const struct nlattr *attr);
 
 /* TLV attribute putters */
 extern void mnl_attr_put(struct nlmsghdr *nlh, int type, size_t len, const void *data);
-extern void mnl_attr_put_u8(struct nlmsghdr *nlh, int type, u_int8_t data);
-extern void mnl_attr_put_u16(struct nlmsghdr *nlh, int type, u_int16_t data);
-extern void mnl_attr_put_u32(struct nlmsghdr *nlh, int type, u_int32_t data);
-extern void mnl_attr_put_u64(struct nlmsghdr *nlh, int type, u_int64_t data);
+extern void mnl_attr_put_u8(struct nlmsghdr *nlh, int type, uint8_t data);
+extern void mnl_attr_put_u16(struct nlmsghdr *nlh, int type, uint16_t data);
+extern void mnl_attr_put_u32(struct nlmsghdr *nlh, int type, uint32_t data);
+extern void mnl_attr_put_u64(struct nlmsghdr *nlh, int type, uint64_t data);
 extern void mnl_attr_put_str(struct nlmsghdr *nlh, int type, const void *data);
 extern void mnl_attr_put_str_null(struct nlmsghdr *nlh, int type, const void *data);
 
