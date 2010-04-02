@@ -116,7 +116,7 @@ int mnl_socket_bind(struct mnl_socket *nl, int groups, int pid)
  * On error, it returns -1 and errno is appropriately set. Otherwise, it 
  * returns the number of bytes sent.
  */
-int mnl_socket_sendto(struct mnl_socket *nl, const void *buf, int len)
+int mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
 {
 	struct sockaddr_nl snl = {
 		.nl_family = AF_NETLINK
@@ -134,8 +134,8 @@ int mnl_socket_sendto(struct mnl_socket *nl, const void *buf, int len)
  * On error, it returns -1 and errno is appropriately set. Otherwise, it 
  * returns the number of bytes sent.
  */
-int
-mnl_socket_sendmsg(struct mnl_socket *nl, struct msghdr *msg, int flags)
+int mnl_socket_sendmsg(const struct mnl_socket *nl,
+		       const struct msghdr *msg, int flags)
 {
 	return sendmsg(nl->fd, msg, flags);
 }
@@ -151,7 +151,7 @@ mnl_socket_sendmsg(struct mnl_socket *nl, struct msghdr *msg, int flags)
  * netlink message is small so you have received a truncated message. Make
  * sure your program set a buffer big enough to store the netlink message.
  */
-int mnl_socket_recvfrom(struct mnl_socket *nl, void *buf, int bufsiz)
+int mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
 {
 	int ret;
 	struct sockaddr_nl addr;
@@ -192,8 +192,8 @@ int mnl_socket_recvfrom(struct mnl_socket *nl, void *buf, int bufsiz)
  * On error, this function returns -1 and errno is appropriately set.
  * On sucess, this function returns the number of bytes received.
  */
-int
-mnl_socket_recvmsg(const struct mnl_socket *nl, struct msghdr *msg, int flags)
+int mnl_socket_recvmsg(const struct mnl_socket *nl,
+		       struct msghdr *msg, int flags)
 {
 	return recvmsg(nl->fd, msg, flags);
 }
@@ -238,7 +238,7 @@ int mnl_socket_close(struct mnl_socket *nl)
  *
  * On error, this function returns -1 and errno is appropriately set.
  */
-int mnl_socket_setsockopt(struct mnl_socket *nl, int type,
+int mnl_socket_setsockopt(const struct mnl_socket *nl, int type,
 			  void *buf, socklen_t len)
 {
 	return setsockopt(nl->fd, SOL_NETLINK, type, buf, len);
@@ -253,7 +253,7 @@ int mnl_socket_setsockopt(struct mnl_socket *nl, int type,
  *
  * On error, this function returns -1 and errno is appropriately set.
  */
-int mnl_socket_getsockopt(struct mnl_socket *nl, int type,
+int mnl_socket_getsockopt(const struct mnl_socket *nl, int type,
 			  void *buf, socklen_t *len)
 {
 	return getsockopt(nl->fd, SOL_NETLINK, type, buf, len);
