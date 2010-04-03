@@ -5,15 +5,43 @@
 #include <libmnl/libmnl.h>
 #include <linux/genetlink.h>
 
+static int parse_mc_grps_cb(const struct nlattr *attr, void *data)
+{
+	const struct nlattr **tb = (const struct nlattr **)data;
+	int type = mnl_attr_get_type(attr);
+
+	if (mnl_attr_type_invalid(attr, CTRL_ATTR_MCAST_GRP_MAX) < 0) {
+		perror("mnl_attr_type_invalid");
+		return MNL_CB_ERROR;
+	}
+
+	switch(type) {
+	case CTRL_ATTR_MCAST_GRP_ID:
+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	case CTRL_ATTR_MCAST_GRP_NAME:
+		if (mnl_attr_validate(attr, MNL_TYPE_STRING) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	}
+	tb[type] = attr;
+	return MNL_CB_OK;
+}
+
 static void parse_genl_mc_grps(struct nlattr *nested)
 {
 	struct nlattr *pos;
 	int len;
 
-	mnl_attr_for_each_nested(pos, nested, len) {
-		struct nlattr *tb[CTRL_ATTR_MCAST_GRP_MAX+1];
+	mnl_attr_for_each_nested(pos, nested) {
+		struct nlattr *tb[CTRL_ATTR_MCAST_GRP_MAX+1] = {};
 
-		mnl_attr_parse_nested(pos, tb, CTRL_ATTR_MCAST_GRP_MAX);
+		mnl_attr_parse_nested(pos, parse_mc_grps_cb, tb);
 		if (tb[CTRL_ATTR_MCAST_GRP_ID]) {
 			printf("id-0x%x ",
 				mnl_attr_get_u32(tb[CTRL_ATTR_MCAST_GRP_ID]));
@@ -26,15 +54,41 @@ static void parse_genl_mc_grps(struct nlattr *nested)
 	}
 }
 
+static int parse_family_ops_cb(const struct nlattr *attr, void *data)
+{
+	const struct nlattr **tb = (const struct nlattr **)data;
+	int type = mnl_attr_get_type(attr);
+
+	if (mnl_attr_type_invalid(attr, CTRL_ATTR_OP_MAX) < 0) {
+		perror("mnl_attr_type_invalid");
+		return MNL_CB_ERROR;
+	}
+
+	switch(type) {
+	case CTRL_ATTR_OP_ID:
+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	case CTRL_ATTR_OP_MAX:
+		break;
+	default:
+		return MNL_CB_OK;
+	}
+	tb[type] = attr;
+	return MNL_CB_OK;
+}
+
 static void parse_genl_family_ops(struct nlattr *nested)
 {
 	struct nlattr *pos;
 	int len;
 
-	mnl_attr_for_each_nested(pos, nested, len) {
-		struct nlattr *tb[CTRL_ATTR_OP_MAX+1];
+	mnl_attr_for_each_nested(pos, nested) {
+		struct nlattr *tb[CTRL_ATTR_OP_MAX+1] = {};
 
-		mnl_attr_parse_nested(pos, tb, CTRL_ATTR_OP_MAX);
+		mnl_attr_parse_nested(pos, parse_family_ops_cb, tb);
 		if (tb[CTRL_ATTR_OP_ID]) {
 			printf("id-0x%x ",
 				mnl_attr_get_u32(tb[CTRL_ATTR_OP_ID]));
@@ -46,12 +100,55 @@ static void parse_genl_family_ops(struct nlattr *nested)
 	}
 }
 
+static int data_attr_cb(const struct nlattr *attr, void *data)
+{
+	const struct nlattr **tb = (const struct nlattr **)data;
+	int type = mnl_attr_get_type(attr);
+
+	if (mnl_attr_type_invalid(attr, CTRL_ATTR_MAX) < 0) {
+		perror("mnl_attr_type_invalid");
+		return MNL_CB_ERROR;
+	}
+
+	switch(type) {
+	case CTRL_ATTR_FAMILY_NAME:
+		if (mnl_attr_validate(attr, MNL_TYPE_STRING) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	case CTRL_ATTR_FAMILY_ID:
+		if (mnl_attr_validate(attr, MNL_TYPE_U16) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	case CTRL_ATTR_VERSION:
+	case CTRL_ATTR_HDRSIZE:
+	case CTRL_ATTR_MAXATTR:
+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	case CTRL_ATTR_OPS:
+	case CTRL_ATTR_MCAST_GROUPS:
+		if (mnl_attr_validate(attr, MNL_TYPE_NESTED) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	}
+	tb[type] = attr;
+	return MNL_CB_OK;
+}
+
 static int data_cb(const struct nlmsghdr *nlh, void *data)
 {
-	struct nlattr *tb[CTRL_ATTR_MAX+1];
+	struct nlattr *tb[CTRL_ATTR_MAX+1] = {};
 	struct genlmsghdr *genl = mnl_nlmsg_get_data(nlh);
 
-	mnl_attr_parse_at_offset(nlh, sizeof(*genl), tb, CTRL_ATTR_MAX);
+	mnl_attr_parse(nlh, sizeof(*genl), data_attr_cb, tb);
 	if (tb[CTRL_ATTR_FAMILY_NAME]) {
 		printf("name=%s\t",
 			mnl_attr_get_str(tb[CTRL_ATTR_FAMILY_NAME]));

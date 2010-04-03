@@ -7,6 +7,22 @@
 #include <linux/if_link.h>
 #include <linux/rtnetlink.h>
 
+static int data_attr_cb2(const struct nlattr *attr, void *data)
+{
+	const struct nlattr **tb = (const struct nlattr **)data;
+	int type = mnl_attr_get_type(attr);
+
+	if (mnl_attr_type_invalid(attr, RTAX_MAX) < 0) {
+		perror("mnl_attr_type_invalid");
+		return MNL_CB_ERROR;
+	}
+	if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
+		perror("mnl_attr_validate");
+		return MNL_CB_ERROR;
+	}
+	return MNL_CB_OK;
+}
+
 static void attributes_show_ipv4(struct nlattr *tb[])
 {
 	if (tb[RTA_TABLE]) {
@@ -35,7 +51,7 @@ static void attributes_show_ipv4(struct nlattr *tb[])
 		int i;
 		struct nlattr *tbx[RTAX_MAX+1] = {};
 
-		mnl_attr_parse_nested(tb[RTA_METRICS], tbx, RTAX_MAX);
+		mnl_attr_parse_nested(tb[RTA_METRICS], data_attr_cb2, tbx);
 
 		for (i=0; i<RTAX_MAX; i++) {
 			if (tbx[i]) {
@@ -47,9 +63,42 @@ static void attributes_show_ipv4(struct nlattr *tb[])
 	printf("\n");
 }
 
+static int data_attr_cb(const struct nlattr *attr, void *data)
+{
+	const struct nlattr **tb = (const struct nlattr **)data;
+	int type = mnl_attr_get_type(attr);
+
+	if (mnl_attr_type_invalid(attr, RTA_MAX) < 0) {
+		perror("mnl_attr_type_invalid");
+		return MNL_CB_ERROR;
+	}
+
+	switch(type) {
+	case RTA_TABLE:
+	case RTA_DST:
+	case RTA_SRC:
+	case RTA_OIF:
+	case RTA_FLOW:
+	case RTA_PREFSRC:
+	case RTA_GATEWAY:
+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	case RTA_METRICS:
+		if (mnl_attr_validate(attr, MNL_TYPE_NESTED) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	}
+	tb[type] = attr;
+	return MNL_CB_OK;
+}
+
 static int data_cb(const struct nlmsghdr *nlh, void *data)
 {
-	/* parse() ya está inicializando este array, qué hacer ? */
 	struct nlattr *tb[RTA_MAX+1] = {};
 	struct rtmsg *rm = mnl_nlmsg_get_data(nlh);
 	int len = mnl_nlmsg_get_len(nlh);
@@ -131,7 +180,7 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 	 */
 	printf("flags=%x\n", rm->rtm_flags);
 
-	mnl_attr_parse_at_offset(nlh, sizeof(*rm), tb, RTA_MAX);
+	mnl_attr_parse(nlh, sizeof(*rm), data_attr_cb, tb);
 
 	switch(rm->rtm_family) {
 	case AF_INET:

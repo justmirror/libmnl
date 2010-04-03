@@ -7,37 +7,8 @@
 #include <linux/if_link.h>
 #include <linux/rtnetlink.h>
 
-static int data_attr_cb(const struct nlattr *attr, void *data)
-{
-	const struct nlattr **tb = (const struct nlattr **)data;
-	int type = mnl_attr_get_type(attr);
-
-	if (mnl_attr_type_invalid(attr, IFLA_MAX) < 0) {
-		perror("mnl_attr_type_invalid");
-		return MNL_CB_ERROR;
-	}
-
-	switch(type) {
-	case IFLA_MTU:
-		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
-			perror("mnl_attr_validate");
-			return MNL_CB_ERROR;
-		}
-		break;
-	case IFLA_IFNAME:
-		if (mnl_attr_validate(attr, MNL_TYPE_STRING) < 0) {
-			perror("mnl_attr_validate2");
-			return MNL_CB_ERROR;
-		}
-		break;
-	}
-	tb[type] = attr;
-	return MNL_CB_OK;
-}
-
 static int data_cb(const struct nlmsghdr *nlh, void *data)
 {
-	struct nlattr *tb[IFLA_MAX+1] = {};
 	struct ifinfomsg *ifm = mnl_nlmsg_get_data(nlh);
 	int len = mnl_nlmsg_get_len(nlh);
 	struct nlattr *attr;
@@ -51,14 +22,32 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 	else
 		printf("[NOT RUNNING] ");
 
-	mnl_attr_parse(nlh, sizeof(*ifm), data_attr_cb, tb);
-	if (tb[IFLA_MTU]) {
-		printf("mtu=%d ", mnl_attr_get_u32(tb[IFLA_MTU]));
-	}
-	if (tb[IFLA_IFNAME]) {
-		printf("name=%s", mnl_attr_get_str(tb[IFLA_IFNAME]));
+	mnl_attr_for_each(attr, nlh, sizeof(*ifm)) {
+		int type = mnl_attr_get_type(attr);
+
+		if (mnl_attr_type_invalid(attr, IFLA_MAX) < 0) {
+			perror("mnl_attr_type_invalid");
+			return MNL_CB_ERROR;
+		}
+		switch(type) {
+		case IFLA_MTU:
+			if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
+				perror("mnl_attr_validate");
+				return MNL_CB_ERROR;
+			}
+			printf("mtu=%d ", mnl_attr_get_u32(attr));
+			break;
+		case IFLA_IFNAME:
+			if (mnl_attr_validate(attr, MNL_TYPE_STRING) < 0) {
+				perror("mnl_attr_validate");
+				return MNL_CB_ERROR;
+			}
+			printf("name=%s ", mnl_attr_get_str(attr));
+			break;
+		}
 	}
 	printf("\n");
+
 	return MNL_CB_OK;
 }
 

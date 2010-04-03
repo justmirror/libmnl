@@ -9,6 +9,8 @@
 
 #include <libmnl/libmnl.h>
 #include <string.h>
+#include <values.h>	/* for INT_MAX */
+#include <errno.h>
 
 /*
  * Netlink Type-Length-Value (TLV) attribute:
@@ -94,80 +96,172 @@ struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len)
 }
 
 /**
- * mnl_attr_parse_at_offset - returns an array of attributes from offset
- * @nlh: pointer to netlink message
- * @offset: offset to start parse from
- * @tb: array of pointers to the attribute found
- * @max: size of the attribute array
+ * mnl_attr_type_invalid - check if the attribute type is valid
+ * @attr: pointer to attribute to be checked
+ * @max: maximum attribute type
  *
- * This functions zeroes the array of pointers. Thus, you don't need to
- * initialize this array.
- *
- * This function returns an array of pointers to the attributes that has been
- * found in a netlink payload. This function return 0 on sucess, and >0 to
- * indicate the number of bytes the remaining bytes.
+ * This function allows to check if the attribute type is higher than the
+ * maximum supported type. If the attribute type is invalid, this function
+ * returns -1 and errno is explicitly set.
  */
-int mnl_attr_parse_at_offset(const struct nlmsghdr *nlh, int offset,
-			     struct nlattr *tb[], int max)
+int mnl_attr_type_invalid(const struct nlattr *attr, int max)
 {
+	if (mnl_attr_get_type(attr) > max) {
+		errno = EINVAL;
+		return -1;
+	}
+	return 0;
+}
+
+static int __mnl_attr_validate(const struct nlattr *attr,
+			       enum mnl_attr_data_type type, int exp_len)
+{
+	uint16_t attr_len = mnl_attr_get_payload_len(attr);
+	char *attr_data = mnl_attr_get_data(attr);
+
+	if (attr_len < exp_len) {
+		errno = ERANGE;
+		return -1;
+	}
+	switch(type) {
+	case MNL_TYPE_FLAG:
+		if (attr_len > 0) {
+			errno = ERANGE;
+			return -1;
+		}
+		break;
+	case MNL_TYPE_NUL_STRING:
+		if (attr_len == 0) {
+			errno = ERANGE;
+			return -1;
+		}
+		if (attr_data[attr_len-1] != '\0') {
+			errno = EINVAL;
+			return -1;
+		}
+		break;
+	case MNL_TYPE_STRING:
+		if (attr_len == 0) {
+			errno = ERANGE;
+			return -1;
+		}
+		break;
+	case MNL_TYPE_NESTED:
+		/* empty nested attributes are OK. */
+		if (attr_len == 0)
+			break;
+		/* if not empty, they must contain one header, eg. flag */
+		if (attr_len < MNL_ATTR_HDRLEN) {
+			errno = ERANGE;
+			return -1;
+		}
+		break;
+	default:
+		/* make gcc happy. */
+		break;
+	}
+	if (exp_len && attr_len > exp_len) {
+		errno = ERANGE;
+		return -1;
+	}
+	return 0;
+}
+
+/**
+ * mnl_attr_validate - validate netlink attribute (simplified version)
+ * @attr: pointer to netlink attribute that we want to validate
+ * @type: data type (see enum mnl_attr_data_type)
+ *
+ * The validation is based on the data type. This functions returns -1 in
+ * case of error and errno is explicitly set.
+ */
+static size_t mnl_attr_data_type_len[MNL_TYPE_MAX] = {
+	[MNL_TYPE_U8]		= sizeof(uint8_t),
+	[MNL_TYPE_U16]		= sizeof(uint16_t),
+	[MNL_TYPE_U32]		= sizeof(uint32_t),
+	[MNL_TYPE_U64]		= sizeof(uint64_t),
+};
+
+int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
+{
+	int exp_len;
+
+	if (type < 0 || type >= MNL_TYPE_MAX) {
+		errno = EINVAL;
+		return -1;
+	}
+	exp_len = mnl_attr_data_type_len[type];
+	return __mnl_attr_validate(attr, type, exp_len);
+}
+
+/**
+ * mnl_attr_validate2 - validate netlink attribute (extended version)
+ * @attr: pointer to netlink attribute that we want to validate
+ * @type: attribute type (see enum mnl_attr_data_type)
+ * @exp_len: expected attribute data size
+ *
+ * This function allows to perform a more accurate validation for attributes
+ * whose size is variable. If the size of the attribute is not what we expect,
+ * this functions returns -1 and errno is explicitly set.
+ */
+int mnl_attr_validate2(const struct nlattr *attr, 
+		       enum mnl_attr_data_type type, int exp_len)
+{
+	if (type < 0 || type >= MNL_TYPE_MAX) {
+		errno = EINVAL;
+		return -1;
+	}
+	return __mnl_attr_validate(attr, type, exp_len);
+}
+
+/**
+ * mnl_attr_parse - parse attributes
+ * @nlh: pointer to netlink message
+ * @offset: offset to start parsing from
+ * @cb: callback function
+ * @data: pointer to data passed to the callback function
+ *
+ * This function propagates the return value of the callback that can be
+ * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
+ */
+int mnl_attr_parse(const struct nlmsghdr *nlh, int offset,
+		   mnl_attr_cb_t cb, void *data)
+{
+	int ret = MNL_CB_OK;
 	struct nlattr *attr = mnl_nlmsg_get_data_offset(nlh, offset);
 	int len = mnl_nlmsg_get_len(nlh);
 
-	memset(tb, 0, sizeof(struct nlattr *) * (max + 1));
-
 	while (mnl_attr_ok(attr, len)) {
-		if (mnl_attr_get_type(attr) <= max)
-			tb[mnl_attr_get_type(attr)] = attr;
+		if (cb && (ret = cb(attr, data)) <= MNL_CB_STOP)
+			return ret;
 		attr = mnl_attr_next(attr, &len);
 	}
-	return len;
+	return ret;
 }
 
 /**
- * mnl_attr_parse - returns an array with the attributes in the netlink message
- * @nlh: pointer to netlink message header
- * @tb: array of pointers to the attribute found
- * @max: size of the attribute array
- *
- * This functions zeroes the array of pointers. Thus, you don't need to
- * initialize this array.
- *
- * This function returns an array of pointers to the attributes that has been
- * found in a netlink payload. This function return 0 on sucess, and >0 to
- * indicate the number of bytes the remaining bytes.
- */
-int mnl_attr_parse(const struct nlmsghdr *nlh, struct nlattr *tb[], int max)
-{
-	return mnl_attr_parse_at_offset(nlh, 0, tb, max);
-}
-
-/**
- * mnl_attr_parse_nested - returns an array with the attributes from nested
+ * mnl_attr_parse_nested - parse attributes inside a nest
  * @nested: pointer to netlink attribute that contains a nest
- * @tb: array of pointers to the attribute found
- * @max: size of the attribute array
+ * @offset: offset to start parsing from
+ * @cb: callback function
+ * @data: pointer to data passed to the callback function
  *
- * This functions zeroes the array of pointers. Thus, you don't need to
- * initialize this array.
- *
- * This function returns an array of pointers to the attributes that has been
- * found in a netlink payload. This function return 0 on sucess, and >0 to
- * indicate the number of bytes the remaining bytes.
+ * This function propagates the return value of the callback that can be
+ * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
  */
 int mnl_attr_parse_nested(const struct nlattr *nested,
-			  struct nlattr *tb[], int max)
+			  mnl_attr_cb_t cb, void *data)
 {
+	int ret = MNL_CB_OK;
 	struct nlattr *attr = mnl_attr_get_data(nested);
 	int len = mnl_attr_get_payload_len(nested);
 
-	memset(tb, 0, sizeof(struct nlattr *) * (max + 1));
-
 	while (mnl_attr_ok(attr, len)) {
-		if (mnl_attr_get_type(attr) <= max)
-			tb[mnl_attr_get_type(attr)] = attr;
+		if (cb && (ret = cb(attr, data)) <= MNL_CB_STOP)
+			return ret;
 		attr = mnl_attr_next(attr, &len);
 	}
-	return len;
+	return ret;
 }
 
 /**

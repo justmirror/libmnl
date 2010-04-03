@@ -29,8 +29,9 @@ extern int mnl_socket_getsockopt(const struct mnl_socket *nl, int type, void *bu
  * generic netlink message API
  */
 
-#define MNL_ALIGNTO	4
-#define MNL_NLMSG_HDRLEN	mnl_align(sizeof(struct nlmsghdr))
+#define MNL_ALIGNTO		4
+#define MNL_ALIGN(len)		(((len)+MNL_ALIGNTO-1) & ~(MNL_ALIGNTO-1))
+#define MNL_NLMSG_HDRLEN	MNL_ALIGN(sizeof(struct nlmsghdr))
 
 extern int mnl_align(int len);
 extern size_t mnl_nlmsg_size(int len);
@@ -60,7 +61,7 @@ extern void mnl_nlmsg_print(const struct nlmsghdr *nlh);
 /*
  * generic netlink attributes API
  */
-#define MNL_ATTR_HDRLEN	mnl_align(sizeof(struct nlattr))
+#define MNL_ATTR_HDRLEN	MNL_ALIGN(sizeof(struct nlattr))
 
 /* TLV attribute getters */
 extern uint16_t mnl_attr_get_type(const struct nlattr *attr);
@@ -82,17 +83,47 @@ extern void mnl_attr_put_u64(struct nlmsghdr *nlh, int type, uint64_t data);
 extern void mnl_attr_put_str(struct nlmsghdr *nlh, int type, const void *data);
 extern void mnl_attr_put_str_null(struct nlmsghdr *nlh, int type, const void *data);
 
-/* TLV attribute parsers */
-extern int mnl_attr_parse(const struct nlmsghdr *nlh, struct nlattr *tb[], int max);
-extern int mnl_attr_parse_at_offset(const struct nlmsghdr *nlh, int offset, struct nlattr *tb[], int max);
-extern int mnl_attr_parse_nested(const struct nlattr *attr, struct nlattr *tb[], int max);
+/* TLV validation */
+enum mnl_attr_data_type {
+	MNL_TYPE_UNSPEC,
+	MNL_TYPE_U8,
+	MNL_TYPE_U16,
+	MNL_TYPE_U32,
+	MNL_TYPE_U64,
+	MNL_TYPE_STRING,
+	MNL_TYPE_FLAG,
+	MNL_TYPE_MSECS,
+	MNL_TYPE_NESTED,
+	MNL_TYPE_NESTED_COMPAT,
+	MNL_TYPE_NUL_STRING,
+	MNL_TYPE_BINARY,
+	MNL_TYPE_MAX,
+};
+
+extern int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type);
+extern int mnl_attr_validate2(const struct nlattr *attr, enum mnl_attr_data_type type, int minlen);
+
+/* TLV iterators */
 extern int mnl_attr_ok(const struct nlattr *attr, int len);
 extern struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len);
 
-#define mnl_attr_for_each_nested(pos, head, len)			    \
-	for (pos = mnl_attr_get_data(head), len = mnl_attr_get_len(head); \
-	     mnl_attr_ok(pos, len);					    \
-	     pos = mnl_attr_next(pos, &(len)))
+#define mnl_attr_for_each(attr, nlh, offset)			\
+	int __len__ = mnl_nlmsg_payload_size(nlh);		\
+	for (attr = mnl_nlmsg_get_data_offset(nlh, offset);	\
+	     mnl_attr_ok(attr, __len__);			\
+	     attr = mnl_attr_next(attr, &(__len__)))
+
+#define mnl_attr_for_each_nested(attr, nest)			\
+	int __len__ = mnl_attr_get_len(nest);			\
+	for (pos = mnl_attr_get_data(nest);			\
+	     mnl_attr_ok(attr, __len__);			\
+	     pos = mnl_attr_next(attr, &(__len__)))
+
+/* TLV callback-based attribute parsers */
+typedef int (*mnl_attr_cb_t)(const struct nlattr *attr, void *data);
+
+extern int mnl_attr_parse(const struct nlmsghdr *nlh, int offset, mnl_attr_cb_t cb, void *data);
+extern int mnl_attr_parse_nested(const struct nlattr *attr, mnl_attr_cb_t cb, void *data);
 
 /*
  * callback API
