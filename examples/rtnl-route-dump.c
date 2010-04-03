@@ -55,10 +55,6 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 	int len = mnl_nlmsg_get_len(nlh);
 	struct nlattr *attr;
 
-	/* this does not come from the kernel. */
-	if (nlh->nlmsg_pid != 0)
-		return MNL_CB_OK;
-
 	/* protocol family = AF_INET | AF_INET6 */
 	printf("family=%u ", rm->rtm_family);
 

@@ -14,10 +14,6 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 	int len = mnl_nlmsg_get_len(nlh);
 	struct nlattr *attr;
 
-	/* this does not come from the kernel. */
-	if (nlh->nlmsg_pid != 0)
-		return MNL_CB_OK;
-
 	printf("index=%d type=%d flags=%d family=%d ", 
 		ifm->ifi_index, ifm->ifi_type,
 		ifm->ifi_flags, ifm->ifi_family);
