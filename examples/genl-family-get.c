@@ -51,6 +51,10 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 	struct nlattr *tb[CTRL_ATTR_MAX+1];
 	struct genlmsghdr *genl = mnl_nlmsg_get_data(nlh);
 
+	/* this does not come from the kernel. */
+	if (nlh->nlmsg_pid != 0)
+		return MNL_CB_OK;
+
 	mnl_attr_parse_at_offset(nlh, sizeof(*genl), tb, CTRL_ATTR_MAX);
 	if (tb[CTRL_ATTR_FAMILY_NAME]) {
 		printf("name=%s\t",
