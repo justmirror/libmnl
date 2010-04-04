@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
 	struct nlmsghdr *nlh;
 	struct genlmsghdr *genl;
 	int ret;
-	unsigned int seq;
+	unsigned int seq, portid;
 
 	if (argc != 2) {
 		printf("%s [family name]\n", argv[0]);
@@ -216,6 +216,7 @@ int main(int argc, char *argv[])
 		perror("mnl_socket_bind");
 		exit(EXIT_FAILURE);
 	}
+	portid = mnl_socket_get_portid(nl);
 
 	if (mnl_socket_sendto(nl, nlh, mnl_nlmsg_get_len(nlh)) < 0) {
 		perror("mnl_socket_send");
@@ -224,7 +225,7 @@ int main(int argc, char *argv[])
 
 	ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));
 	while (ret > 0) {
-		ret = mnl_cb_run(buf, ret, seq, data_cb, NULL);
+		ret = mnl_cb_run(buf, ret, seq, portid, data_cb, NULL);
 		if (ret <= 0)
 			break;
 		ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));

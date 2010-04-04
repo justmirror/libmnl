@@ -49,6 +49,9 @@ extern struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len);
 /* Netlink sequence tracking */
 extern int mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq);
 
+/* Netlink portID checking */
+int mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid);
+
 /* Netlink header getters */
 extern uint16_t mnl_nlmsg_get_len(const struct nlmsghdr *nlh);
 extern void *mnl_nlmsg_get_data(const struct nlmsghdr *nlh);
@@ -135,10 +138,10 @@ extern int mnl_attr_parse_nested(const struct nlattr *attr, mnl_attr_cb_t cb, vo
 typedef int (*mnl_cb_t)(const struct nlmsghdr *nlh, void *data);
 
 extern int mnl_cb_run(const char *buf, int numbytes, unsigned int seq,
-		      mnl_cb_t cb_data, void *data);
+		      unsigned int portid, mnl_cb_t cb_data, void *data);
 
-extern int mnl_cb_run2(const char *buf, int numbytes,
-		       unsigned int seq, mnl_cb_t cb_data, void *data,
+extern int mnl_cb_run2(const char *buf, int numbytes, unsigned int seq,
+		       unsigned int portid, mnl_cb_t cb_data, void *data,
 		       mnl_cb_t *cb_ctl_array, unsigned int cb_ctl_array_len);
 
 /*

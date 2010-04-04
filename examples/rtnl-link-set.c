@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	struct nlmsghdr *nlh;
 	struct ifinfomsg *ifm;
 	int ret;
-	unsigned int seq, oper;
+	unsigned int seq, portid, oper;
 
 	if (argc != 3) {
 		printf("Usage: %s [ifname] [up|down]\n", argv[0]);
@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
 		perror("mnl_socket_bind");
 		exit(EXIT_FAILURE);
 	}
+	portid = mnl_socket_get_portid(nl);
 
 	mnl_nlmsg_print(nlh);
 
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	ret = mnl_cb_run(buf, ret, seq, NULL, NULL);
+	ret = mnl_cb_run(buf, ret, seq, portid, NULL, NULL);
 	if (ret == -1){
 		perror("callback");
 		exit(EXIT_FAILURE);

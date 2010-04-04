@@ -184,13 +184,27 @@ void *mnl_nlmsg_get_tail(const struct nlmsghdr *nlh)
  * @seq: last sequence number used to send a message
  *
  * This functions returns 1 if the sequence tracking is fulfilled, otherwise
- * 0 is returned. If seq is 0, then the sequence tracking is skipped. This
- * value is generally used by the kernel for asynchronous notifications,
- * for that reason, this library consider that it is reserved.
+ * 0 is returned. We skip the tracking for netlink messages whose sequence
+ * number is zero since it is usually reserved for event-based kernel
+ * notifications.
  */
 int mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
 {
-	return seq ? nlh->nlmsg_seq == seq : 1;
+	return nlh->nlmsg_seq ? nlh->nlmsg_seq == seq : 1;
+}
+
+/**
+ * mnl_nlmsg_portid_ok - perform portID origin check
+ * @nlh: current netlink message that we are handling
+ * @seq: netlink portid that we want to check
+ *
+ * This functions return 1 if the origin is fulfilled, otherwise
+ * 0 is returned.  We skip the tracking for netlink message whose portID 
+ * is zero since it is reserved for event-based kernel notifications.
+ */
+int mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
+{
+	return nlh->nlmsg_pid ? nlh->nlmsg_pid == portid : 1;
 }
 
 /* XXX: rework this, please */

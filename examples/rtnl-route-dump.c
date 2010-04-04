@@ -198,7 +198,7 @@ int main()
 	struct nlmsghdr *nlh;
 	struct rtmsg *rtm;
 	int ret;
-	unsigned int seq;
+	unsigned int seq, portid;
 
 	nlh = mnl_nlmsg_put_header(buf);
 	nlh->nlmsg_type = RTM_GETROUTE;
@@ -217,6 +217,7 @@ int main()
 		perror("mnl_socket_bind");
 		exit(EXIT_FAILURE);
 	}
+	portid = mnl_socket_get_portid(nl);
 
 	if (mnl_socket_sendto(nl, nlh, mnl_nlmsg_get_len(nlh)) < 0) {
 		perror("mnl_socket_send");
@@ -225,7 +226,7 @@ int main()
 
 	ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));
 	while (ret > 0) {
-		ret = mnl_cb_run(buf, ret, 0, data_cb, NULL);
+		ret = mnl_cb_run(buf, ret, seq, portid, data_cb, NULL);
 		if (ret <= MNL_CB_STOP)
 			break;
 		ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));
