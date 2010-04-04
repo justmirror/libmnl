@@ -86,6 +86,8 @@ extern void mnl_attr_put_str(struct nlmsghdr *nlh, int type, const void *data);
 extern void mnl_attr_put_str_null(struct nlmsghdr *nlh, int type, const void *data);
 
 /* TLV validation */
+extern int mnl_attr_type_ok(const struct nlattr *attr, int maxtype);
+
 enum mnl_attr_data_type {
 	MNL_TYPE_UNSPEC,
 	MNL_TYPE_U8,

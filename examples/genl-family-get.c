@@ -10,8 +10,8 @@ static int parse_mc_grps_cb(const struct nlattr *attr, void *data)
 	const struct nlattr **tb = (const struct nlattr **)data;
 	int type = mnl_attr_get_type(attr);
 
-	if (mnl_attr_type_invalid(attr, CTRL_ATTR_MCAST_GRP_MAX) < 0) {
-		perror("mnl_attr_type_invalid");
+	if (mnl_attr_type_ok(attr, CTRL_ATTR_MCAST_GRP_MAX) < 0) {
+		perror("mnl_attr_type_ok");
 		return MNL_CB_ERROR;
 	}
 
@@ -59,8 +59,8 @@ static int parse_family_ops_cb(const struct nlattr *attr, void *data)
 	const struct nlattr **tb = (const struct nlattr **)data;
 	int type = mnl_attr_get_type(attr);
 
-	if (mnl_attr_type_invalid(attr, CTRL_ATTR_OP_MAX) < 0) {
-		perror("mnl_attr_type_invalid");
+	if (mnl_attr_type_ok(attr, CTRL_ATTR_OP_MAX) < 0) {
+		perror("mnl_attr_type_ok");
 		return MNL_CB_ERROR;
 	}
 
@@ -105,8 +105,8 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 	const struct nlattr **tb = (const struct nlattr **)data;
 	int type = mnl_attr_get_type(attr);
 
-	if (mnl_attr_type_invalid(attr, CTRL_ATTR_MAX) < 0) {
-		perror("mnl_attr_type_invalid");
+	if (mnl_attr_type_ok(attr, CTRL_ATTR_MAX) < 0) {
+		perror("mnl_attr_type_ok");
 		return MNL_CB_ERROR;
 	}
 

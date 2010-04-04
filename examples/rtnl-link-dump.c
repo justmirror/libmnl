@@ -12,8 +12,8 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 	const struct nlattr **tb = (const struct nlattr **)data;
 	int type = mnl_attr_get_type(attr);
 
-	if (mnl_attr_type_invalid(attr, IFLA_MAX) < 0) {
-		perror("mnl_attr_type_invalid");
+	if (mnl_attr_type_ok(attr, IFLA_MAX) < 0) {
+		perror("mnl_attr_type_ok");
 		return MNL_CB_ERROR;
 	}
 
