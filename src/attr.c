@@ -186,7 +186,7 @@ int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
 {
 	int exp_len;
 
-	if (type < 0 || type >= MNL_TYPE_MAX) {
+	if (type >= MNL_TYPE_MAX) {
 		errno = EINVAL;
 		return -1;
 	}
@@ -207,7 +207,7 @@ int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
 int mnl_attr_validate2(const struct nlattr *attr, 
 		       enum mnl_attr_data_type type, int exp_len)
 {
-	if (type < 0 || type >= MNL_TYPE_MAX) {
+	if (type >= MNL_TYPE_MAX) {
 		errno = EINVAL;
 		return -1;
 	}
