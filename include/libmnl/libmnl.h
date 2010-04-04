@@ -33,7 +33,6 @@ extern int mnl_socket_getsockopt(const struct mnl_socket *nl, int type, void *bu
 #define MNL_ALIGN(len)		(((len)+MNL_ALIGNTO-1) & ~(MNL_ALIGNTO-1))
 #define MNL_NLMSG_HDRLEN	MNL_ALIGN(sizeof(struct nlmsghdr))
 
-extern int mnl_align(int len);
 extern size_t mnl_nlmsg_size(int len);
 extern size_t mnl_nlmsg_total_size(int len);
 extern size_t mnl_nlmsg_payload_size(const struct nlmsghdr *nlh);

@@ -91,8 +91,8 @@ int mnl_attr_ok(const struct nlattr *attr, int len)
  */
 struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len)
 {
-	*len -= mnl_align(attr->nla_len);
-	return (struct nlattr *)((void *)attr + mnl_align(attr->nla_len));
+	*len -= MNL_ALIGN(attr->nla_len);
+	return (struct nlattr *)((void *)attr + MNL_ALIGN(attr->nla_len));
 }
 
 /**
@@ -333,12 +333,12 @@ const char *mnl_attr_get_str(const struct nlattr *attr)
 void mnl_attr_put(struct nlmsghdr *nlh, int type, size_t len, const void *data)
 {
 	struct nlattr *attr = mnl_nlmsg_get_tail(nlh);
-	int payload_len = mnl_align(sizeof(struct nlattr)) + len;
+	int payload_len = MNL_ALIGN(sizeof(struct nlattr)) + len;
 
 	attr->nla_type = type;
 	attr->nla_len = payload_len;
 	memcpy(mnl_attr_get_data(attr), data, len);
-	nlh->nlmsg_len += mnl_align(payload_len);
+	nlh->nlmsg_len += MNL_ALIGN(payload_len);
 }
 
 /**

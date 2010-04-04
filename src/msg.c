@@ -14,18 +14,6 @@
 #include <libmnl/libmnl.h>
 
 /**
- * mnl_align - align a value to four bytes
- * @value: the value that we want to get aligned
- *
- * This function returns the value passed aligned to four bytes. Netlink
- * message headers and its attributes are always aligned to four bytes.
- */
-int mnl_align(int value)
-{
-	return (value + MNL_ALIGNTO - 1) & ~(MNL_ALIGNTO - 1);
-}
-
-/**
  * mnl_nlmsg_size - get size of the netlink messages (without alignment)
  * @len: length of the netlink message
  *
@@ -34,7 +22,7 @@ int mnl_align(int value)
  */
 size_t mnl_nlmsg_size(int len)
 {
-	return len + mnl_align(MNL_NLMSG_HDRLEN);
+	return len + MNL_ALIGN(MNL_NLMSG_HDRLEN);
 }
 
 /**
@@ -46,7 +34,7 @@ size_t mnl_nlmsg_size(int len)
  */
 size_t mnl_nlmsg_aligned_size(int len)
 {
-	return mnl_align(mnl_nlmsg_size(len));
+	return MNL_ALIGN(mnl_nlmsg_size(len));
 }
 
 /**
@@ -71,7 +59,7 @@ size_t mnl_nlmsg_payload_size(const struct nlmsghdr *nlh)
  */
 struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
 {
-	int len = mnl_align(sizeof(struct nlmsghdr));
+	int len = MNL_ALIGN(sizeof(struct nlmsghdr));
 	struct nlmsghdr *nlh = buf;
 
 	memset(buf, 0, len);
@@ -92,7 +80,7 @@ struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
 void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, int size)
 {
 	char *ptr = (char *)nlh + nlh->nlmsg_len;
-	nlh->nlmsg_len += mnl_align(size);
+	nlh->nlmsg_len += MNL_ALIGN(size);
 	memset(ptr, 0, size);
 	return ptr;
 }
@@ -130,7 +118,7 @@ void *mnl_nlmsg_get_data(const struct nlmsghdr *nlh)
  */
 void *mnl_nlmsg_get_data_offset(const struct nlmsghdr *nlh, int offset)
 {
-	return (void *)nlh + MNL_NLMSG_HDRLEN + mnl_align(offset);
+	return (void *)nlh + MNL_NLMSG_HDRLEN + MNL_ALIGN(offset);
 }
 
 /**
@@ -162,8 +150,8 @@ int mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len)
  */
 struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
 {
-	*len -= mnl_align(nlh->nlmsg_len);
-	return (struct nlmsghdr *)((void *)nlh + mnl_align(nlh->nlmsg_len));
+	*len -= MNL_ALIGN(nlh->nlmsg_len);
+	return (struct nlmsghdr *)((void *)nlh + MNL_ALIGN(nlh->nlmsg_len));
 }
 
 /**
@@ -175,7 +163,7 @@ struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
  */
 void *mnl_nlmsg_get_tail(const struct nlmsghdr *nlh)
 {
-	return (struct nlmsghdr *)((void *)nlh + mnl_align(nlh->nlmsg_len));
+	return (struct nlmsghdr *)((void *)nlh + MNL_ALIGN(nlh->nlmsg_len));
 }
 
 /**
