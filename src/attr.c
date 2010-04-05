@@ -74,6 +74,9 @@ void *mnl_attr_get_data(const struct nlattr *attr)
  * has enough room for the attribute that it stores, ie. this function can
  * be used to verify that an attribute is neither malformed nor truncated.
  *
+ * This function does not set errno in case of error since it is intended
+ * for iterations. Thus, it returns 1 on success and 0 on error.
+ *
  * The @len parameter may become negative in malformed messages during
  * attribute iteration, that is why we use a signed integer.
  */
@@ -90,7 +93,8 @@ int mnl_attr_ok(const struct nlattr *attr, int len)
  * @len: pointer to the current remaining bytes in the buffer
  *
  * This function returns a pointer to the next attribute that is in the
- * payload of a netlink message.
+ * payload of a netlink message. You have to use mnl_attr_ok() to ensure that
+ * the next attribute is valid.
  */
 struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len)
 {
