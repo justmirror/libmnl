@@ -99,21 +99,21 @@ struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len)
 }
 
 /**
- * mnl_attr_type_ok - check if the attribute type is valid
+ * mnl_attr_type_valid - check if the attribute type is valid
  * @attr: pointer to attribute to be checked
  * @max: maximum attribute type
  *
  * This function allows to check if the attribute type is higher than the
  * maximum supported type. If the attribute type is invalid, this function
- * returns -1 and errno is explicitly set.
+ * returns -1 and errno is explicitly set. On success, this function returns 1.
  */
-int mnl_attr_type_ok(const struct nlattr *attr, int max)
+int mnl_attr_type_valid(const struct nlattr *attr, int max)
 {
 	if (mnl_attr_get_type(attr) > max) {
 		errno = EINVAL;
 		return -1;
 	}
-	return 0;
+	return 1;
 }
 
 static int __mnl_attr_validate(const struct nlattr *attr,

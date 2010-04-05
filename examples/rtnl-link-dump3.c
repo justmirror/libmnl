@@ -25,8 +25,8 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 	mnl_attr_for_each(attr, nlh, sizeof(*ifm)) {
 		int type = mnl_attr_get_type(attr);
 
-		if (mnl_attr_type_ok(attr, IFLA_MAX) < 0) {
-			perror("mnl_attr_type_ok");
+		if (mnl_attr_type_valid(attr, IFLA_MAX) < 0) {
+			perror("mnl_attr_type_valid");
 			return MNL_CB_ERROR;
 		}
 		switch(type) {

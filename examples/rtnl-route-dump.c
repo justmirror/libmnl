@@ -12,8 +12,8 @@ static int data_attr_cb2(const struct nlattr *attr, void *data)
 	const struct nlattr **tb = (const struct nlattr **)data;
 	int type = mnl_attr_get_type(attr);
 
-	if (mnl_attr_type_ok(attr, RTAX_MAX) < 0) {
-		perror("mnl_attr_type_ok");
+	if (mnl_attr_type_valid(attr, RTAX_MAX) < 0) {
+		perror("mnl_attr_type_valid");
 		return MNL_CB_ERROR;
 	}
 	if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
@@ -68,8 +68,8 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 	const struct nlattr **tb = (const struct nlattr **)data;
 	int type = mnl_attr_get_type(attr);
 
-	if (mnl_attr_type_ok(attr, RTA_MAX) < 0) {
-		perror("mnl_attr_type_ok");
+	if (mnl_attr_type_valid(attr, RTA_MAX) < 0) {
+		perror("mnl_attr_type_valid");
 		return MNL_CB_ERROR;
 	}
 

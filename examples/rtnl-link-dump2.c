@@ -9,8 +9,8 @@
 
 static int data_attr_cb(const struct nlattr *attr, void *data)
 {
-	if (mnl_attr_type_ok(attr, IFLA_MAX) < 0) {
-		perror("mnl_attr_type_ok");
+	if (mnl_attr_type_valid(attr, IFLA_MAX) < 0) {
+		perror("mnl_attr_type_valid");
 		return MNL_CB_ERROR;
 	}
 
