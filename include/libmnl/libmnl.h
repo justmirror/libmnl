@@ -53,9 +53,9 @@ int mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid);
 
 /* Netlink header getters */
 extern uint16_t mnl_nlmsg_get_len(const struct nlmsghdr *nlh);
-extern void *mnl_nlmsg_get_data(const struct nlmsghdr *nlh);
-extern void *mnl_nlmsg_get_data_offset(const struct nlmsghdr *nlh, int offset);
-extern void *mnl_nlmsg_get_tail(const struct nlmsghdr *nlh);
+extern void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh);
+extern void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, int offset);
+extern void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh);
 
 /* Netlink dump message */
 extern void mnl_nlmsg_print(const struct nlmsghdr *nlh);
@@ -69,7 +69,7 @@ extern void mnl_nlmsg_print(const struct nlmsghdr *nlh);
 extern uint16_t mnl_attr_get_type(const struct nlattr *attr);
 extern uint16_t mnl_attr_get_len(const struct nlattr *attr);
 extern uint16_t mnl_attr_get_payload_len(const struct nlattr *attr);
-extern void *mnl_attr_get_data(const struct nlattr *attr);
+extern void *mnl_attr_get_payload(const struct nlattr *attr);
 extern uint8_t mnl_attr_get_u8(const struct nlattr *attr);
 extern uint16_t mnl_attr_get_u16(const struct nlattr *attr);
 extern uint32_t mnl_attr_get_u32(const struct nlattr *attr);
@@ -113,13 +113,13 @@ extern struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len);
 
 #define mnl_attr_for_each(attr, nlh, offset)			\
 	int __len__ = mnl_nlmsg_get_payload_len(nlh);		\
-	for (attr = mnl_nlmsg_get_data_offset(nlh, offset);	\
+	for (attr = mnl_nlmsg_get_payload_offset(nlh, offset);	\
 	     mnl_attr_ok(attr, __len__);			\
 	     attr = mnl_attr_next(attr, &(__len__)))
 
 #define mnl_attr_for_each_nested(attr, nest)			\
 	int __len__ = mnl_attr_get_len(nest);			\
-	for (pos = mnl_attr_get_data(nest);			\
+	for (pos = mnl_attr_get_payload(nest);			\
 	     mnl_attr_ok(attr, __len__);			\
 	     pos = mnl_attr_next(attr, &(__len__)))
 

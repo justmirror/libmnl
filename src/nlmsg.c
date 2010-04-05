@@ -98,25 +98,25 @@ uint16_t mnl_nlmsg_get_len(const struct nlmsghdr *nlh)
 }
 
 /**
- * mnl_nlmsg_get_data - get a pointer to the payload of the netlink message
+ * mnl_nlmsg_get_payload - get a pointer to the payload of the netlink message
  * @nlh: pointer to a netlink header
  *
  * This function returns a pointer to the payload of the netlink message.
  */
-void *mnl_nlmsg_get_data(const struct nlmsghdr *nlh)
+void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh)
 {
 	return (void *)nlh + MNL_NLMSG_HDRLEN;
 }
 
 /**
- * mnl_nlmsg_get_data_offset - get a pointer to the payload of the message
+ * mnl_nlmsg_get_payload_offset - get a pointer to the payload of the message
  * @nlh: pointer to a netlink header
  * @offset: offset to the payload of the attributes TLV set
  *
  * This function returns a pointer to the payload of the netlink message plus
  * a given offset.
  */
-void *mnl_nlmsg_get_data_offset(const struct nlmsghdr *nlh, int offset)
+void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, int offset)
 {
 	return (void *)nlh + MNL_NLMSG_HDRLEN + MNL_ALIGN(offset);
 }
@@ -161,13 +161,13 @@ struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
 }
 
 /**
- * mnl_nlmsg_get_tail - get the ending of the netlink message
+ * mnl_nlmsg_get_payload_tail - get the ending of the netlink message
  * @nlh: pointer to netlink message
  *
  * This function returns a pointer to the netlink message tail. This is useful
  * to build a message since we continue adding attribute at the end of it.
  */
-void *mnl_nlmsg_get_tail(const struct nlmsghdr *nlh)
+void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh)
 {
 	return (struct nlmsghdr *)((void *)nlh + MNL_ALIGN(nlh->nlmsg_len));
 }

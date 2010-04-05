@@ -35,7 +35,7 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 
 static int data_cb(const struct nlmsghdr *nlh, void *data)
 {
-	struct ifinfomsg *ifm = mnl_nlmsg_get_data(nlh);
+	struct ifinfomsg *ifm = mnl_nlmsg_get_payload(nlh);
 	int len = mnl_nlmsg_get_len(nlh);
 	struct nlattr *attr;
 

@@ -56,11 +56,11 @@ uint16_t mnl_attr_get_payload_len(const struct nlattr *attr)
 }
 
 /**
- * mnl_attr_get_data - get pointer to the attribute payload
+ * mnl_attr_get_payload - get pointer to the attribute payload
  *
  * This function return a pointer to the attribute payload
  */
-void *mnl_attr_get_data(const struct nlattr *attr)
+void *mnl_attr_get_payload(const struct nlattr *attr)
 {
 	return (void *)attr + MNL_ATTR_HDRLEN;
 }
@@ -124,7 +124,7 @@ static int __mnl_attr_validate(const struct nlattr *attr,
 			       enum mnl_attr_data_type type, int exp_len)
 {
 	uint16_t attr_len = mnl_attr_get_payload_len(attr);
-	char *attr_data = mnl_attr_get_data(attr);
+	char *attr_data = mnl_attr_get_payload(attr);
 
 	if (attr_len < exp_len) {
 		errno = ERANGE;
@@ -235,7 +235,7 @@ int mnl_attr_parse(const struct nlmsghdr *nlh, int offset,
 		   mnl_attr_cb_t cb, void *data)
 {
 	int ret = MNL_CB_OK;
-	struct nlattr *attr = mnl_nlmsg_get_data_offset(nlh, offset);
+	struct nlattr *attr = mnl_nlmsg_get_payload_offset(nlh, offset);
 	int len = mnl_nlmsg_get_len(nlh);
 
 	while (mnl_attr_ok(attr, len)) {
@@ -260,7 +260,7 @@ int mnl_attr_parse_nested(const struct nlattr *nested,
 			  mnl_attr_cb_t cb, void *data)
 {
 	int ret = MNL_CB_OK;
-	struct nlattr *attr = mnl_attr_get_data(nested);
+	struct nlattr *attr = mnl_attr_get_payload(nested);
 	int len = mnl_attr_get_payload_len(nested);
 
 	while (mnl_attr_ok(attr, len)) {
@@ -279,7 +279,7 @@ int mnl_attr_parse_nested(const struct nlattr *nested,
  */
 uint8_t mnl_attr_get_u8(const struct nlattr *attr)
 {
-	return *((uint8_t *)mnl_attr_get_data(attr));
+	return *((uint8_t *)mnl_attr_get_payload(attr));
 }
 
 /**
@@ -290,7 +290,7 @@ uint8_t mnl_attr_get_u8(const struct nlattr *attr)
  */
 uint16_t mnl_attr_get_u16(const struct nlattr *attr)
 {
-	return *((uint16_t *)mnl_attr_get_data(attr));
+	return *((uint16_t *)mnl_attr_get_payload(attr));
 }
 
 /**
@@ -301,7 +301,7 @@ uint16_t mnl_attr_get_u16(const struct nlattr *attr)
  */
 uint32_t mnl_attr_get_u32(const struct nlattr *attr)
 {
-	return *((uint32_t *)mnl_attr_get_data(attr));
+	return *((uint32_t *)mnl_attr_get_payload(attr));
 }
 
 /**
@@ -315,7 +315,7 @@ uint32_t mnl_attr_get_u32(const struct nlattr *attr)
 uint64_t mnl_attr_get_u64(const struct nlattr *attr)
 {
 	uint64_t tmp;
-	memcpy(&tmp, mnl_attr_get_data(attr), sizeof(tmp));
+	memcpy(&tmp, mnl_attr_get_payload(attr), sizeof(tmp));
 	return tmp;
 }
 
@@ -327,7 +327,7 @@ uint64_t mnl_attr_get_u64(const struct nlattr *attr)
  */
 const char *mnl_attr_get_str(const struct nlattr *attr)
 {
-	return (const char *)mnl_attr_get_data(attr);
+	return (const char *)mnl_attr_get_payload(attr);
 }
 
 /**
@@ -339,12 +339,12 @@ const char *mnl_attr_get_str(const struct nlattr *attr)
  */
 void mnl_attr_put(struct nlmsghdr *nlh, int type, size_t len, const void *data)
 {
-	struct nlattr *attr = mnl_nlmsg_get_tail(nlh);
+	struct nlattr *attr = mnl_nlmsg_get_payload_tail(nlh);
 	int payload_len = MNL_ALIGN(sizeof(struct nlattr)) + len;
 
 	attr->nla_type = type;
 	attr->nla_len = payload_len;
-	memcpy(mnl_attr_get_data(attr), data, len);
+	memcpy(mnl_attr_get_payload(attr), data, len);
 	nlh->nlmsg_len += MNL_ALIGN(payload_len);
 }
 

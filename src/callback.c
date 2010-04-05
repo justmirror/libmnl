@@ -17,7 +17,7 @@ static int mnl_cb_noop(const struct nlmsghdr *nlh, void *data)
 
 static int mnl_cb_error(const struct nlmsghdr *nlh, void *data)
 {
-	const struct nlmsgerr *err = mnl_nlmsg_get_data(nlh);
+	const struct nlmsgerr *err = mnl_nlmsg_get_payload(nlh);
 
 	if (nlh->nlmsg_len < mnl_nlmsg_size(sizeof(struct nlmsgerr))) {
 		errno = EBADMSG; 
