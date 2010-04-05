@@ -35,7 +35,7 @@ extern int mnl_socket_getsockopt(const struct mnl_socket *nl, int type, void *bu
 
 extern size_t mnl_nlmsg_size(int len);
 extern size_t mnl_nlmsg_total_size(int len);
-extern size_t mnl_nlmsg_payload_size(const struct nlmsghdr *nlh);
+extern size_t mnl_nlmsg_get_payload_len(const struct nlmsghdr *nlh);
 
 /* Netlink message header builder */
 extern struct nlmsghdr *mnl_nlmsg_put_header(void *buf);
@@ -112,7 +112,7 @@ extern int mnl_attr_ok(const struct nlattr *attr, int len);
 extern struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len);
 
 #define mnl_attr_for_each(attr, nlh, offset)			\
-	int __len__ = mnl_nlmsg_payload_size(nlh);		\
+	int __len__ = mnl_nlmsg_get_payload_len(nlh);		\
 	for (attr = mnl_nlmsg_get_data_offset(nlh, offset);	\
 	     mnl_attr_ok(attr, __len__);			\
 	     attr = mnl_attr_next(attr, &(__len__)))

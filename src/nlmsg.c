@@ -38,12 +38,12 @@ size_t mnl_nlmsg_aligned_size(int len)
 }
 
 /**
- * mnl_nlmsg_payload_size - get the size of the payload
+ * mnl_nlmsg_get_payload_len - get the size of the payload
  * @nlh: pointer to the header of the netlink message
  *
  * This function returns the size of the netlink payload
  */
-size_t mnl_nlmsg_payload_size(const struct nlmsghdr *nlh)
+size_t mnl_nlmsg_get_payload_len(const struct nlmsghdr *nlh)
 {
 	return nlh->nlmsg_len - MNL_NLMSG_HDRLEN;
 }
