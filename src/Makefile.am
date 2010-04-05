@@ -6,4 +6,4 @@ LIBS=
 lib_LTLIBRARIES = libmnl.la
 
 libmnl_la_LDFLAGS = -Wc,-nostartfiles -version-info $(LIBVERSION)
-libmnl_la_SOURCES = socket.c callback.c msg.c attr.c
+libmnl_la_SOURCES = socket.c callback.c nlmsg.c attr.c

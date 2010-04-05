@@ -131,6 +131,9 @@ void *mnl_nlmsg_get_data_offset(const struct nlmsghdr *nlh, int offset)
  * function can be used to verify that a netlink message is not malformed nor
  * truncated.
  *
+ * This function does not set errno in case of error since it is intended
+ * for iterations. Thus, it returns 1 on success and 0 on error.
+ *
  * The @len parameter may become negative in malformed messages during message
  * iteration, that is why we use a signed integer.
  */
