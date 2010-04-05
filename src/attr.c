@@ -73,12 +73,15 @@ void *mnl_attr_get_data(const struct nlattr *attr)
  * This function is used to check that a buffer that contains an attribute
  * has enough room for the attribute that it stores, ie. this function can
  * be used to verify that an attribute is neither malformed nor truncated.
+ *
+ * The @len parameter may become negative in malformed messages during
+ * attribute iteration, that is why we use a signed integer.
  */
 int mnl_attr_ok(const struct nlattr *attr, int len)
 {
-	return len >= sizeof(struct nlattr) &&
+	return len >= (int)sizeof(struct nlattr) &&
 	       attr->nla_len >= sizeof(struct nlattr) &&
-	       attr->nla_len <= len;
+	       (int)attr->nla_len <= len;
 }
 
 /**

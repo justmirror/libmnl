@@ -130,12 +130,15 @@ void *mnl_nlmsg_get_data_offset(const struct nlmsghdr *nlh, int offset)
  * message has enough room for the netlink message that it stores, ie. this
  * function can be used to verify that a netlink message is not malformed nor
  * truncated.
+ *
+ * The @len parameter may become negative in malformed messages during message
+ * iteration, that is why we use a signed integer.
  */
 int mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len)
 {
-	return len >= sizeof(struct nlmsghdr) &&
+	return len >= (int)sizeof(struct nlmsghdr) &&
 	       nlh->nlmsg_len >= sizeof(struct nlmsghdr) &&
-	       nlh->nlmsg_len <= len;
+	       (int)nlh->nlmsg_len <= len;
 }
 
 /**
