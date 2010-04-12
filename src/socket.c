@@ -38,7 +38,7 @@ int mnl_socket_get_fd(const struct mnl_socket *nl)
  * This function returns the Netlink PortID of a given netlink socket.
  * It's a common mistake to assume that this PortID equals the process ID
  * which is not always true. This is the case if you open more than one
- * socket that is binded to the same Netlink subsystem.
+ * socket that is binded to the same Netlink subsystem from the same process.
  */
 unsigned int mnl_socket_get_portid(const struct mnl_socket *nl)
 {
@@ -47,12 +47,12 @@ unsigned int mnl_socket_get_portid(const struct mnl_socket *nl)
 
 /**
  * mnl_socket_open - open a netlink socket
- * @unit: the netlink socket unit (see NETLINK_* constants)
+ * @unit: the netlink socket bus ID (see NETLINK_* constants)
  *
  * On error, it returns -1 and errno is appropriately set. Otherwise, it
  * returns a valid pointer to the mnl_socket structure.
  */
-struct mnl_socket *mnl_socket_open(int unit)
+struct mnl_socket *mnl_socket_open(int bus)
 {
 	struct mnl_socket *nl;
 
@@ -60,7 +60,7 @@ struct mnl_socket *mnl_socket_open(int unit)
 	if (nl == NULL)
 		return NULL;
 
-	nl->fd = socket(AF_NETLINK, SOCK_RAW, unit);
+	nl->fd = socket(AF_NETLINK, SOCK_RAW, bus);
 	if (nl->fd == -1) {
 		free(nl);
 		return NULL;
@@ -76,7 +76,8 @@ struct mnl_socket *mnl_socket_open(int unit)
  * @pid: the port ID you want to use (use zero for automatic selection)
  *
  * On error, this function returns -1 and errno is appropriately set. On
- * success, 0 is returned.
+ * success, 0 is returned. You can use MNL_SOCKET_AUTOPID which is 0 for
+ * automatic port ID selection.
  */
 int mnl_socket_bind(struct mnl_socket *nl, int groups, int pid)
 {
