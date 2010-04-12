@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
 	mnl_nlmsg_print(nlh);
 
-	if (mnl_socket_sendto(nl, nlh, mnl_nlmsg_get_len(nlh)) < 0) {
+	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
 		perror("mnl_socket_send");
 		exit(EXIT_FAILURE);
 	}

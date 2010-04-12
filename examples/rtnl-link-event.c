@@ -39,7 +39,7 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 {
 	struct nlattr *tb[IFLA_MAX+1] = {};
 	struct ifinfomsg *ifm = mnl_nlmsg_get_payload(nlh);
-	int len = mnl_nlmsg_get_len(nlh);
+	int len = nlh->nlmsg_len;
 	struct nlattr *attr;
 
 	printf("index=%d type=%d flags=%d family=%d ", 

@@ -113,21 +113,6 @@ void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, int size)
 }
 
 /**
- * mnl_nlmsg_get_len - get the length field from the netlink message
- * @nlh: pointer to a netlink header
- *
- * This function returns the full length of the Netlink message (including the
- * length of the Netlink header) by return the field nlmsg_len of the message.
- *
- * XXX: This function is likely to be deleted soon since the structure of the
- * Netlink header is public.
- */
-uint16_t mnl_nlmsg_get_len(const struct nlmsghdr *nlh)
-{
-	return nlh->nlmsg_len;
-}
-
-/**
  * mnl_nlmsg_get_payload - get a pointer to the payload of the netlink message
  * @nlh: pointer to a netlink header
  *
@@ -248,7 +233,7 @@ void mnl_nlmsg_print(const struct nlmsghdr *nlh)
 	printf("port ID(32 bits)=%.08u\n", nlh->nlmsg_pid);
 	printf("===================================\n");
 
-	for (i=sizeof(struct nlmsghdr); i<mnl_nlmsg_get_len(nlh); i+=4) {
+	for (i=sizeof(struct nlmsghdr); i<nlh->nlmsg_len; i+=4) {
 		char *b = (char *) nlh;
 
 		printf("(%.3d) %.2x %.2x %.2x %.2x | ", i,

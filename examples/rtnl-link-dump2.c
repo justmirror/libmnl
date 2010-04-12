@@ -36,7 +36,7 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 static int data_cb(const struct nlmsghdr *nlh, void *data)
 {
 	struct ifinfomsg *ifm = mnl_nlmsg_get_payload(nlh);
-	int len = mnl_nlmsg_get_len(nlh);
+	int len = nlh->nlmsg_len;
 	struct nlattr *attr;
 
 	printf("index=%d type=%d flags=%d family=%d ", 
@@ -81,7 +81,7 @@ int main()
 	}
 	portid = mnl_socket_get_portid(nl);
 
-	if (mnl_socket_sendto(nl, nlh, mnl_nlmsg_get_len(nlh)) < 0) {
+	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
 		perror("mnl_socket_send");
 		exit(EXIT_FAILURE);
 	}

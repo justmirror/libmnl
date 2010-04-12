@@ -51,8 +51,7 @@ extern int mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq);
 /* Netlink portID checking */
 int mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid);
 
-/* Netlink header getters */
-extern uint16_t mnl_nlmsg_get_len(const struct nlmsghdr *nlh);
+/* Netlink message getters */
 extern void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh);
 extern void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, int offset);
 extern void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh);
