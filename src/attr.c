@@ -20,10 +20,13 @@
  *  |     length    |      type     |      value     |
  *  -------------------------------------------------
  *  |<--------- header ------------>|<-- payload --->|
+ *
+ * The payload of the Netlink message contains sequences of attributes that are
+ * expressed in TLV format.
  */
 
 /**
- * mnl_attr_get_type - get the attribute type of a netlink message
+ * mnl_attr_get_type - get type of netlink attribute
  * @attr: pointer to netlink attribute
  *
  * This function returns the attribute type.
@@ -34,10 +37,11 @@ uint16_t mnl_attr_get_type(const struct nlattr *attr)
 }
 
 /**
- * mnl_attr_get_len - get the attribute length
+ * mnl_attr_get_len - get length of netlink attribute
  * @attr: pointer to netlink attribute
  *
- * This function returns the attribute length, including the attribute header.
+ * This function returns the attribute length that is the attribute header
+ * plus the attribute payload.
  */
 uint16_t mnl_attr_get_len(const struct nlattr *attr)
 {
@@ -66,18 +70,19 @@ void *mnl_attr_get_payload(const struct nlattr *attr)
 }
 
 /**
- * mnl_attr_ok - check a there is room for an attribute in a buffer
- * @nlh: attribute that we want to check
+ * mnl_attr_ok - check if there is room for an attribute in a buffer
+ * @nattr: attribute that we want to check if there is room for
  * @len: remaining bytes in a buffer that contains the attribute
  *
- * This function is used to check that a buffer that contains an attribute
- * has enough room for the attribute that it stores, ie. this function can
- * be used to verify that an attribute is neither malformed nor truncated.
+ * This function is used to check that a buffer, which is supposed to contain
+ * an attribute, has enough room for the attribute that it stores, ie. this
+ * function can be used to verify that an attribute is neither malformed nor
+ * truncated.
  *
  * This function does not set errno in case of error since it is intended
  * for iterations. Thus, it returns 1 on success and 0 on error.
  *
- * The @len parameter may become negative in malformed messages during
+ * The @len parameter may be negative in the case of malformed messages during
  * attribute iteration, that is why we use a signed integer.
  */
 int mnl_attr_ok(const struct nlattr *attr, int len)
@@ -90,11 +95,11 @@ int mnl_attr_ok(const struct nlattr *attr, int len)
 /**
  * mnl_attr_next - get the next attribute in the payload of a netlink message
  * @attr: pointer to the current attribute
- * @len: pointer to the current remaining bytes in the buffer
+ * @len: length of the remaining bytes in the buffer (passed by reference).
  *
- * This function returns a pointer to the next attribute that is in the
- * payload of a netlink message. You have to use mnl_attr_ok() to ensure that
- * the next attribute is valid.
+ * This function returns a pointer to the next attribute after the one passed
+ * as parameter. You have to use mnl_attr_ok() to ensure that the next
+ * attribute is valid.
  */
 struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len)
 {
@@ -179,8 +184,9 @@ static int __mnl_attr_validate(const struct nlattr *attr,
  * @attr: pointer to netlink attribute that we want to validate
  * @type: data type (see enum mnl_attr_data_type)
  *
- * The validation is based on the data type. This functions returns -1 in
- * case of error and errno is explicitly set.
+ * The validation is based on the data type. Specifically, it checks that
+ * integers (u8, u16, u32 and u64) have enough room for them. This function
+ * returns -1 in case of error and errno is explicitly set.
  */
 static size_t mnl_attr_data_type_len[MNL_TYPE_MAX] = {
 	[MNL_TYPE_U8]		= sizeof(uint8_t),
@@ -224,9 +230,14 @@ int mnl_attr_validate2(const struct nlattr *attr,
 /**
  * mnl_attr_parse - parse attributes
  * @nlh: pointer to netlink message
- * @offset: offset to start parsing from
- * @cb: callback function
- * @data: pointer to data passed to the callback function
+ * @offset: offset to start parsing from (if payload is after any extra header)
+ * @cb: callback function that is called for each attribute
+ * @data: pointer to data that is passed to the callback function
+ *
+ * This function allows to iterate over the sequence of attributes that compose
+ * the Netlink message. You can then put the attribute in an array as it
+ * usually happens at this stage or you can use any other data structure (such
+ * as lists or trees).
  *
  * This function propagates the return value of the callback that can be
  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
@@ -249,9 +260,13 @@ int mnl_attr_parse(const struct nlmsghdr *nlh, int offset,
 /**
  * mnl_attr_parse_nested - parse attributes inside a nest
  * @nested: pointer to netlink attribute that contains a nest
- * @offset: offset to start parsing from
- * @cb: callback function
+ * @cb: callback function that is called for each attribute in the nest
  * @data: pointer to data passed to the callback function
+ *
+ * This function allows to iterate over the sequence of attributes that compose
+ * the Netlink message. You can then put the attribute in an array as it
+ * usually happens at this stage or you can use any other data structure (such
+ * as lists or trees).
  *
  * This function propagates the return value of the callback that can be
  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
@@ -272,10 +287,10 @@ int mnl_attr_parse_nested(const struct nlattr *nested,
 }
 
 /**
- * mnl_attr_get_u8 - returns 8-bit unsigned integer attribute.
+ * mnl_attr_get_u8 - returns 8-bit unsigned integer attribute payload
  * @attr: pointer to netlink attribute
  *
- * This function returns the 8-bit value of a netlink attribute.
+ * This function returns the 8-bit value of the attribute payload.
  */
 uint8_t mnl_attr_get_u8(const struct nlattr *attr)
 {
@@ -283,10 +298,10 @@ uint8_t mnl_attr_get_u8(const struct nlattr *attr)
 }
 
 /**
- * mnl_attr_get_u16 - returns 16-bit unsigned integer attribute.
+ * mnl_attr_get_u16 - returns 16-bit unsigned integer attribute payload
  * @attr: pointer to netlink attribute
  *
- * This function returns the 16-bit value of a netlink attribute.
+ * This function returns the 16-bit value of the attribute payload.
  */
 uint16_t mnl_attr_get_u16(const struct nlattr *attr)
 {
@@ -294,10 +309,10 @@ uint16_t mnl_attr_get_u16(const struct nlattr *attr)
 }
 
 /**
- * mnl_attr_get_u32 - returns 32-bit unsigned integer attribute.
+ * mnl_attr_get_u32 - returns 32-bit unsigned integer attribute payload
  * @attr: pointer to netlink attribute
  *
- * This function returns the 32-bit value of a netlink attribute.
+ * This function returns the 32-bit value of the attribute payload.
  */
 uint32_t mnl_attr_get_u32(const struct nlattr *attr)
 {
@@ -308,9 +323,9 @@ uint32_t mnl_attr_get_u32(const struct nlattr *attr)
  * mnl_attr_get_u64 - returns 64-bit unsigned integer attribute.
  * @attr: pointer to netlink attribute
  *
- * This function returns the payload of a 64-bit attribute. This function
- * is align-safe since accessing 64-bit Netlink attributes is a common
- * source of alignment issues.
+ * This function returns the 64-bit value of the attribute payload. This
+ * function is align-safe since accessing 64-bit Netlink attributes is a
+ * common source of alignment issues.
  */
 uint64_t mnl_attr_get_u64(const struct nlattr *attr)
 {
@@ -333,9 +348,12 @@ const char *mnl_attr_get_str(const struct nlattr *attr)
 /**
  * mnl_attr_put - add an attribute to netlink message
  * @nlh: pointer to the netlink message
- * @type: netlink attribute type
- * @len: netlink attribute payload size
- * @data: pointer to the data that is stored by the new attribute 
+ * @type: netlink attribute type that you want to add
+ * @len: netlink attribute payload length
+ * @data: pointer to the data that will be stored by the new attribute
+ *
+ * This function updates the length field of the Netlink message (nlmsg_len)
+ * by adding the size (header + payload) of the new attribute.
  */
 void mnl_attr_put(struct nlmsghdr *nlh, int type, size_t len, const void *data)
 {
@@ -354,6 +372,9 @@ void mnl_attr_put(struct nlmsghdr *nlh, int type, size_t len, const void *data)
  * @type: netlink attribute type
  * @len: netlink attribute payload size
  * @data: 8-bit unsigned integer data that is stored by the new attribute
+ *
+ * This function updates the length field of the Netlink message (nlmsg_len)
+ * by adding the size (header + payload) of the new attribute.
  */
 void mnl_attr_put_u8(struct nlmsghdr *nlh, int type, uint8_t data)
 {
@@ -365,6 +386,9 @@ void mnl_attr_put_u8(struct nlmsghdr *nlh, int type, uint8_t data)
  * @nlh: pointer to the netlink message
  * @type: netlink attribute type
  * @data: 16-bit unsigned integer data that is stored by the new attribute
+ *
+ * This function updates the length field of the Netlink message (nlmsg_len)
+ * by adding the size (header + payload) of the new attribute.
  */
 void mnl_attr_put_u16(struct nlmsghdr *nlh, int type, uint16_t data)
 {
@@ -376,6 +400,9 @@ void mnl_attr_put_u16(struct nlmsghdr *nlh, int type, uint16_t data)
  * @nlh: pointer to the netlink message
  * @type: netlink attribute type
  * @data: 32-bit unsigned integer data that is stored by the new attribute
+ *
+ * This function updates the length field of the Netlink message (nlmsg_len)
+ * by adding the size (header + payload) of the new attribute.
  */
 void mnl_attr_put_u32(struct nlmsghdr *nlh, int type, uint32_t data)
 {
@@ -387,6 +414,9 @@ void mnl_attr_put_u32(struct nlmsghdr *nlh, int type, uint32_t data)
  * @nlh: pointer to the netlink message
  * @type: netlink attribute type
  * @data: 64-bit unsigned integer data that is stored by the new attribute
+ *
+ * This function updates the length field of the Netlink message (nlmsg_len)
+ * by adding the size (header + payload) of the new attribute.
  */
 void mnl_attr_put_u64(struct nlmsghdr *nlh, int type, uint64_t data)
 {
@@ -398,6 +428,9 @@ void mnl_attr_put_u64(struct nlmsghdr *nlh, int type, uint64_t data)
  * @nlh: pointer to the netlink message
  * @type: netlink attribute type
  * @data: pointer to string data that is stored by the new attribute
+ *
+ * This function updates the length field of the Netlink message (nlmsg_len)
+ * by adding the size (header + payload) of the new attribute.
  */
 void mnl_attr_put_str(struct nlmsghdr *nlh, int type, const void *data)
 {
@@ -412,6 +445,9 @@ void mnl_attr_put_str(struct nlmsghdr *nlh, int type, const void *data)
  *
  * This function is similar to mnl_attr_put_str but it includes the NULL
  * terminator at the end of the string.
+ *
+ * This function updates the length field of the Netlink message (nlmsg_len)
+ * by adding the size (header + payload) of the new attribute.
  */
 void mnl_attr_put_str_null(struct nlmsghdr *nlh, int type, const void *data)
 {
