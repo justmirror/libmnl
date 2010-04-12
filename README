@@ -6,7 +6,7 @@ both the Netlink header and TLVs that are repetitive and easy to get wrong.
 This library aims to provide simple helpers that allows you to re-use code
 and to avoid re-inventing the wheel. The main features of this library are:
 
-* Small: the shared library requires around 20KB in a x86-based computer.
+* Small: the shared library requires around 30KB in a x86-based computer.
 * Simple: this library avoids complexity and elaborated abstractions that
 tend to hide Netlink details.
 * Easy to use: the library simplifies the work for Netlink-wise developers.
