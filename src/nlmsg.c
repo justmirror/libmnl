@@ -203,7 +203,7 @@ struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
  */
 void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh)
 {
-	return (struct nlmsghdr *)((void *)nlh + MNL_ALIGN(nlh->nlmsg_len));
+	return (void *)nlh + MNL_ALIGN(nlh->nlmsg_len);
 }
 
 /**
