@@ -13,9 +13,34 @@
 #include <string.h>
 #include <libmnl/libmnl.h>
 
+/*
+ * Netlink message:
+ *
+ *  |<----------------- 4 bytes ------------------->|
+ *  |<----- 2 bytes ------>|<------- 2 bytes ------>|
+ *
+ *  |-----------------------------------------------|
+ *  |      Message length (including header)        |
+ *  |-----------------------------------------------|
+ *  |     Message type     |     Message flags      |
+ *  |-----------------------------------------------|
+ *  |           Message sequence number             |
+ *  |-----------------------------------------------|
+ *  |                 Netlink PortID                |
+ *  |-----------------------------------------------|
+ *  |                                               |
+ *  .                   Payload                     .
+ *  |_______________________________________________|
+ *
+ * There is usually an extra header after the the Netlink header (at the
+ * beginning of the payload). This extra header is specific of the Netlink
+ * subsystem. After this extra header, it comes the sequence of attributes
+ * that are expressed in Type-Length-Value (TLV) format.
+ */
+
 /**
- * mnl_nlmsg_size - get size of the netlink messages (without alignment)
- * @len: length of the netlink message
+ * mnl_nlmsg_size - calculate the size of Netlink message (without alignment)
+ * @len: length of the Netlink payload
  *
  * This function returns the size of a netlink message (header plus payload)
  * without alignment.
@@ -26,8 +51,8 @@ size_t mnl_nlmsg_size(int len)
 }
 
 /**
- * mnl_nlmsg_aligned_size - get size of the netlink messages (with alignment)
- * @len: length of the netlink message
+ * mnl_nlmsg_aligned_size - calculate the aligned size of Netlink messages
+ * @len: length of the Netlink payload
  *
  * This function returns the size of a netlink message (header plus payload)
  * with alignment.
@@ -38,10 +63,11 @@ size_t mnl_nlmsg_aligned_size(int len)
 }
 
 /**
- * mnl_nlmsg_get_payload_len - get the size of the payload
- * @nlh: pointer to the header of the netlink message
+ * mnl_nlmsg_get_payload_len - get the length of the Netlink payload
+ * @nlh: pointer to the header of the Netlink message
  *
- * This function returns the size of the netlink payload
+ * This function returns the Length of the netlink payload, ie. the length
+ * of the full message minus the size of the Netlink header.
  */
 size_t mnl_nlmsg_get_payload_len(const struct nlmsghdr *nlh)
 {
@@ -49,13 +75,13 @@ size_t mnl_nlmsg_get_payload_len(const struct nlmsghdr *nlh)
 }
 
 /**
- * mnl_nlmsg_put_header - prepare room for Netlink header
- * @buf: memory already allocated to store the Netlink message
+ * mnl_nlmsg_put_header - reserve and prepare room for Netlink header
+ * @buf: memory already allocated to store the Netlink header
  *
- * This function sets to zero the room that is required to put a Netlink
+ * This function sets to zero the room that is required to put the Netlink
  * header in the memory buffer passed as parameter. This function also
- * initializes the nlmsg_len field. This function returns a pointer to the
- * Netlink header structure.
+ * initializes the nlmsg_len field to the size of the Netlink header. This
+ * function returns a pointer to the Netlink header structure.
  */
 struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
 {
@@ -68,13 +94,14 @@ struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
 }
 
 /**
- * mnl_nlmsg_put_extra_header - prepare room for an extra header
+ * mnl_nlmsg_put_extra_header - reserve and prepare room for an extra header
  * @nlh: pointer to Netlink header
  * @size: size of the extra header that we want to put
  *
  * This function sets to zero the room that is required to put the extra
  * header after the initial Netlink header. This function also increases
- * the nlmsg_len field. This function returns a pointer to the extra
+ * the nlmsg_len field. You have to invoke mnl_nlmsg_put_header() before
+ * you call this function. This function returns a pointer to the extra
  * header.
  */
 void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, int size)
@@ -89,8 +116,11 @@ void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, int size)
  * mnl_nlmsg_get_len - get the length field from the netlink message
  * @nlh: pointer to a netlink header
  *
- * This function returns the length of the netlink message by return the field
- * nlmsg_len of the message.
+ * This function returns the full length of the Netlink message (including the
+ * length of the Netlink header) by return the field nlmsg_len of the message.
+ *
+ * XXX: This function is likely to be deleted soon since the structure of the
+ * Netlink header is public.
  */
 uint16_t mnl_nlmsg_get_len(const struct nlmsghdr *nlh)
 {
@@ -147,12 +177,15 @@ int mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len)
 /**
  * mnl_nlmsg_next - get the next netlink message in a multipart message
  * @nlh: current netlink message that we are handling
- * @len: pointer to the current remaining bytes in the buffer
+ * @len: length of the remaining bytes in the buffer (passed by reference).
  *
  * This function returns a pointer to the next netlink message that is part
- * of a multi-part netlink message. Netlink can batches messages into a buffer
- * so that the receiver has to iterate over the whole set of netlink
- * messages.
+ * of a multi-part netlink message. Netlink can batch several messages into
+ * one buffer so that the receiver has to iterate over the whole set of
+ * Netlink messages.
+ *
+ * You have to use mnl_nlmsg_ok() to check if the next Netlink message is
+ * valid.
  */
 struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
 {
@@ -165,7 +198,8 @@ struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
  * @nlh: pointer to netlink message
  *
  * This function returns a pointer to the netlink message tail. This is useful
- * to build a message since we continue adding attribute at the end of it.
+ * to build a message since we continue adding attributes at the end of the
+ * message.
  */
 void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh)
 {
