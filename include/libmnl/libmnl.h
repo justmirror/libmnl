@@ -118,9 +118,9 @@ extern struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len);
 
 #define mnl_attr_for_each_nested(attr, nest)			\
 	int __len__ = mnl_attr_get_len(nest);			\
-	for (pos = mnl_attr_get_payload(nest);			\
+	for (attr = mnl_attr_get_payload(nest);			\
 	     mnl_attr_ok(attr, __len__);			\
-	     pos = mnl_attr_next(attr, &(__len__)))
+	     attr = mnl_attr_next(attr, &(__len__)))
 
 /* TLV callback-based attribute parsers */
 typedef int (*mnl_attr_cb_t)(const struct nlattr *attr, void *data);
