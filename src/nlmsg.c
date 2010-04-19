@@ -220,27 +220,33 @@ int mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
 	return nlh->nlmsg_pid ? nlh->nlmsg_pid == portid : 1;
 }
 
-/* XXX: rework this, please */
-void mnl_nlmsg_print(const struct nlmsghdr *nlh)
+/**
+ * mnl_nlmsg_fprintf - print netlink message to file
+ * @nlh: pointer to netlink message that we want to print
+ *
+ * This function prints the netlink header to a file. This function may be
+ * useful for debugging purposes.
+ */
+void mnl_nlmsg_fprintf(FILE *fd, const struct nlmsghdr *nlh)
 {
-	int i;
+	size_t i;
 
-	printf("========= netlink header ==========\n");
-	printf("length(32 bits)=%.08u\n", nlh->nlmsg_len);
-	printf("type(16 bits)=%.04u flags(16 bits)=%.04x\n",
+	fprintf(fd, "========= netlink header ==========\n");
+	fprintf(fd, "length(32 bits)=%.08u\n", nlh->nlmsg_len);
+	fprintf(fd, "type(16 bits)=%.04u flags(16 bits)=%.04x\n",
 		nlh->nlmsg_type, nlh->nlmsg_flags);
-	printf("sequence number(32 bits)=%.08x\n", nlh->nlmsg_seq);
-	printf("port ID(32 bits)=%.08u\n", nlh->nlmsg_pid);
-	printf("===================================\n");
+	fprintf(fd, "sequence number(32 bits)=%.08x\n", nlh->nlmsg_seq);
+	fprintf(fd, "port ID(32 bits)=%.08u\n", nlh->nlmsg_pid);
+	fprintf(fd, "===================================\n");
 
 	for (i=sizeof(struct nlmsghdr); i<nlh->nlmsg_len; i+=4) {
 		char *b = (char *) nlh;
 
-		printf("(%.3d) %.2x %.2x %.2x %.2x | ", i,
+		fprintf(fd, "(%.3d) %.2x %.2x %.2x %.2x | ", i,
 			0xff & b[i],	0xff & b[i+1],
 			0xff & b[i+2],	0xff & b[i+3]);
 
-		printf("%c %c %c %c\n",
+		fprintf(fd, "%c %c %c %c\n",
 			isalnum(b[i]) ? b[i] : 0,
 			isalnum(b[i+1]) ? b[i+1] : 0,
 			isalnum(b[i+2]) ? b[i+2] : 0,

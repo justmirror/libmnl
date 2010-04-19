@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 	}
 	portid = mnl_socket_get_portid(nl);
 
-	mnl_nlmsg_print(nlh);
+	mnl_nlmsg_fprintf(stdout, nlh);
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
 		perror("mnl_socket_send");

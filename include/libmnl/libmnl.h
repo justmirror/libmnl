@@ -1,6 +1,7 @@
 #ifndef _LIBMNL_H_
 #define _LIBMNL_H_
 
+#include <stdio.h>
 #include <stdint.h>
 #include <sys/socket.h> /* for sa_family_t */
 #include <linux/netlink.h>
@@ -57,7 +58,7 @@ extern void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, int offset
 extern void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh);
 
 /* Netlink dump message */
-extern void mnl_nlmsg_print(const struct nlmsghdr *nlh);
+extern void mnl_nlmsg_fprintf(FILE *fd, const struct nlmsghdr *nlh);
 
 /*
  * generic netlink attributes API
