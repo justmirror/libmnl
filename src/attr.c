@@ -116,7 +116,7 @@ struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len)
  * maximum supported type. If the attribute type is invalid, this function
  * returns -1 and errno is explicitly set. On success, this function returns 1.
  */
-int mnl_attr_type_valid(const struct nlattr *attr, int max)
+int mnl_attr_type_valid(const struct nlattr *attr, uint16_t max)
 {
 	if (mnl_attr_get_type(attr) > max) {
 		errno = EINVAL;
@@ -126,7 +126,7 @@ int mnl_attr_type_valid(const struct nlattr *attr, int max)
 }
 
 static int __mnl_attr_validate(const struct nlattr *attr,
-			       enum mnl_attr_data_type type, int exp_len)
+			       enum mnl_attr_data_type type, size_t exp_len)
 {
 	uint16_t attr_len = mnl_attr_get_payload_len(attr);
 	char *attr_data = mnl_attr_get_payload(attr);
@@ -218,7 +218,7 @@ int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
  * this functions returns -1 and errno is explicitly set.
  */
 int mnl_attr_validate2(const struct nlattr *attr, 
-		       enum mnl_attr_data_type type, int exp_len)
+		       enum mnl_attr_data_type type, size_t exp_len)
 {
 	if (type >= MNL_TYPE_MAX) {
 		errno = EINVAL;
@@ -242,7 +242,7 @@ int mnl_attr_validate2(const struct nlattr *attr,
  * This function propagates the return value of the callback that can be
  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
  */
-int mnl_attr_parse(const struct nlmsghdr *nlh, int offset,
+int mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
 		   mnl_attr_cb_t cb, void *data)
 {
 	int ret = MNL_CB_OK;
@@ -355,10 +355,11 @@ const char *mnl_attr_get_str(const struct nlattr *attr)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put(struct nlmsghdr *nlh, int type, size_t len, const void *data)
+void mnl_attr_put(struct nlmsghdr *nlh, uint16_t type,
+		  size_t len, const void *data)
 {
 	struct nlattr *attr = mnl_nlmsg_get_payload_tail(nlh);
-	int payload_len = MNL_ALIGN(sizeof(struct nlattr)) + len;
+	uint16_t payload_len = MNL_ALIGN(sizeof(struct nlattr)) + len;
 
 	attr->nla_type = type;
 	attr->nla_len = payload_len;
@@ -376,7 +377,7 @@ void mnl_attr_put(struct nlmsghdr *nlh, int type, size_t len, const void *data)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_u8(struct nlmsghdr *nlh, int type, uint8_t data)
+void mnl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint8_t), &data);
 }
@@ -390,7 +391,7 @@ void mnl_attr_put_u8(struct nlmsghdr *nlh, int type, uint8_t data)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_u16(struct nlmsghdr *nlh, int type, uint16_t data)
+void mnl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint16_t), &data);
 }
@@ -404,7 +405,7 @@ void mnl_attr_put_u16(struct nlmsghdr *nlh, int type, uint16_t data)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_u32(struct nlmsghdr *nlh, int type, uint32_t data)
+void mnl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint32_t), &data);
 }
@@ -418,7 +419,7 @@ void mnl_attr_put_u32(struct nlmsghdr *nlh, int type, uint32_t data)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_u64(struct nlmsghdr *nlh, int type, uint64_t data)
+void mnl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint64_t), &data);
 }
@@ -432,7 +433,7 @@ void mnl_attr_put_u64(struct nlmsghdr *nlh, int type, uint64_t data)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_str(struct nlmsghdr *nlh, int type, const void *data)
+void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const void *data)
 {
 	mnl_attr_put(nlh, type, strlen(data), data);
 }
@@ -449,7 +450,7 @@ void mnl_attr_put_str(struct nlmsghdr *nlh, int type, const void *data)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_str_null(struct nlmsghdr *nlh, int type, const void *data)
+void mnl_attr_put_str_null(struct nlmsghdr *nlh, uint16_t type, const void *data)
 {
 	mnl_attr_put(nlh, type, strlen(data)+1, data);
 }

@@ -77,16 +77,16 @@ extern uint64_t mnl_attr_get_u64(const struct nlattr *attr);
 extern const char *mnl_attr_get_str(const struct nlattr *attr);
 
 /* TLV attribute putters */
-extern void mnl_attr_put(struct nlmsghdr *nlh, int type, size_t len, const void *data);
-extern void mnl_attr_put_u8(struct nlmsghdr *nlh, int type, uint8_t data);
-extern void mnl_attr_put_u16(struct nlmsghdr *nlh, int type, uint16_t data);
-extern void mnl_attr_put_u32(struct nlmsghdr *nlh, int type, uint32_t data);
-extern void mnl_attr_put_u64(struct nlmsghdr *nlh, int type, uint64_t data);
-extern void mnl_attr_put_str(struct nlmsghdr *nlh, int type, const void *data);
-extern void mnl_attr_put_str_null(struct nlmsghdr *nlh, int type, const void *data);
+extern void mnl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data);
+extern void mnl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data);
+extern void mnl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data);
+extern void mnl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data);
+extern void mnl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data);
+extern void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const void *data);
+extern void mnl_attr_put_str_null(struct nlmsghdr *nlh, uint16_t type, const void *data);
 
 /* TLV validation */
-extern int mnl_attr_type_valid(const struct nlattr *attr, int maxtype);
+extern int mnl_attr_type_valid(const struct nlattr *attr, uint16_t maxtype);
 
 enum mnl_attr_data_type {
 	MNL_TYPE_UNSPEC,
@@ -105,7 +105,7 @@ enum mnl_attr_data_type {
 };
 
 extern int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type);
-extern int mnl_attr_validate2(const struct nlattr *attr, enum mnl_attr_data_type type, int minlen);
+extern int mnl_attr_validate2(const struct nlattr *attr, enum mnl_attr_data_type type, size_t len);
 
 /* TLV iterators */
 extern int mnl_attr_ok(const struct nlattr *attr, int len);
@@ -126,7 +126,7 @@ extern struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len);
 /* TLV callback-based attribute parsers */
 typedef int (*mnl_attr_cb_t)(const struct nlattr *attr, void *data);
 
-extern int mnl_attr_parse(const struct nlmsghdr *nlh, int offset, mnl_attr_cb_t cb, void *data);
+extern int mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset, mnl_attr_cb_t cb, void *data);
 extern int mnl_attr_parse_nested(const struct nlattr *attr, mnl_attr_cb_t cb, void *data);
 
 /*
