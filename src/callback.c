@@ -70,10 +70,10 @@ int mnl_cb_run2(const char *buf, size_t numbytes, unsigned int seq,
 		unsigned int portid, mnl_cb_t cb_data, void *data,
 		mnl_cb_t *cb_ctl_array, unsigned int cb_ctl_array_len)
 {
-	int ret = MNL_CB_OK;
+	int ret = MNL_CB_OK, len = numbytes;
 	struct nlmsghdr *nlh = (struct nlmsghdr *)buf;
 
-	while (mnl_nlmsg_ok(nlh, numbytes)) {
+	while (mnl_nlmsg_ok(nlh, len)) {
 		/* check message source */
 		if (!mnl_nlmsg_portid_ok(nlh, portid)) {
 			errno = EINVAL;
@@ -103,7 +103,7 @@ int mnl_cb_run2(const char *buf, size_t numbytes, unsigned int seq,
 			if (ret <= MNL_CB_STOP)
 				goto out;
 		}
-		nlh = mnl_nlmsg_next(nlh, &numbytes);
+		nlh = mnl_nlmsg_next(nlh, &len);
 	}
 out:
 	return ret;
