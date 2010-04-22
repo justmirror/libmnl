@@ -247,7 +247,7 @@ int mnl_attr_parse(const struct nlmsghdr *nlh, int offset,
 {
 	int ret = MNL_CB_OK;
 	struct nlattr *attr = mnl_nlmsg_get_payload_offset(nlh, offset);
-	int len = nlh->nlmsg_len;
+	int len = nlh->nlmsg_len - MNL_NLMSG_HDRLEN - MNL_ALIGN(offset);
 
 	while (mnl_attr_ok(attr, len)) {
 		if (cb && (ret = cb(attr, data)) <= MNL_CB_STOP)
