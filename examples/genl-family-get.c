@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <libmnl/libmnl.h>
 #include <linux/genetlink.h>
@@ -36,7 +37,6 @@ static int parse_mc_grps_cb(const struct nlattr *attr, void *data)
 static void parse_genl_mc_grps(struct nlattr *nested)
 {
 	struct nlattr *pos;
-	int len;
 
 	mnl_attr_for_each_nested(pos, nested) {
 		struct nlattr *tb[CTRL_ATTR_MCAST_GRP_MAX+1] = {};
@@ -83,7 +83,6 @@ static int parse_family_ops_cb(const struct nlattr *attr, void *data)
 static void parse_genl_family_ops(struct nlattr *nested)
 {
 	struct nlattr *pos;
-	int len;
 
 	mnl_attr_for_each_nested(pos, nested) {
 		struct nlattr *tb[CTRL_ATTR_OP_MAX+1] = {};

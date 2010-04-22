@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
+#include <arpa/inet.h>
 
 #include <libmnl/libmnl.h>
 #include <linux/if.h>
@@ -9,9 +11,6 @@
 
 static int data_attr_cb2(const struct nlattr *attr, void *data)
 {
-	const struct nlattr **tb = (const struct nlattr **)data;
-	int type = mnl_attr_get_type(attr);
-
 	if (mnl_attr_type_valid(attr, RTAX_MAX) < 0) {
 		perror("mnl_attr_type_valid");
 		return MNL_CB_ERROR;
@@ -29,10 +28,12 @@ static void attributes_show_ipv4(struct nlattr *tb[])
 		printf("table=%u ", mnl_attr_get_u32(tb[RTA_TABLE]));
 	}
 	if (tb[RTA_DST]) {
-		printf("dst=%s ", inet_ntoa(mnl_attr_get_u32(tb[RTA_DST])));
+		struct in_addr *addr = mnl_attr_get_payload(tb[RTA_DST]);
+		printf("dst=%s ", inet_ntoa(*addr));
 	}
 	if (tb[RTA_SRC]) {
-		printf("src=%s ", inet_ntoa(mnl_attr_get_u32(tb[RTA_SRC])));
+		struct in_addr *addr = mnl_attr_get_payload(tb[RTA_SRC]);
+		printf("src=%s ", inet_ntoa(*addr));
 	}
 	if (tb[RTA_OIF]) {
 		printf("oif=%u ", mnl_attr_get_u32(tb[RTA_OIF]));
@@ -41,11 +42,12 @@ static void attributes_show_ipv4(struct nlattr *tb[])
 		printf("flow=%u ", mnl_attr_get_u32(tb[RTA_FLOW]));
 	}
 	if (tb[RTA_PREFSRC]) {
-		printf("prefsrc=%s ",
-			inet_ntoa(mnl_attr_get_u32(tb[RTA_PREFSRC])));
+		struct in_addr *addr = mnl_attr_get_payload(tb[RTA_PREFSRC]);
+		printf("prefsrc=%s ", inet_ntoa(*addr));
 	}
 	if (tb[RTA_GATEWAY]) {
-		printf("gw=%s ", inet_ntoa(mnl_attr_get_u32(tb[RTA_GATEWAY])));
+		struct in_addr *addr = mnl_attr_get_payload(tb[RTA_GATEWAY]);
+		printf("gw=%s ", inet_ntoa(*addr));
 	}
 	if (tb[RTA_METRICS]) {
 		int i;
@@ -56,7 +58,7 @@ static void attributes_show_ipv4(struct nlattr *tb[])
 		for (i=0; i<RTAX_MAX; i++) {
 			if (tbx[i]) {
 				printf("metrics[%d]=%u ",
-					mnl_attr_get_u32(tbx[i]));
+					i, mnl_attr_get_u32(tbx[i]));
 			}
 		}
 	}
@@ -101,8 +103,6 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 {
 	struct nlattr *tb[RTA_MAX+1] = {};
 	struct rtmsg *rm = mnl_nlmsg_get_payload(nlh);
-	int len = nlh->nlmsg_len;
-	struct nlattr *attr;
 
 	/* protocol family = AF_INET | AF_INET6 */
 	printf("family=%u ", rm->rtm_family);

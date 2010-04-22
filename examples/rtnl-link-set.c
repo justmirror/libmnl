@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+#include <time.h>
 
 #include <libmnl/libmnl.h>
 #include <linux/if.h>
@@ -21,9 +23,9 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if (strncasecmp(argv[2], "up") == 0)
+	if (strncasecmp(argv[2], "up", strlen("up")) == 0)
 		oper = IF_OPER_UP;
-	else if (strncasecmp(argv[2], "down") == 0)
+	else if (strncasecmp(argv[2], "down", strlen("down")) == 0)
 		oper = IF_OPER_DOWN;
 	else {
 		fprintf(stderr, "%s is not `up' nor `down'\n", argv[2]);

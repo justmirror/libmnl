@@ -39,8 +39,6 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 {
 	struct nlattr *tb[IFLA_MAX+1] = {};
 	struct ifinfomsg *ifm = mnl_nlmsg_get_payload(nlh);
-	int len = nlh->nlmsg_len;
-	struct nlattr *attr;
 
 	printf("index=%d type=%d flags=%d family=%d ", 
 		ifm->ifi_index, ifm->ifi_type,
@@ -66,7 +64,6 @@ int main()
 {
 	struct mnl_socket *nl;
 	char buf[getpagesize()];
-	struct nlmsghdr *nlh = (struct nlmsghdr *) buf;
 	int ret;
 
 	nl = mnl_socket_open(NETLINK_ROUTE);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <libmnl/libmnl.h>
 #include <linux/if.h>
@@ -36,8 +37,6 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 static int data_cb(const struct nlmsghdr *nlh, void *data)
 {
 	struct ifinfomsg *ifm = mnl_nlmsg_get_payload(nlh);
-	int len = nlh->nlmsg_len;
-	struct nlattr *attr;
 
 	printf("index=%d type=%d flags=%d family=%d ", 
 		ifm->ifi_index, ifm->ifi_type,
