@@ -1,6 +1,5 @@
 include $(top_srcdir)/Make_global.am
 
-AM_CFLAGS=-fPIC -Wall -Wextra -Wno-unused-parameter
 LIBS=
 
 lib_LTLIBRARIES = libmnl.la
