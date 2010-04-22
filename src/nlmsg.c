@@ -47,7 +47,7 @@
  */
 size_t mnl_nlmsg_size(int len)
 {
-	return len + MNL_ALIGN(MNL_NLMSG_HDRLEN);
+	return len + MNL_NLMSG_HDRLEN;
 }
 
 /**
