@@ -7,7 +7,7 @@
 #include <linux/netlink.h>
 
 /*
- * generic netlink socket API
+ * Netlink socket API
  */
 
 #define MNL_SOCKET_AUTOPID	0
@@ -27,7 +27,7 @@ extern int mnl_socket_setsockopt(const struct mnl_socket *nl, int type, void *bu
 extern int mnl_socket_getsockopt(const struct mnl_socket *nl, int type, void *buf, socklen_t *len);
 
 /*
- * generic netlink message API
+ * Netlink message API
  */
 
 #define MNL_ALIGNTO		4
@@ -61,7 +61,7 @@ extern void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh);
 extern void mnl_nlmsg_fprintf(FILE *fd, const struct nlmsghdr *nlh);
 
 /*
- * generic netlink attributes API
+ * Netlink attributes API
  */
 #define MNL_ATTR_HDRLEN	MNL_ALIGN(sizeof(struct nlattr))
 
