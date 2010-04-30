@@ -85,6 +85,10 @@ extern void mnl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data)
 extern void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const void *data);
 extern void mnl_attr_put_str_null(struct nlmsghdr *nlh, uint16_t type, const void *data);
 
+/* TLV attribute nesting */
+extern struct nlattr *mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type);
+extern void mnl_attr_nest_end(struct nlmsghdr *nlh, struct nlattr *start);
+
 /* TLV validation */
 extern int mnl_attr_type_valid(const struct nlattr *attr, uint16_t maxtype);
 

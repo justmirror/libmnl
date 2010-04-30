@@ -454,3 +454,35 @@ void mnl_attr_put_str_null(struct nlmsghdr *nlh, uint16_t type, const void *data
 {
 	mnl_attr_put(nlh, type, strlen(data)+1, data);
 }
+
+/**
+ * mnl_attr_nest_start - start an attribute nest
+ * @nlh: pointer to the netlink message
+ * @type: netlink attribute type
+ *
+ * This function adds the attribute header that identifies the beginning of
+ * an attribute nest. This function always returns a valid pointer to the
+ * beginning of the nest.
+ */
+struct nlattr *mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type)
+{
+	struct nlattr *start = mnl_nlmsg_get_payload_tail(nlh);
+
+	/* set start->nla_len in mnl_attr_nest_end() */
+	start->nla_type = NLA_F_NESTED | type;
+	nlh->nlmsg_len += MNL_ALIGN(sizeof(struct nlattr));
+
+	return start;
+}
+
+/**
+ * mnl_attr_nest_end - end an attribute nest
+ * @nlh: pointer to the netlink message
+ * @start: pointer to the attribute nest returned by mnl_attr_nest_start()
+ *
+ * This function updates the attribute header that identifies the nest.
+ */
+void mnl_attr_nest_end(struct nlmsghdr *nlh, struct nlattr *start)
+{
+	start->nla_len = mnl_nlmsg_get_payload_tail(nlh) - (void *)start;
+}
