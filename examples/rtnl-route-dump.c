@@ -1,3 +1,9 @@
+/*
+ * (C) 2009-2010 by Pablo Neira Ayuso <pablo@netfilter.org>
+ *
+ * This software may be used and distributed according to the terms
+ * of the GNU General Public License, incorporated herein by reference.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
