@@ -6,7 +6,8 @@ check_PROGRAMS = rtnl-link-dump rtnl-link-dump2 rtnl-link-dump3 \
 		 rtnl-route-add \
 		 rtnl-route-dump \
 		 genl-family-get \
-		 nf-queue
+		 nf-queue \
+		 nfct-event
 
 rtnl_link_dump_SOURCES = rtnl-link-dump.c
 rtnl_link_dump_LDADD = ../src/libmnl.la
@@ -43,3 +44,7 @@ genl_family_get_LDFLAGS = -dynamic -ldl
 nf_queue_SOURCES = nf-queue.c
 nf_queue_LDADD = ../src/libmnl.la
 nf_queue_LDFLAGS = -dynamic -ldl
+
+nfct_event_SOURCES = nfct-event.c
+nfct_event_LDADD = ../src/libmnl.la
+nfct_event_LDFLAGS = -dynamic -ldl
