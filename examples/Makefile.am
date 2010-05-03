@@ -5,7 +5,8 @@ check_PROGRAMS = rtnl-link-dump rtnl-link-dump2 rtnl-link-dump3 \
 		 rtnl-link-set \
 		 rtnl-route-add \
 		 rtnl-route-dump \
-		 genl-family-get
+		 genl-family-get \
+		 nf-queue
 
 rtnl_link_dump_SOURCES = rtnl-link-dump.c
 rtnl_link_dump_LDADD = ../src/libmnl.la
@@ -38,3 +39,7 @@ rtnl_route_dump_LDFLAGS = -dynamic -ldl
 genl_family_get_SOURCES = genl-family-get.c
 genl_family_get_LDADD = ../src/libmnl.la
 genl_family_get_LDFLAGS = -dynamic -ldl
+
+nf_queue_SOURCES = nf-queue.c
+nf_queue_LDADD = ../src/libmnl.la
+nf_queue_LDFLAGS = -dynamic -ldl
