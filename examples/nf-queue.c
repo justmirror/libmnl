@@ -141,7 +141,8 @@ nfq_build_cfg_params(char *buf, uint8_t mode, int range, int queue_num)
 	return nlh;
 }
 
-struct nlmsghdr *nfq_build_verdict(char *buf, int id, int queue_num, int verd)
+static struct nlmsghdr *
+nfq_build_verdict(char *buf, int id, int queue_num, int verd)
 {
 	struct nlmsghdr *nlh;
 	struct nfgenmsg *nfg;
