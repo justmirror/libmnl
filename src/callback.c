@@ -64,7 +64,10 @@ static mnl_cb_t default_cb_array[NLMSG_MIN_TYPE] = {
  * 	- MNL_CB_STOP (=0): stop callback runqueue.
  *	- MNL_CB_OK (>=1): no problems has occurred.
  *
- * This function propagates the callback return value.
+ * This function propagates the callback return value. On error, it returns
+ * -1 and errno is explicitly set. If the portID is not the expected, errno
+ * is set to ESRCH. If the sequence number is not the expected, errno is set
+ * to EPROTO.
  */
 int mnl_cb_run2(const char *buf, size_t numbytes, unsigned int seq,
 		unsigned int portid, mnl_cb_t cb_data, void *data,
@@ -76,12 +79,12 @@ int mnl_cb_run2(const char *buf, size_t numbytes, unsigned int seq,
 	while (mnl_nlmsg_ok(nlh, len)) {
 		/* check message source */
 		if (!mnl_nlmsg_portid_ok(nlh, portid)) {
-			errno = EINVAL;
+			errno = ESRCH;
 			return -1;
 		}
 		/* perform sequence tracking */
 		if (!mnl_nlmsg_seq_ok(nlh, seq)) {
-			errno = EILSEQ;
+			errno = EPROTO;
 			return -1;
 		}
 
