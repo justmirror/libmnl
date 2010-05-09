@@ -33,7 +33,7 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 
 		/* skip unsupported attribute in user-space */
 		if (mnl_attr_type_valid(attr, IFLA_MAX) < 0)
-			return MNL_CB_OK;
+			continue;
 
 		switch(type) {
 		case IFLA_MTU:
