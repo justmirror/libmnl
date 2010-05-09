@@ -16,10 +16,9 @@
 
 static int data_attr_cb(const struct nlattr *attr, void *data)
 {
-	if (mnl_attr_type_valid(attr, IFLA_MAX) < 0) {
-		perror("mnl_attr_type_valid");
-		return MNL_CB_ERROR;
-	}
+	/* skip unsupported attribute in user-space */
+	if (mnl_attr_type_valid(attr, IFLA_MAX) < 0)
+		return MNL_CB_OK;
 
 	switch(mnl_attr_get_type(attr)) {
 	case IFLA_MTU:

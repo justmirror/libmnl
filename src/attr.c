@@ -115,11 +115,16 @@ struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len)
  * This function allows to check if the attribute type is higher than the
  * maximum supported type. If the attribute type is invalid, this function
  * returns -1 and errno is explicitly set. On success, this function returns 1.
+ *
+ * Strict attribute checking in user-space is not a good idea since you may
+ * run an old application with a newer kernel that supports new attributes.
+ * This leads to backward compatibility breakages in user-space. Better check
+ * if you support an attribute, if not, skip it.
  */
 int mnl_attr_type_valid(const struct nlattr *attr, uint16_t max)
 {
 	if (mnl_attr_get_type(attr) > max) {
-		errno = EINVAL;
+		errno = EOPNOTSUPP;
 		return -1;
 	}
 	return 1;

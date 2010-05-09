@@ -31,10 +31,10 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 	mnl_attr_for_each(attr, nlh, sizeof(*ifm)) {
 		int type = mnl_attr_get_type(attr);
 
-		if (mnl_attr_type_valid(attr, IFLA_MAX) < 0) {
-			perror("mnl_attr_type_valid");
-			return MNL_CB_ERROR;
-		}
+		/* skip unsupported attribute in user-space */
+		if (mnl_attr_type_valid(attr, IFLA_MAX) < 0)
+			return MNL_CB_OK;
+
 		switch(type) {
 		case IFLA_MTU:
 			if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
