@@ -34,13 +34,13 @@ extern int mnl_socket_getsockopt(const struct mnl_socket *nl, int type, void *bu
 #define MNL_ALIGN(len)		(((len)+MNL_ALIGNTO-1) & ~(MNL_ALIGNTO-1))
 #define MNL_NLMSG_HDRLEN	MNL_ALIGN(sizeof(struct nlmsghdr))
 
-extern size_t mnl_nlmsg_size(int len);
-extern size_t mnl_nlmsg_total_size(int len);
+extern size_t mnl_nlmsg_size(size_t len);
+extern size_t mnl_nlmsg_total_size(size_t len);
 extern size_t mnl_nlmsg_get_payload_len(const struct nlmsghdr *nlh);
 
 /* Netlink message header builder */
 extern struct nlmsghdr *mnl_nlmsg_put_header(void *buf);
-extern void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, int size);
+extern void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size);
 
 /* Netlink message iterators */
 extern int mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len);
@@ -54,7 +54,7 @@ int mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid);
 
 /* Netlink message getters */
 extern void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh);
-extern void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, int offset);
+extern void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset);
 extern void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh);
 
 /* Netlink dump message */

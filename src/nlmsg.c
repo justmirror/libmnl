@@ -45,7 +45,7 @@
  * This function returns the size of a netlink message (header plus payload)
  * without alignment.
  */
-size_t mnl_nlmsg_size(int len)
+size_t mnl_nlmsg_size(size_t len)
 {
 	return len + MNL_NLMSG_HDRLEN;
 }
@@ -57,7 +57,7 @@ size_t mnl_nlmsg_size(int len)
  * This function returns the size of a netlink message (header plus payload)
  * with alignment.
  */
-size_t mnl_nlmsg_aligned_size(int len)
+size_t mnl_nlmsg_aligned_size(size_t len)
 {
 	return MNL_ALIGN(mnl_nlmsg_size(len));
 }
@@ -104,7 +104,7 @@ struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
  * you call this function. This function returns a pointer to the extra
  * header.
  */
-void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, int size)
+void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size)
 {
 	char *ptr = (char *)nlh + nlh->nlmsg_len;
 	nlh->nlmsg_len += MNL_ALIGN(size);
@@ -131,7 +131,7 @@ void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh)
  * This function returns a pointer to the payload of the netlink message plus
  * a given offset.
  */
-void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, int offset)
+void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset)
 {
 	return (void *)nlh + MNL_NLMSG_HDRLEN + MNL_ALIGN(offset);
 }
