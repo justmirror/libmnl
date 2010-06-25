@@ -127,21 +127,6 @@ int mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
 }
 
 /**
- * mnl_socket_sendmsg - send a netlink message of a certain size
- * @nl: netlink socket obtained via mnl_socket_open()
- * @msg: pointer to struct msghdr (must be initialized appropriately)
- * @flags: flags passed to sendmsg()
- *
- * On error, it returns -1 and errno is appropriately set. Otherwise, it 
- * returns the number of bytes sent.
- */
-int mnl_socket_sendmsg(const struct mnl_socket *nl,
-		       const struct msghdr *msg, int flags)
-{
-	return sendmsg(nl->fd, msg, flags);
-}
-
-/**
  * mnl_socket_recvfrom - receive a netlink message
  * @nl: netlink socket obtained via mnl_socket_open()
  * @buf: buffer that you want to use to store the netlink message
@@ -182,21 +167,6 @@ int mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
 		return -1;
 	}
 	return ret;
-}
-
-/**
- * mnl_socket_recvmsg- receive a netlink message
- * @nl: netlink socket obtained via mnl_socket_open()
- * @msg: pointer to struct msghdr (must be initialized appropriately)
- * @flags: flags passed to recvmsg()
- *
- * On error, this function returns -1 and errno is appropriately set.
- * On sucess, this function returns the number of bytes received.
- */
-int mnl_socket_recvmsg(const struct mnl_socket *nl,
-		       struct msghdr *msg, int flags)
-{
-	return recvmsg(nl->fd, msg, flags);
 }
 
 /**

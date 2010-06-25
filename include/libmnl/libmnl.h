@@ -20,9 +20,7 @@ extern int mnl_socket_close(struct mnl_socket *nl);
 extern int mnl_socket_get_fd(const struct mnl_socket *nl);
 extern unsigned int mnl_socket_get_portid(const struct mnl_socket *nl);
 extern int mnl_socket_sendto(const struct mnl_socket *nl, const void *req, size_t siz);
-extern int mnl_socket_sendmsg(const struct mnl_socket *nl, const struct msghdr *msg, int flags);
 extern int mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t siz);
-extern int mnl_socket_recvmsg(const struct mnl_socket *nl, struct msghdr *msg, int flags);
 extern int mnl_socket_setsockopt(const struct mnl_socket *nl, int type, void *buf, socklen_t len);
 extern int mnl_socket_getsockopt(const struct mnl_socket *nl, int type, void *buf, socklen_t *len);
 
