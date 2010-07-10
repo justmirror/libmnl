@@ -85,22 +85,25 @@ static void print_proto(const struct nlattr *nest)
 
 	mnl_attr_parse_nested(nest, parse_proto_cb, tb);
 	if (tb[CTA_PROTO_NUM]) {
-		printf("proto=%u ", mnl_attr_get_u16(tb[CTA_PROTO_NUM]));
+		printf("proto=%u ", mnl_attr_get_u8(tb[CTA_PROTO_NUM]));
 	}
 	if (tb[CTA_PROTO_SRC_PORT]) {
-		printf("sport=%u ", mnl_attr_get_u16(tb[CTA_PROTO_SRC_PORT]));
+		printf("sport=%u ",
+			ntohs(mnl_attr_get_u16(tb[CTA_PROTO_SRC_PORT])));
 	}
 	if (tb[CTA_PROTO_DST_PORT]) {
-		printf("dport=%u ", mnl_attr_get_u16(tb[CTA_PROTO_DST_PORT]));
+		printf("dport=%u ",
+			ntohs(mnl_attr_get_u16(tb[CTA_PROTO_DST_PORT])));
 	}
 	if (tb[CTA_PROTO_ICMP_ID]) {
-		printf("id=%u ", mnl_attr_get_u16(tb[CTA_PROTO_ICMP_ID]));
+		printf("id=%u ",
+			ntohs(mnl_attr_get_u16(tb[CTA_PROTO_ICMP_ID])));
 	}
 	if (tb[CTA_PROTO_ICMP_TYPE]) {
-		printf("type=%u ", mnl_attr_get_u16(tb[CTA_PROTO_ICMP_TYPE]));
+		printf("type=%u ", mnl_attr_get_u8(tb[CTA_PROTO_ICMP_TYPE]));
 	}
 	if (tb[CTA_PROTO_ICMP_CODE]) {
-		printf("code=%u ", mnl_attr_get_u16(tb[CTA_PROTO_ICMP_CODE]));
+		printf("code=%u ", mnl_attr_get_u8(tb[CTA_PROTO_ICMP_CODE]));
 	}
 }
 
@@ -193,10 +196,10 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 		print_tuple(tb[CTA_TUPLE_ORIG]);
 	}
 	if (tb[CTA_MARK]) {
-		printf("mark=%u ", mnl_attr_get_u32(tb[CTA_MARK]));
+		printf("mark=%u ", ntohl(mnl_attr_get_u32(tb[CTA_MARK])));
 	}
 	if (tb[CTA_SECMARK]) {
-		printf("secmark=%u ", mnl_attr_get_u32(tb[CTA_SECMARK]));
+		printf("secmark=%u ", ntohl(mnl_attr_get_u32(tb[CTA_SECMARK])));
 	}
 	printf("\n");
 	return MNL_CB_OK;
