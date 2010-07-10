@@ -22,30 +22,33 @@ int main(int argc, char *argv[])
 	struct nlmsghdr *nlh;
 	struct ifinfomsg *ifm;
 	int ret;
-	unsigned int seq, portid, oper;
+	unsigned int seq, portid, change = 0, flags = 0;
 
 	if (argc != 3) {
 		printf("Usage: %s [ifname] [up|down]\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
-	if (strncasecmp(argv[2], "up", strlen("up")) == 0)
-		oper = IF_OPER_UP;
-	else if (strncasecmp(argv[2], "down", strlen("down")) == 0)
-		oper = IF_OPER_DOWN;
-	else {
+	if (strncasecmp(argv[2], "up", strlen("up")) == 0) {
+		change |= IFF_UP;
+		flags |= IFF_UP;
+	} else if (strncasecmp(argv[2], "down", strlen("down")) == 0) {
+		change |= IFF_UP;
+		flags &= ~IFF_UP;
+	} else {
 		fprintf(stderr, "%s is not `up' nor `down'\n", argv[2]);
 		exit(EXIT_FAILURE);
 	}
 
 	nlh = mnl_nlmsg_put_header(buf);
-	nlh->nlmsg_type	= RTM_SETLINK;
+	nlh->nlmsg_type	= RTM_NEWLINK;
 	nlh->nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK;
 	nlh->nlmsg_seq = seq = time(NULL);
 	ifm = mnl_nlmsg_put_extra_header(nlh, sizeof(*ifm));
-	ifm->ifi_family = AF_PACKET;
+	ifm->ifi_family = AF_UNSPEC;
+	ifm->ifi_change = change;
+	ifm->ifi_flags = flags;
 
-	mnl_attr_put_u8(nlh, IFLA_OPERSTATE, oper);
 	mnl_attr_put_str(nlh, IFLA_IFNAME, argv[1]);
 
 	nl = mnl_socket_open(NETLINK_ROUTE);
