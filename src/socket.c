@@ -15,14 +15,62 @@
 #include <time.h>
 #include <errno.h>
 
+/**
+ * \mainpage
+ *
+ * libmnl is a minimalistic user-space library oriented to Netlink developers.
+ * There are a lot of common tasks in parsing, validating, constructing of
+ * both the Netlink header and TLVs that are repetitive and easy to get wrong.
+ * This library aims to provide simple helpers that allows you to avoid
+ * re-inventing the wheel in common Netlink tasks.
+ *
+ * The acronim libmnl stands for LIBrary Minimalistic NetLink.
+ *
+ * (temporary) libmnl homepage is:
+ *      http://1984.lsi.us.es/projects/libmnl/
+ *
+ * \section features Main Features
+ * - Small: the shared library requires around 30KB in a x86-based computer.
+ * - Simple: this library avoids complex abstractions that tend to hide Netlink
+ *   details. It avoids elaborated object-oriented infrastructure and complex
+ *   callback-based workflow.
+ * - Easy to use: the library simplifies the work for Netlink-wise developers.
+ *   It provides functions to make socket handling, message building,
+ *   validating, parsing, and sequence tracking, easier.
+ * - Easy to re-use: you can use this library to build your own abstraction
+ *   layer upon this library, if you want to provide another library that
+ *   hides Netlink details to your users.
+ * - Decoupling: the interdependency of the main bricks that compose this
+ *   library is reduced, ie. the library provides many helpers but the
+ *   programmer is not forced to use them.
+ *
+ * \section Dependencies
+ * You have to install the Linux kernel headers that you want to use to develop
+ * your application. Moreover, this library requires that you have some basics
+ * on Netlink.
+ *
+ * \section scm Git Tree
+ * The current development version of libmnl can be accessed at:
+ * http://1984.lsi.us.es/git/?p=libmnl/.git;a=summary
+ *
+ * \section using Using libmnl
+ * You can access several examples files under examples/ in the libmnl source
+ * code tree.
+ */
+
 struct mnl_socket {
 	int 			fd;
 	struct sockaddr_nl	addr;
 };
 
 /**
+ * \defgroup socket Netlink socket helpers
+ * @{
+ */
+
+/**
  * mnl_socket_get_fd - obtain file descriptor from netlink socket
- * @nl: netlink socket obtained via mnl_socket_open()
+ * \param nl netlink socket obtained via mnl_socket_open()
  *
  * This function returns the file descriptor of a given netlink socket.
  */
@@ -33,7 +81,7 @@ int mnl_socket_get_fd(const struct mnl_socket *nl)
 
 /**
  * mnl_socket_get_portid - obtain Netlink PortID from netlink socket
- * @nl: netlink socket obtained via mnl_socket_open()
+ * \param nl netlink socket obtained via mnl_socket_open()
  *
  * This function returns the Netlink PortID of a given netlink socket.
  * It's a common mistake to assume that this PortID equals the process ID
@@ -47,7 +95,7 @@ unsigned int mnl_socket_get_portid(const struct mnl_socket *nl)
 
 /**
  * mnl_socket_open - open a netlink socket
- * @unit: the netlink socket bus ID (see NETLINK_* constants)
+ * \param unit the netlink socket bus ID (see NETLINK_* constants)
  *
  * On error, it returns -1 and errno is appropriately set. Otherwise, it
  * returns a valid pointer to the mnl_socket structure.
@@ -71,9 +119,9 @@ struct mnl_socket *mnl_socket_open(int bus)
 
 /**
  * mnl_socket_bind - bind netlink socket
- * @nl: netlink socket obtained via mnl_socket_open()
- * @groups: the group of message you're interested in
- * @pid: the port ID you want to use (use zero for automatic selection)
+ * \param nl netlink socket obtained via mnl_socket_open()
+ * \param groups the group of message you're interested in
+ * \param pid the port ID you want to use (use zero for automatic selection)
  *
  * On error, this function returns -1 and errno is appropriately set. On
  * success, 0 is returned. You can use MNL_SOCKET_AUTOPID which is 0 for
@@ -110,9 +158,9 @@ int mnl_socket_bind(struct mnl_socket *nl, int groups, int pid)
 
 /**
  * mnl_socket_sendto - send a netlink message of a certain size
- * @nl: netlink socket obtained via mnl_socket_open()
- * @buf: buffer containing the netlink message to be sent
- * @bufsiz: number of bytes in the buffer that you want to send
+ * \param nl netlink socket obtained via mnl_socket_open()
+ * \param buf buffer containing the netlink message to be sent
+ * \param bufsiz number of bytes in the buffer that you want to send
  *
  * On error, it returns -1 and errno is appropriately set. Otherwise, it 
  * returns the number of bytes sent.
@@ -128,9 +176,9 @@ int mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
 
 /**
  * mnl_socket_recvfrom - receive a netlink message
- * @nl: netlink socket obtained via mnl_socket_open()
- * @buf: buffer that you want to use to store the netlink message
- * @bufsiz: size of the buffer passed to store the netlink message
+ * \param nl netlink socket obtained via mnl_socket_open()
+ * \param buf buffer that you want to use to store the netlink message
+ * \param bufsiz size of the buffer passed to store the netlink message
  *
  * On error, it returns -1 and errno is appropriately set. If errno is set
  * to ENOSPC, it means that the buffer that you have passed to store the
@@ -171,7 +219,7 @@ int mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
 
 /**
  * mnl_socket_close - close a given netlink socket
- * @nl: netlink socket obtained via mnl_socket_open()
+ * \param nl netlink socket obtained via mnl_socket_open()
  *
  * On error, this function returns -1 and errno is appropriately set.
  * On success, it returns 0.
@@ -186,10 +234,10 @@ int mnl_socket_close(struct mnl_socket *nl)
 
 /**
  * mnl_socket_setsockopt - set Netlink socket option
- * @nl: netlink socket obtained via mnl_socket_open()
- * @type: type of Netlink socket options
- * @buf: the buffer that contains the data about this option
- * @len: the size of the buffer passed
+ * \param nl netlink socket obtained via mnl_socket_open()
+ * \param type type of Netlink socket options
+ * \param buf the buffer that contains the data about this option
+ * \param len the size of the buffer passed
  *
  * This function allows you to set some Netlink socket option. As of writing
  * this, the existing options are:
@@ -217,10 +265,10 @@ int mnl_socket_setsockopt(const struct mnl_socket *nl, int type,
 
 /**
  * mnl_socket_getsockopt - get a Netlink socket option
- * @nl: netlink socket obtained via mnl_socket_open()
- * @type: type of Netlink socket options
- * @buf: pointer to the buffer to store the value of this option
- * @len: size of the information written in the buffer
+ * \param nl netlink socket obtained via mnl_socket_open()
+ * \param type type of Netlink socket options
+ * \param buf pointer to the buffer to store the value of this option
+ * \param len size of the information written in the buffer
  *
  * On error, this function returns -1 and errno is appropriately set.
  */
@@ -229,3 +277,7 @@ int mnl_socket_getsockopt(const struct mnl_socket *nl, int type,
 {
 	return getsockopt(nl->fd, SOL_NETLINK, type, buf, len);
 }
+
+/**
+ * @}
+ */

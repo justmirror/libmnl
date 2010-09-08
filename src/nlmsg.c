@@ -13,34 +13,38 @@
 #include <string.h>
 #include <libmnl/libmnl.h>
 
-/*
+/**
+ * \defgroup nlmsg Netlink message helpers
+ *
  * Netlink message:
- *
- *  |<----------------- 4 bytes ------------------->|
- *  |<----- 2 bytes ------>|<------- 2 bytes ------>|
- *
- *  |-----------------------------------------------|
- *  |      Message length (including header)        |
- *  |-----------------------------------------------|
- *  |     Message type     |     Message flags      |
- *  |-----------------------------------------------|
- *  |           Message sequence number             |
- *  |-----------------------------------------------|
- *  |                 Netlink PortID                |
- *  |-----------------------------------------------|
- *  |                                               |
- *  .                   Payload                     .
- *  |_______________________________________________|
+ * \verbatim
+	|<----------------- 4 bytes ------------------->|
+	|<----- 2 bytes ------>|<------- 2 bytes ------>|
+	|-----------------------------------------------|
+	|      Message length (including header)        |
+	|-----------------------------------------------|
+	|     Message type     |     Message flags      |
+	|-----------------------------------------------|
+	|           Message sequence number             |
+	|-----------------------------------------------|
+	|                 Netlink PortID                |
+	|-----------------------------------------------|
+	|                                               |
+	.                   Payload                     .
+	|_______________________________________________|
+\endverbatim
  *
  * There is usually an extra header after the the Netlink header (at the
  * beginning of the payload). This extra header is specific of the Netlink
  * subsystem. After this extra header, it comes the sequence of attributes
  * that are expressed in Type-Length-Value (TLV) format.
+ *
+ * @{
  */
 
 /**
  * mnl_nlmsg_size - calculate the size of Netlink message (without alignment)
- * @len: length of the Netlink payload
+ * \param len length of the Netlink payload
  *
  * This function returns the size of a netlink message (header plus payload)
  * without alignment.
@@ -52,7 +56,7 @@ size_t mnl_nlmsg_size(size_t len)
 
 /**
  * mnl_nlmsg_aligned_size - calculate the aligned size of Netlink messages
- * @len: length of the Netlink payload
+ * \param len length of the Netlink payload
  *
  * This function returns the size of a netlink message (header plus payload)
  * with alignment.
@@ -64,7 +68,7 @@ size_t mnl_nlmsg_aligned_size(size_t len)
 
 /**
  * mnl_nlmsg_get_payload_len - get the length of the Netlink payload
- * @nlh: pointer to the header of the Netlink message
+ * \param nlh pointer to the header of the Netlink message
  *
  * This function returns the Length of the netlink payload, ie. the length
  * of the full message minus the size of the Netlink header.
@@ -76,7 +80,7 @@ size_t mnl_nlmsg_get_payload_len(const struct nlmsghdr *nlh)
 
 /**
  * mnl_nlmsg_put_header - reserve and prepare room for Netlink header
- * @buf: memory already allocated to store the Netlink header
+ * \param buf memory already allocated to store the Netlink header
  *
  * This function sets to zero the room that is required to put the Netlink
  * header in the memory buffer passed as parameter. This function also
@@ -95,8 +99,8 @@ struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
 
 /**
  * mnl_nlmsg_put_extra_header - reserve and prepare room for an extra header
- * @nlh: pointer to Netlink header
- * @size: size of the extra header that we want to put
+ * \param nlh pointer to Netlink header
+ * \param size size of the extra header that we want to put
  *
  * This function sets to zero the room that is required to put the extra
  * header after the initial Netlink header. This function also increases
@@ -114,7 +118,7 @@ void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size)
 
 /**
  * mnl_nlmsg_get_payload - get a pointer to the payload of the netlink message
- * @nlh: pointer to a netlink header
+ * \param nlh pointer to a netlink header
  *
  * This function returns a pointer to the payload of the netlink message.
  */
@@ -125,8 +129,8 @@ void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh)
 
 /**
  * mnl_nlmsg_get_payload_offset - get a pointer to the payload of the message
- * @nlh: pointer to a netlink header
- * @offset: offset to the payload of the attributes TLV set
+ * \param nlh pointer to a netlink header
+ * \param offset offset to the payload of the attributes TLV set
  *
  * This function returns a pointer to the payload of the netlink message plus
  * a given offset.
@@ -138,8 +142,8 @@ void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset)
 
 /**
  * mnl_nlmsg_ok - check a there is room for netlink message
- * @nlh: netlink message that we want to check
- * @len: remaining bytes in a buffer that contains the netlink message
+ * \param nlh netlink message that we want to check
+ * \param len remaining bytes in a buffer that contains the netlink message
  *
  * This function is used to check that a buffer that contains a netlink
  * message has enough room for the netlink message that it stores, ie. this
@@ -149,7 +153,7 @@ void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset)
  * This function does not set errno in case of error since it is intended
  * for iterations. Thus, it returns 1 on success and 0 on error.
  *
- * The @len parameter may become negative in malformed messages during message
+ * The len parameter may become negative in malformed messages during message
  * iteration, that is why we use a signed integer.
  */
 int mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len)
@@ -161,8 +165,8 @@ int mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len)
 
 /**
  * mnl_nlmsg_next - get the next netlink message in a multipart message
- * @nlh: current netlink message that we are handling
- * @len: length of the remaining bytes in the buffer (passed by reference).
+ * \param nlh current netlink message that we are handling
+ * \param len length of the remaining bytes in the buffer (passed by reference).
  *
  * This function returns a pointer to the next netlink message that is part
  * of a multi-part netlink message. Netlink can batch several messages into
@@ -180,7 +184,7 @@ struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
 
 /**
  * mnl_nlmsg_get_payload_tail - get the ending of the netlink message
- * @nlh: pointer to netlink message
+ * \param nlh pointer to netlink message
  *
  * This function returns a pointer to the netlink message tail. This is useful
  * to build a message since we continue adding attributes at the end of the
@@ -193,8 +197,8 @@ void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh)
 
 /**
  * mnl_nlmsg_seq_ok - perform sequence tracking
- * @nlh: current netlink message that we are handling
- * @seq: last sequence number used to send a message
+ * \param nlh current netlink message that we are handling
+ * \param seq last sequence number used to send a message
  *
  * This functions returns 1 if the sequence tracking is fulfilled, otherwise
  * 0 is returned. We skip the tracking for netlink messages whose sequence
@@ -212,8 +216,8 @@ int mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
 
 /**
  * mnl_nlmsg_portid_ok - perform portID origin check
- * @nlh: current netlink message that we are handling
- * @seq: netlink portid that we want to check
+ * \param nlh current netlink message that we are handling
+ * \param seq netlink portid that we want to check
  *
  * This functions return 1 if the origin is fulfilled, otherwise
  * 0 is returned.  We skip the tracking for netlink message whose portID 
@@ -231,7 +235,7 @@ int mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
 
 /**
  * mnl_nlmsg_fprintf - print netlink message to file
- * @nlh: pointer to netlink message that we want to print
+ * \param nlh pointer to netlink message that we want to print
  *
  * This function prints the netlink header to a file. This function may be
  * useful for debugging purposes.
@@ -262,3 +266,7 @@ void mnl_nlmsg_fprintf(FILE *fd, const struct nlmsghdr *nlh)
 			isalnum(b[i+3]) ? b[i+3] : 0);
 	}
 }
+
+/**
+ * @}
+ */
