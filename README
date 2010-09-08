@@ -18,6 +18,11 @@ on top of this library.
 is reduced, eg. the library provides many helpers but the programmer is not
 forced to use them.
 
+= Examples files =
+
+You can find several examples files under examples/ that you can compile by
+invoking `make check'.
+
 --
-08/apr/2010
+08/sep/2010
 Pablo Neira Ayuso <pablo@netfilter.org>

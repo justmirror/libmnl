@@ -15,4 +15,4 @@ case $target in
 *) AC_MSG_ERROR([Linux only, dude!]);;
 esac
 
-AC_OUTPUT(Makefile src/Makefile include/Makefile include/libmnl/Makefile examples/Makefile libmnl.pc)
+AC_OUTPUT(Makefile src/Makefile include/Makefile include/libmnl/Makefile examples/Makefile examples/genl/Makefile examples/netfilter/Makefile examples/rtnl/Makefile libmnl.pc)
