@@ -24,6 +24,10 @@
  * This library aims to provide simple helpers that allows you to avoid
  * re-inventing the wheel in common Netlink tasks.
  *
+ * \verbatim
+"Simplify, simplify" -- Henry David Thoureau. Walden (1854)
+\endverbatim
+ *
  * The acronim libmnl stands for LIBrary Minimalistic NetLink.
  *
  * (temporary) libmnl homepage is:
