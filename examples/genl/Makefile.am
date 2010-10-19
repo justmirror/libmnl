@@ -4,4 +4,3 @@ check_PROGRAMS = genl-family-get
 
 genl_family_get_SOURCES = genl-family-get.c
 genl_family_get_LDADD = ../../src/libmnl.la
-genl_family_get_LDFLAGS = -dynamic -ldl
