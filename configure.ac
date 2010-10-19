@@ -3,7 +3,7 @@ dnl Process this file with autoconf to create configure.
 AC_INIT([libmnl], [1.0.0-beta0])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign dist-bzip2 1.6])
 
 AC_PROG_CC
 AC_EXEEXT

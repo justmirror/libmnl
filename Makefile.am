@@ -1,6 +1,5 @@
 include $(top_srcdir)/Make_global.am
 
-AUTOMAKE_OPTIONS = foreign dist-bzip2 1.6
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = src include examples
