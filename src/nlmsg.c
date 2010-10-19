@@ -255,7 +255,7 @@ void mnl_nlmsg_fprintf(FILE *fd, const struct nlmsghdr *nlh)
 	for (i=sizeof(struct nlmsghdr); i<nlh->nlmsg_len; i+=4) {
 		char *b = (char *) nlh;
 
-		fprintf(fd, "(%.3d) %.2x %.2x %.2x %.2x | ", i,
+		fprintf(fd, "(%03zu) %.2x %.2x %.2x %.2x | ", i,
 			0xff & b[i],	0xff & b[i+1],
 			0xff & b[i+2],	0xff & b[i+3]);
 
