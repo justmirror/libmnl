@@ -55,7 +55,7 @@
  *
  * \section scm Git Tree
  * The current development version of libmnl can be accessed at:
- * http://1984.lsi.us.es/git/?p=libmnl/.git;a=summary
+ * http://git.netfilter.org/cgi-bin/gitweb.cgi?p=libmnl.git;a=summary
  *
  * \section using Using libmnl
  * You can access several examples files under examples/ in the libmnl source
@@ -247,13 +247,13 @@ int mnl_socket_close(struct mnl_socket *nl)
  * \param len the size of the buffer passed
  *
  * This function allows you to set some Netlink socket option. As of writing
- * this, the existing options are:
+ * this (see linux/netlink.h), the existing options are:
  *
- * #define NETLINK_ADD_MEMBERSHIP  1
- * #define NETLINK_DROP_MEMBERSHIP 2
- * #define NETLINK_PKTINFO         3
- * #define NETLINK_BROADCAST_ERROR 4
- * #define NETLINK_NO_ENOBUFS      5
+ *	- \#define NETLINK_ADD_MEMBERSHIP  1
+ *	- \#define NETLINK_DROP_MEMBERSHIP 2
+ *	- \#define NETLINK_PKTINFO         3
+ *	- \#define NETLINK_BROADCAST_ERROR 4
+ *	- \#define NETLINK_NO_ENOBUFS      5
  *
  * In the early days, Netlink only supported 32 groups expressed in a
  * 32-bits mask. However, since 2.6.14, Netlink may have up to 2^32 multicast
