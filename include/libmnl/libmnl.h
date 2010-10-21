@@ -11,6 +11,7 @@
  */
 
 #define MNL_SOCKET_AUTOPID	0
+#define MNL_SOCKET_BUFFER_SIZE	8192UL	/* see linux/netlink.h */
 
 struct mnl_socket;
 

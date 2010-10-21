@@ -186,8 +186,11 @@ int mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
  *
  * On error, it returns -1 and errno is appropriately set. If errno is set
  * to ENOSPC, it means that the buffer that you have passed to store the
- * netlink message is small so you have received a truncated message. Make
- * sure your program set a buffer big enough to store the netlink message.
+ * netlink message is too small so you have received a truncated message.
+ * To avoid this you have to allocate a buffer of MNL_SOCKET_BUFFER_SIZE
+ * (which is 8KB, see linux/netlink.h for more information). Using this
+ * buffer size ensures that your buffer is big enough to store the netlink
+ * message without truncating it.
  */
 int mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
 {

@@ -18,7 +18,7 @@
 int main(int argc, char *argv[])
 {
 	struct mnl_socket *nl;
-	char buf[getpagesize()];
+	char buf[MNL_SOCKET_BUFFER_SIZE];
 	struct nlmsghdr *nlh;
 	struct ifinfomsg *ifm;
 	int ret;

@@ -68,7 +68,7 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 int main()
 {
 	struct mnl_socket *nl;
-	char buf[getpagesize()];
+	char buf[MNL_SOCKET_BUFFER_SIZE];
 	int ret;
 
 	nl = mnl_socket_open(NETLINK_ROUTE);

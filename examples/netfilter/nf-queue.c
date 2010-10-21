@@ -167,7 +167,7 @@ nfq_build_verdict(char *buf, int id, int queue_num, int verd)
 int main(int argc, char *argv[])
 {
 	struct mnl_socket *nl;
-	char buf[getpagesize()];
+	char buf[MNL_SOCKET_BUFFER_SIZE];
 	struct nlmsghdr *nlh;
 	int ret;
 	unsigned int portid, queue_num;
