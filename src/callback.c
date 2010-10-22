@@ -37,7 +37,7 @@ static int mnl_cb_stop(const struct nlmsghdr *nlh, void *data)
 	return MNL_CB_STOP;
 }
 
-static mnl_cb_t default_cb_array[NLMSG_MIN_TYPE] = {
+static const mnl_cb_t default_cb_array[NLMSG_MIN_TYPE] = {
 	[NLMSG_NOOP]	= mnl_cb_noop,
 	[NLMSG_ERROR]	= mnl_cb_error,
 	[NLMSG_DONE]	= mnl_cb_stop,
