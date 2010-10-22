@@ -201,7 +201,7 @@ int mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
 		.iov_len	= bufsiz,
 	};
 	struct msghdr msg = {
-		.msg_name	= (void *)&addr,
+		.msg_name	= &addr,
 		.msg_namelen	= sizeof(struct sockaddr_nl),
 		.msg_iov	= &iov,
 		.msg_iovlen	= 1,

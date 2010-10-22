@@ -351,7 +351,7 @@ uint64_t mnl_attr_get_u64(const struct nlattr *attr)
  */
 const char *mnl_attr_get_str(const struct nlattr *attr)
 {
-	return (const char *)mnl_attr_get_payload(attr);
+	return mnl_attr_get_payload(attr);
 }
 
 /**
