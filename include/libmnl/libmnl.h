@@ -6,6 +6,10 @@
 #include <sys/socket.h> /* for sa_family_t */
 #include <linux/netlink.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * Netlink socket API
  */
@@ -154,6 +158,10 @@ extern int mnl_cb_run2(const void *buf, size_t numbytes, unsigned int seq,
 
 #ifndef SOL_NETLINK
 #define SOL_NETLINK	270
+#endif
+
+#ifdef __cplusplus
+} /* extern "C" */
 #endif
 
 #endif
