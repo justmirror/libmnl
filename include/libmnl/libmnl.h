@@ -141,10 +141,10 @@ extern int mnl_attr_parse_nested(const struct nlattr *attr, mnl_attr_cb_t cb, vo
 
 typedef int (*mnl_cb_t)(const struct nlmsghdr *nlh, void *data);
 
-extern int mnl_cb_run(const char *buf, size_t numbytes, unsigned int seq,
+extern int mnl_cb_run(const void *buf, size_t numbytes, unsigned int seq,
 		      unsigned int portid, mnl_cb_t cb_data, void *data);
 
-extern int mnl_cb_run2(const char *buf, size_t numbytes, unsigned int seq,
+extern int mnl_cb_run2(const void *buf, size_t numbytes, unsigned int seq,
 		       unsigned int portid, mnl_cb_t cb_data, void *data,
 		       mnl_cb_t *cb_ctl_array, unsigned int cb_ctl_array_len);
 
