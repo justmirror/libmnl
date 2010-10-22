@@ -131,7 +131,7 @@ struct mnl_socket *mnl_socket_open(int bus)
  * success, 0 is returned. You can use MNL_SOCKET_AUTOPID which is 0 for
  * automatic port ID selection.
  */
-int mnl_socket_bind(struct mnl_socket *nl, int groups, int pid)
+int mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
 {
 	int ret;
 	socklen_t addr_len;
