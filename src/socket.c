@@ -235,7 +235,6 @@ int mnl_socket_close(struct mnl_socket *nl)
 {
 	int ret = close(nl->fd);
 	free(nl);
-	nl = NULL;
 	return ret;
 }
 
