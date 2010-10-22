@@ -8,8 +8,8 @@ AM_INIT_AUTOMAKE([foreign dist-bzip2 1.6 subdir-objects])
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_EXEEXT
-LT_INIT
 AC_DISABLE_STATIC
+LT_INIT
 AC_SUBST(LIBTOOL_DEPS)
 
 case $target in 
