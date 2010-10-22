@@ -81,8 +81,8 @@ extern void mnl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data);
 extern void mnl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data);
 extern void mnl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data);
 extern void mnl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data);
-extern void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const void *data);
-extern void mnl_attr_put_str_null(struct nlmsghdr *nlh, uint16_t type, const void *data);
+extern void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const char *data);
+extern void mnl_attr_put_str_null(struct nlmsghdr *nlh, uint16_t type, const char *data);
 
 /* TLV attribute nesting */
 extern struct nlattr *mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type);
