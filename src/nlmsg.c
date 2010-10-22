@@ -219,10 +219,10 @@ int mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
  * \param nlh current netlink message that we are handling
  * \param seq netlink portid that we want to check
  *
- * This functions return 1 if the origin is fulfilled, otherwise
+ * This functions returns 1 if the origin is fulfilled, otherwise
  * 0 is returned.  We skip the tracking for netlink message whose portID 
  * is zero since it is reserved for event-based kernel notifications. On the
- * other hand, if portid is set but the message PortID is not set (i.e. this
+ * other hand, if portid is set but the message PortID is not (i.e. this
  * is an event message coming from kernel-space), then we also skip the
  * tracking. This approach is good if we use the same socket to send commands
  * to kernel-space (that we want to track) and to listen to events (that we
@@ -237,8 +237,8 @@ int mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
  * mnl_nlmsg_fprintf - print netlink message to file
  * \param nlh pointer to netlink message that we want to print
  *
- * This function prints the netlink header to a file. This function may be
- * useful for debugging purposes.
+ * This function prints the netlink header to a file handle.
+ * It may be useful for debugging purposes.
  */
 void mnl_nlmsg_fprintf(FILE *fd, const struct nlmsghdr *nlh)
 {

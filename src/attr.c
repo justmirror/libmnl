@@ -65,8 +65,9 @@ uint16_t mnl_attr_get_payload_len(const struct nlattr *attr)
 
 /**
  * mnl_attr_get_payload - get pointer to the attribute payload
+ * \param attr pointer to netlink attribute
  *
- * This function return a pointer to the attribute payload
+ * This function return a pointer to the attribute payload.
  */
 void *mnl_attr_get_payload(const struct nlattr *attr)
 {
@@ -75,11 +76,11 @@ void *mnl_attr_get_payload(const struct nlattr *attr)
 
 /**
  * mnl_attr_ok - check if there is room for an attribute in a buffer
- * \param nattr attribute that we want to check if there is room for
+ * \param attr attribute that we want to check if there is room for
  * \param len remaining bytes in a buffer that contains the attribute
  *
  * This function is used to check that a buffer, which is supposed to contain
- * an attribute, has enough room for the attribute that it stores, ie. this
+ * an attribute, has enough room for the attribute that it stores, i.e. this
  * function can be used to verify that an attribute is neither malformed nor
  * truncated.
  *
@@ -202,7 +203,7 @@ static const size_t mnl_attr_data_type_len[MNL_TYPE_MAX] = {
  *
  * The validation is based on the data type. Specifically, it checks that
  * integers (u8, u16, u32 and u64) have enough room for them. This function
- * returns -1 in case of error and errno is explicitly set.
+ * returns -1 in case of error, and errno is explicitly set.
  */
 int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
 {
@@ -248,7 +249,7 @@ int mnl_attr_validate2(const struct nlattr *attr,
  * usually happens at this stage or you can use any other data structure (such
  * as lists or trees).
  *
- * This function propagates the return value of the callback that can be
+ * This function propagates the return value of the callback, which can be
  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
  */
 int mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
@@ -277,7 +278,7 @@ int mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
  * usually happens at this stage or you can use any other data structure (such
  * as lists or trees).
  *
- * This function propagates the return value of the callback that can be
+ * This function propagates the return value of the callback, which can be
  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
  */
 int mnl_attr_parse_nested(const struct nlattr *nested,
@@ -333,7 +334,7 @@ uint32_t mnl_attr_get_u32(const struct nlattr *attr)
  * \param attr pointer to netlink attribute
  *
  * This function returns the 64-bit value of the attribute payload. This
- * function is align-safe since accessing 64-bit Netlink attributes is a
+ * function is align-safe, since accessing 64-bit Netlink attributes is a
  * common source of alignment issues.
  */
 uint64_t mnl_attr_get_u64(const struct nlattr *attr)
@@ -453,7 +454,7 @@ void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const void *data)
  * \param type netlink attribute type
  * \param data pointer to string data that is stored by the new attribute
  *
- * This function is similar to mnl_attr_put_str but it includes the NULL
+ * This function is similar to mnl_attr_put_str, but it includes the NUL
  * terminator at the end of the string.
  *
  * This function updates the length field of the Netlink message (nlmsg_len)

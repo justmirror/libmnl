@@ -28,24 +28,24 @@
 "Simplify, simplify" -- Henry David Thoureau. Walden (1854)
 \endverbatim
  *
- * The acronim libmnl stands for LIBrary Minimalistic NetLink.
+ * The acronym libmnl stands for LIBrary Minimalistic NetLink.
  *
  * (temporary) libmnl homepage is:
  *      http://1984.lsi.us.es/projects/libmnl/
  *
  * \section features Main Features
- * - Small: the shared library requires around 30KB in a x86-based computer.
+ * - Small: the shared library requires around 30KB for an x86-based computer.
  * - Simple: this library avoids complex abstractions that tend to hide Netlink
  *   details. It avoids elaborated object-oriented infrastructure and complex
  *   callback-based workflow.
  * - Easy to use: the library simplifies the work for Netlink-wise developers.
  *   It provides functions to make socket handling, message building,
- *   validating, parsing, and sequence tracking, easier.
+ *   validating, parsing and sequence tracking, easier.
  * - Easy to re-use: you can use this library to build your own abstraction
  *   layer upon this library, if you want to provide another library that
  *   hides Netlink details to your users.
  * - Decoupling: the interdependency of the main bricks that compose this
- *   library is reduced, ie. the library provides many helpers but the
+ *   library is reduced, i.e. the library provides many helpers, but the
  *   programmer is not forced to use them.
  *
  * \section Dependencies
@@ -58,7 +58,7 @@
  * http://git.netfilter.org/cgi-bin/gitweb.cgi?p=libmnl.git;a=summary
  *
  * \section using Using libmnl
- * You can access several examples files under examples/ in the libmnl source
+ * You can access several example files under examples/ in the libmnl source
  * code tree.
  */
 
@@ -99,7 +99,7 @@ unsigned int mnl_socket_get_portid(const struct mnl_socket *nl)
 
 /**
  * mnl_socket_open - open a netlink socket
- * \param unit the netlink socket bus ID (see NETLINK_* constants)
+ * \param bus the netlink socket bus ID (see NETLINK_* constants)
  *
  * On error, it returns -1 and errno is appropriately set. Otherwise, it
  * returns a valid pointer to the mnl_socket structure.
@@ -164,7 +164,7 @@ int mnl_socket_bind(struct mnl_socket *nl, int groups, int pid)
  * mnl_socket_sendto - send a netlink message of a certain size
  * \param nl netlink socket obtained via mnl_socket_open()
  * \param buf buffer containing the netlink message to be sent
- * \param bufsiz number of bytes in the buffer that you want to send
+ * \param len number of bytes in the buffer that you want to send
  *
  * On error, it returns -1 and errno is appropriately set. Otherwise, it 
  * returns the number of bytes sent.
@@ -186,8 +186,8 @@ int mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
  *
  * On error, it returns -1 and errno is appropriately set. If errno is set
  * to ENOSPC, it means that the buffer that you have passed to store the
- * netlink message is too small so you have received a truncated message.
- * To avoid this you have to allocate a buffer of MNL_SOCKET_BUFFER_SIZE
+ * netlink message is too small, so you have received a truncated message.
+ * To avoid this, you have to allocate a buffer of MNL_SOCKET_BUFFER_SIZE
  * (which is 8KB, see linux/netlink.h for more information). Using this
  * buffer size ensures that your buffer is big enough to store the netlink
  * message without truncating it.
