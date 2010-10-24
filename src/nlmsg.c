@@ -6,7 +6,7 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
-
+#include <stdbool.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
@@ -200,8 +200,8 @@ void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh)
  * \param nlh current netlink message that we are handling
  * \param seq last sequence number used to send a message
  *
- * This functions returns 1 if the sequence tracking is fulfilled, otherwise
- * 0 is returned. We skip the tracking for netlink messages whose sequence
+ * This functions returns true if the sequence tracking is fulfilled, otherwise
+ * false is returned. We skip the tracking for netlink messages whose sequence
  * number is zero since it is usually reserved for event-based kernel
  * notifications. On the other hand, if seq is set but the message sequence
  * number is not set (i.e. this is an event message coming from kernel-space),
@@ -209,9 +209,9 @@ void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh)
  * socket to send commands to kernel-space (that we want to track) and to
  * listen to events (that we do not track).
  */
-int mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
+bool mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
 {
-	return nlh->nlmsg_seq && seq ? nlh->nlmsg_seq == seq : 1;
+	return nlh->nlmsg_seq && seq ? nlh->nlmsg_seq == seq : true;
 }
 
 /**
@@ -219,8 +219,8 @@ int mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
  * \param nlh current netlink message that we are handling
  * \param seq netlink portid that we want to check
  *
- * This functions returns 1 if the origin is fulfilled, otherwise
- * 0 is returned.  We skip the tracking for netlink message whose portID 
+ * This functions returns true if the origin is fulfilled, otherwise
+ * false is returned. We skip the tracking for netlink message whose portID
  * is zero since it is reserved for event-based kernel notifications. On the
  * other hand, if portid is set but the message PortID is not (i.e. this
  * is an event message coming from kernel-space), then we also skip the
@@ -228,9 +228,9 @@ int mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
  * to kernel-space (that we want to track) and to listen to events (that we
  * do not track).
  */
-int mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
+bool mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
 {
-	return nlh->nlmsg_pid && portid ? nlh->nlmsg_pid == portid : 1;
+	return nlh->nlmsg_pid && portid ? nlh->nlmsg_pid == portid : true;
 }
 
 /**

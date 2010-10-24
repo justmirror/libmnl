@@ -5,6 +5,9 @@
 #include <stdint.h>
 #include <sys/socket.h> /* for sa_family_t */
 #include <linux/netlink.h>
+#ifndef __cplusplus
+#	include <stdbool.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,10 +53,10 @@ extern int mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len);
 extern struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len);
 
 /* Netlink sequence tracking */
-extern int mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq);
+extern bool mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq);
 
 /* Netlink portID checking */
-extern int mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid);
+extern bool mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid);
 
 /* Netlink message getters */
 extern void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh);
