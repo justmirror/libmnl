@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
 	genl->version = 1;
 
 	mnl_attr_put_u32(nlh, CTRL_ATTR_FAMILY_ID, GENL_ID_CTRL);
-	mnl_attr_put_str_null(nlh, CTRL_ATTR_FAMILY_NAME, argv[1]);
+	mnl_attr_put_strz(nlh, CTRL_ATTR_FAMILY_NAME, argv[1]);
 
 	nl = mnl_socket_open(NETLINK_GENERIC);
 	if (nl == NULL) {

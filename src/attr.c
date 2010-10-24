@@ -449,18 +449,18 @@ void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const char *data)
 }
 
 /**
- * mnl_attr_put_str_null - add string attribute to netlink message
+ * mnl_attr_put_strz - add string attribute to netlink message
  * \param nlh pointer to the netlink message
  * \param type netlink attribute type
  * \param data pointer to string data that is stored by the new attribute
  *
- * This function is similar to mnl_attr_put_str, but it includes the NUL
- * terminator at the end of the string.
+ * This function is similar to mnl_attr_put_str, but it includes the
+ * NUL/zero ('\0') terminator at the end of the string.
  *
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_str_null(struct nlmsghdr *nlh, uint16_t type, const char *data)
+void mnl_attr_put_strz(struct nlmsghdr *nlh, uint16_t type, const char *data)
 {
 	mnl_attr_put(nlh, type, strlen(data)+1, data);
 }
