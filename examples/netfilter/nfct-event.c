@@ -15,7 +15,7 @@
 
 static int parse_ip_cb(const struct nlattr *attr, void *data)
 {
-	const struct nlattr **tb = (const struct nlattr **)data;
+	const struct nlattr **tb = data;
 	int type = mnl_attr_get_type(attr);
 
 	if (mnl_attr_type_valid(attr, CTA_IP_MAX) < 0)
@@ -51,7 +51,7 @@ static void print_ip(const struct nlattr *nest)
 
 static int parse_proto_cb(const struct nlattr *attr, void *data)
 {
-	const struct nlattr **tb = (const struct nlattr **)data;
+	const struct nlattr **tb = data;
 	int type = mnl_attr_get_type(attr);
 
 	if (mnl_attr_type_valid(attr, CTA_PROTO_MAX) < 0)
@@ -109,7 +109,7 @@ static void print_proto(const struct nlattr *nest)
 
 static int parse_tuple_cb(const struct nlattr *attr, void *data)
 {
-	const struct nlattr **tb = (const struct nlattr **)data;
+	const struct nlattr **tb = data;
 	int type = mnl_attr_get_type(attr);
 
 	if (mnl_attr_type_valid(attr, CTA_TUPLE_MAX) < 0)
@@ -148,7 +148,7 @@ static void print_tuple(const struct nlattr *nest)
 
 static int data_attr_cb(const struct nlattr *attr, void *data)
 {
-	const struct nlattr **tb = (const struct nlattr **)data;
+	const struct nlattr **tb = data;
 	int type = mnl_attr_get_type(attr);
 
 	if (mnl_attr_type_valid(attr, CTA_MAX) < 0)

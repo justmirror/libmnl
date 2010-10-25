@@ -14,7 +14,7 @@
 
 static int parse_mc_grps_cb(const struct nlattr *attr, void *data)
 {
-	const struct nlattr **tb = (const struct nlattr **)data;
+	const struct nlattr **tb = data;
 	int type = mnl_attr_get_type(attr);
 
 	/* skip unsupported attribute in user-space */
@@ -61,7 +61,7 @@ static void parse_genl_mc_grps(struct nlattr *nested)
 
 static int parse_family_ops_cb(const struct nlattr *attr, void *data)
 {
-	const struct nlattr **tb = (const struct nlattr **)data;
+	const struct nlattr **tb = data;
 	int type = mnl_attr_get_type(attr);
 
 	if (mnl_attr_type_valid(attr, CTRL_ATTR_OP_MAX) < 0)
@@ -104,7 +104,7 @@ static void parse_genl_family_ops(struct nlattr *nested)
 
 static int data_attr_cb(const struct nlattr *attr, void *data)
 {
-	const struct nlattr **tb = (const struct nlattr **)data;
+	const struct nlattr **tb = data;
 	int type = mnl_attr_get_type(attr);
 
 	if (mnl_attr_type_valid(attr, CTRL_ATTR_MAX) < 0)

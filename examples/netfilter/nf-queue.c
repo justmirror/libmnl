@@ -23,7 +23,7 @@
 
 static int parse_attr_cb(const struct nlattr *attr, void *data)
 {
-        const struct nlattr **tb = (const struct nlattr **)data;
+        const struct nlattr **tb = data;
 	int type = mnl_attr_get_type(attr);
 
 	/* skip unsupported attribute in user-space */
