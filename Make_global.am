@@ -21,4 +21,4 @@
 LIBVERSION=0:0:0
 
 CPPFLAGS = -I$(top_srcdir)/include
-AM_CFLAGS=-fPIC -Wall -Wextra -Wno-unused-parameter
+AM_CFLAGS = -Wall -Wextra -Wno-unused-parameter
