@@ -10,7 +10,6 @@ AM_PROG_CC_C_O
 AC_EXEEXT
 AC_DISABLE_STATIC
 LT_INIT
-AC_SUBST(LIBTOOL_DEPS)
 
 case $target in 
 *-*-linux*) ;;
