@@ -63,8 +63,8 @@ extern void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh);
 extern void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset);
 extern void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh);
 
-/* Netlink dump message */
-extern void mnl_nlmsg_fprintf(FILE *fd, const struct nlmsghdr *nlh);
+/* Netlink message printer */
+extern void mnl_nlmsg_fprintf(FILE *fd, const void *data, size_t datalen, size_t extra_header_size);
 
 /*
  * Netlink attributes API

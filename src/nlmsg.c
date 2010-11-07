@@ -233,37 +233,145 @@ bool mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
 	return nlh->nlmsg_pid && portid ? nlh->nlmsg_pid == portid : true;
 }
 
-/**
- * mnl_nlmsg_fprintf - print netlink message to file
- * \param nlh pointer to netlink message that we want to print
- *
- * This function prints the netlink header to a file handle.
- * It may be useful for debugging purposes.
- */
-void mnl_nlmsg_fprintf(FILE *fd, const struct nlmsghdr *nlh)
+static void mnl_nlmsg_fprintf_header(FILE *fd, const struct nlmsghdr *nlh)
 {
-	size_t i;
+	fprintf(fd, "----------------\t------------------\n");
+	fprintf(fd, "|  %.010u  |\t| message length |\n", nlh->nlmsg_len);
+	fprintf(fd, "| %.05u | %c%c%c%c |\t|  type | flags  |\n",
+		nlh->nlmsg_type,
+		nlh->nlmsg_flags & NLM_F_REQUEST ? 'R' : '-',
+		nlh->nlmsg_flags & NLM_F_MULTI ? 'M' : '-',
+		nlh->nlmsg_flags & NLM_F_ACK ? 'A' : '-',
+		nlh->nlmsg_flags & NLM_F_ECHO ? 'E' : '-');
+	fprintf(fd, "|  %.010u  |\t| sequence number|\n", nlh->nlmsg_seq);
+	fprintf(fd, "|  %.010u  |\t|     port ID    |\n", nlh->nlmsg_pid);
+	fprintf(fd, "----------------\t------------------\n");
+}
 
-	fprintf(fd, "========= netlink header ==========\n");
-	fprintf(fd, "length(32 bits)=%.08u\n", nlh->nlmsg_len);
-	fprintf(fd, "type(16 bits)=%.04u flags(16 bits)=%.04x\n",
-		nlh->nlmsg_type, nlh->nlmsg_flags);
-	fprintf(fd, "sequence number(32 bits)=%.08x\n", nlh->nlmsg_seq);
-	fprintf(fd, "port ID(32 bits)=%.08u\n", nlh->nlmsg_pid);
-	fprintf(fd, "===================================\n");
+static void
+mnl_nlmsg_fprintf_payload(FILE *fd, const struct nlmsghdr *nlh,
+			  size_t extra_header_size)
+{
+	int rem = 0;
+	unsigned int i;
 
 	for (i=sizeof(struct nlmsghdr); i<nlh->nlmsg_len; i+=4) {
 		char *b = (char *) nlh;
+		struct nlattr *attr = (struct nlattr *) (b+i);
 
-		fprintf(fd, "(%03zu) %.2x %.2x %.2x %.2x | ", i,
-			0xff & b[i],	0xff & b[i+1],
-			0xff & b[i+2],	0xff & b[i+3]);
+		/* netlink control message. */
+		if (nlh->nlmsg_type < NLMSG_MIN_TYPE) {
+			fprintf(fd, "| %.2x %.2x %.2x %.2x  |\t",
+				0xff & b[i],	0xff & b[i+1],
+				0xff & b[i+2],	0xff & b[i+3]);
+			fprintf(fd, "|                |\n");
+		/* special handling for the extra header. */
+		} else if (extra_header_size > 0) {
+			extra_header_size -= 4;
+			fprintf(fd, "| %.2x %.2x %.2x %.2x  |\t",
+				0xff & b[i],	0xff & b[i+1],
+				0xff & b[i+2],	0xff & b[i+3]);
+			fprintf(fd, "|  extra header  |\n");
+		/* this seems like an attribute header. */
+		} else if (rem == 0 && (attr->nla_type & NLA_TYPE_MASK) != 0) {
+			fprintf(fd, "|%c[%d;%dm"
+				    "%.5u"
+				    "%c[%dm"
+				    "|"
+				    "%c[%d;%dm"
+				    "%c%c"
+				    "%c[%dm"
+				    "|"
+				    "%c[%d;%dm"
+				    "%.5u"
+				    "%c[%dm|\t",
+				27, 1, 31,
+				attr->nla_len,
+				27, 0,
+				27, 1, 32,
+				attr->nla_type & NLA_F_NESTED ? 'N' : '-',
+				attr->nla_type &
+					NLA_F_NET_BYTEORDER ? 'B' : '-',
+				27, 0,
+				27, 1, 34,
+				attr->nla_type & NLA_TYPE_MASK,
+				27, 0);
+			fprintf(fd, "|len |flags| type|\n");
 
-		fprintf(fd, "%c %c %c %c\n",
-			isalnum(b[i]) ? b[i] : 0,
-			isalnum(b[i+1]) ? b[i+1] : 0,
-			isalnum(b[i+2]) ? b[i+2] : 0,
-			isalnum(b[i+3]) ? b[i+3] : 0);
+			if (!(attr->nla_type & NLA_F_NESTED)) {
+				rem = NLA_ALIGN(attr->nla_len) -
+					sizeof(struct nlattr);
+			}
+		/* this is the attribute payload. */
+		} else if (rem > 0) {
+			rem -= 4;
+			fprintf(fd, "| %.2x %.2x %.2x %.2x  |\t",
+				0xff & b[i],	0xff & b[i+1],
+				0xff & b[i+2],	0xff & b[i+3]);
+			fprintf(fd, "|      data      |");
+			fprintf(fd, "\t %c %c %c %c\n",
+				isalnum(b[i]) ? b[i] : 0,
+				isalnum(b[i+1]) ? b[i+1] : 0,
+				isalnum(b[i+2]) ? b[i+2] : 0,
+				isalnum(b[i+3]) ? b[i+3] : 0);
+		}
+	}
+	fprintf(fd, "----------------\t------------------\n");
+}
+
+/**
+ * mnl_nlmsg_fprintf - print netlink message to file
+ * \param fd pointer to file type
+ * \param data pointer to the buffer that contains messages to be printed
+ * \param datalen length of data stored in the buffer
+ * \param extra_header_size size of the extra header (if any)
+ *
+ * This function prints the netlink header to a file handle.
+ * It may be useful for debugging purposes. One example of the output
+ * is the following:
+ *
+ *\verbatim
+----------------        ------------------
+|  0000000040  |        | message length |
+| 00016 | R-A- |        |  type | flags  |
+|  1289148991  |        | sequence number|
+|  0000000000  |        |     port ID    |
+----------------        ------------------
+| 00 00 00 00  |        |  extra header  |
+| 00 00 00 00  |        |  extra header  |
+| 01 00 00 00  |        |  extra header  |
+| 01 00 00 00  |        |  extra header  |
+|00008|--|00003|        |len |flags| type|
+| 65 74 68 30  |        |      data      |       e t h 0
+----------------        ------------------
+\endverbatim
+ *
+ * This example above shows the netlink message that is send to kernel-space
+ * to set up the link interface eth0. The netlink and attribute header data
+ * are displayed in base 10 whereas the extra header and the attribute payload
+ * are expressed in base 16. The possible flags in the netlink header are:
+ *
+ * - R, that indicates that NLM_F_REQUEST is set.
+ * - M, that indicates that NLM_F_MULTI is set.
+ * - A, that indicates that NLM_F_ACK is set.
+ * - E, that indicates that NLM_F_ECHO is set.
+ *
+ * The lack of one flag is displayed with '-'. On the other hand, the possible
+ * attribute flags available are:
+ *
+ * - N, that indicates that NLA_F_NESTED is set.
+ * - B, that indicates that NLA_F_NET_BYTEORDER is set.
+ */
+void mnl_nlmsg_fprintf(FILE *fd, const void *data,
+		       size_t datalen, size_t extra_header_size)
+{
+	const struct nlmsghdr *nlh = data;
+	int len = datalen;
+
+	while (mnl_nlmsg_ok(nlh, len)) {
+		mnl_nlmsg_fprintf_header(fd, nlh);
+		mnl_nlmsg_fprintf_payload(fd, nlh, extra_header_size);
+		nlh = mnl_nlmsg_next(nlh, &len);
 	}
 }
 
