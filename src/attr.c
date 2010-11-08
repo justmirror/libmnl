@@ -106,9 +106,8 @@ bool mnl_attr_ok(const struct nlattr *attr, int len)
  * as parameter. You have to use mnl_attr_ok() to ensure that the next
  * attribute is valid.
  */
-struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len)
+struct nlattr *mnl_attr_next(const struct nlattr *attr)
 {
-	*len -= MNL_ALIGN(attr->nla_len);
 	return (struct nlattr *)((void *)attr + MNL_ALIGN(attr->nla_len));
 }
 
@@ -256,14 +255,11 @@ int mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
 		   mnl_attr_cb_t cb, void *data)
 {
 	int ret = MNL_CB_OK;
-	const struct nlattr *attr = mnl_nlmsg_get_payload_offset(nlh, offset);
-	int len = nlh->nlmsg_len - MNL_NLMSG_HDRLEN - MNL_ALIGN(offset);
+	const struct nlattr *attr;
 
-	while (mnl_attr_ok(attr, len)) {
+	mnl_attr_for_each(attr, nlh, offset)
 		if ((ret = cb(attr, data)) <= MNL_CB_STOP)
 			return ret;
-		attr = mnl_attr_next(attr, &len);
-	}
 	return ret;
 }
 
@@ -285,14 +281,11 @@ int mnl_attr_parse_nested(const struct nlattr *nested,
 			  mnl_attr_cb_t cb, void *data)
 {
 	int ret = MNL_CB_OK;
-	const struct nlattr *attr = mnl_attr_get_payload(nested);
-	int len = mnl_attr_get_payload_len(nested);
+	const struct nlattr *attr;
 
-	while (mnl_attr_ok(attr, len)) {
+	mnl_attr_for_each_nested(attr, nested)
 		if ((ret = cb(attr, data)) <= MNL_CB_STOP)
 			return ret;
-		attr = mnl_attr_next(attr, &len);
-	}
 	return ret;
 }
 

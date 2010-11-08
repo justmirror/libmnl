@@ -128,19 +128,17 @@ MNL_API int mnl_attr_validate2(const struct nlattr *attr, enum mnl_attr_data_typ
 
 /* TLV iterators */
 MNL_API bool mnl_attr_ok(const struct nlattr *attr, int len);
-MNL_API struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len);
+MNL_API struct nlattr *mnl_attr_next(const struct nlattr *attr);
 
-#define mnl_attr_for_each(attr, nlh, offset)			\
-	int __len__ = mnl_nlmsg_get_payload_len(nlh);		\
-	for (attr = mnl_nlmsg_get_payload_offset(nlh, offset);	\
-	     mnl_attr_ok(attr, __len__);			\
-	     attr = mnl_attr_next(attr, &(__len__)))
+#define mnl_attr_for_each(attr, nlh, offset) \
+	for ((attr) = mnl_nlmsg_get_payload_offset((nlh), (offset)); \
+	     mnl_attr_ok((attr), mnl_nlmsg_get_payload_tail(nlh) - (void *)(attr)); \
+	     (attr) = mnl_attr_next(attr))
 
-#define mnl_attr_for_each_nested(attr, nest)			\
-	int __len__ = mnl_attr_get_len(nest);			\
-	for (attr = mnl_attr_get_payload(nest);			\
-	     mnl_attr_ok(attr, __len__);			\
-	     attr = mnl_attr_next(attr, &(__len__)))
+#define mnl_attr_for_each_nested(attr, nest) \
+	for ((attr) = mnl_attr_get_payload(nest); \
+	     mnl_attr_ok((attr), mnl_attr_get_payload(nest) + mnl_attr_get_payload_len(nest) - (void *)(attr)); \
+	     (attr) = mnl_attr_next(attr))
 
 /* TLV callback-based attribute parsers */
 typedef int (*mnl_attr_cb_t)(const struct nlattr *attr, void *data);
