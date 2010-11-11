@@ -171,7 +171,7 @@ int mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
  */
 int mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
 {
-	struct sockaddr_nl snl = {
+	static const struct sockaddr_nl snl = {
 		.nl_family = AF_NETLINK
 	};
 	return sendto(nl->fd, buf, len, 0, 
