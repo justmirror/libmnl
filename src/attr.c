@@ -260,7 +260,7 @@ int mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
 	int len = nlh->nlmsg_len - MNL_NLMSG_HDRLEN - MNL_ALIGN(offset);
 
 	while (mnl_attr_ok(attr, len)) {
-		if (cb && (ret = cb(attr, data)) <= MNL_CB_STOP)
+		if ((ret = cb(attr, data)) <= MNL_CB_STOP)
 			return ret;
 		attr = mnl_attr_next(attr, &len);
 	}
@@ -289,7 +289,7 @@ int mnl_attr_parse_nested(const struct nlattr *nested,
 	int len = mnl_attr_get_payload_len(nested);
 
 	while (mnl_attr_ok(attr, len)) {
-		if (cb && (ret = cb(attr, data)) <= MNL_CB_STOP)
+		if ((ret = cb(attr, data)) <= MNL_CB_STOP)
 			return ret;
 		attr = mnl_attr_next(attr, &len);
 	}
