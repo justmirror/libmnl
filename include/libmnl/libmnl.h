@@ -49,7 +49,7 @@ extern struct nlmsghdr *mnl_nlmsg_put_header(void *buf);
 extern void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size);
 
 /* Netlink message iterators */
-extern int mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len);
+extern bool mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len);
 extern struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len);
 
 /* Netlink sequence tracking */
@@ -118,7 +118,7 @@ extern int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type 
 extern int mnl_attr_validate2(const struct nlattr *attr, enum mnl_attr_data_type type, size_t len);
 
 /* TLV iterators */
-extern int mnl_attr_ok(const struct nlattr *attr, int len);
+extern bool mnl_attr_ok(const struct nlattr *attr, int len);
 extern struct nlattr *mnl_attr_next(const struct nlattr *attr, int *len);
 
 #define mnl_attr_for_each(attr, nlh, offset)			\
