@@ -36,8 +36,8 @@ MNL_API int mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pi
 MNL_API int mnl_socket_close(struct mnl_socket *nl);
 MNL_API int mnl_socket_get_fd(const struct mnl_socket *nl);
 MNL_API unsigned int mnl_socket_get_portid(const struct mnl_socket *nl);
-MNL_API int mnl_socket_sendto(const struct mnl_socket *nl, const void *req, size_t siz);
-MNL_API int mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t siz);
+MNL_API ssize_t mnl_socket_sendto(const struct mnl_socket *nl, const void *req, size_t siz);
+MNL_API ssize_t mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t siz);
 MNL_API int mnl_socket_setsockopt(const struct mnl_socket *nl, int type, void *buf, socklen_t len);
 MNL_API int mnl_socket_getsockopt(const struct mnl_socket *nl, int type, void *buf, socklen_t *len);
 

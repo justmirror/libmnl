@@ -169,7 +169,8 @@ int mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
  * On error, it returns -1 and errno is appropriately set. Otherwise, it 
  * returns the number of bytes sent.
  */
-int mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
+ssize_t mnl_socket_sendto(const struct mnl_socket *nl, const void *buf,
+			  size_t len)
 {
 	static const struct sockaddr_nl snl = {
 		.nl_family = AF_NETLINK
@@ -192,9 +193,10 @@ int mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
  * buffer size ensures that your buffer is big enough to store the netlink
  * message without truncating it.
  */
-int mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
+ssize_t mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf,
+			    size_t bufsiz)
 {
-	int ret;
+	ssize_t ret;
 	struct sockaddr_nl addr;
 	struct iovec iov = {
 		.iov_base	= buf,
