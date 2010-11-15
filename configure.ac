@@ -10,7 +10,7 @@ AM_PROG_CC_C_O
 AC_EXEEXT
 AC_DISABLE_STATIC
 LT_INIT
-
+gl_VISIBILITY
 case $target in 
 *-*-linux*) ;;
 *) AC_MSG_ERROR([Linux only, dude!]);;
