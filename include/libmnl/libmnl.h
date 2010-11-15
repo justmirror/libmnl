@@ -1,13 +1,16 @@
 #ifndef _LIBMNL_H_
 #define _LIBMNL_H_
 
-#include <stdio.h>
-#include <stdint.h>
+#ifdef __cplusplus
+#	include <cstdio>
+#	include <cstdint>
+#else
+#	include <stdbool.h> /* not in C++ */
+#	include <stdio.h>
+#	include <stdint.h>
+#endif
 #include <sys/socket.h> /* for sa_family_t */
 #include <linux/netlink.h>
-#ifndef __cplusplus
-#	include <stdbool.h>
-#endif
 
 #ifdef __cplusplus
 extern "C" {
