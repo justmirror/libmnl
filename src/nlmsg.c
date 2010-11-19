@@ -56,18 +56,6 @@ EXPORT_SYMBOL size_t mnl_nlmsg_size(size_t len)
 }
 
 /**
- * mnl_nlmsg_aligned_size - calculate the aligned size of Netlink messages
- * \param len length of the Netlink payload
- *
- * This function returns the size of a netlink message (header plus payload)
- * with alignment.
- */
-size_t mnl_nlmsg_aligned_size(size_t len)
-{
-	return MNL_ALIGN(mnl_nlmsg_size(len));
-}
-
-/**
  * mnl_nlmsg_get_payload_len - get the length of the Netlink payload
  * \param nlh pointer to the header of the Netlink message
  *
