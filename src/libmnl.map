@@ -39,7 +39,6 @@ global:
   mnl_nlmsg_put_header;
   mnl_nlmsg_seq_ok;
   mnl_nlmsg_size;
-  mnl_nlmsg_total_size;
   mnl_socket_bind;
   mnl_socket_close;
   mnl_socket_get_fd;

@@ -50,7 +50,6 @@ MNL_API int mnl_socket_getsockopt(const struct mnl_socket *nl, int type, void *b
 #define MNL_NLMSG_HDRLEN	MNL_ALIGN(sizeof(struct nlmsghdr))
 
 MNL_API size_t mnl_nlmsg_size(size_t len);
-MNL_API size_t mnl_nlmsg_total_size(size_t len);
 MNL_API size_t mnl_nlmsg_get_payload_len(const struct nlmsghdr *nlh);
 
 /* Netlink message header builder */
