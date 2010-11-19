@@ -21,4 +21,4 @@
 LIBVERSION=0:0:0
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
-AM_CFLAGS = -Wall -Wextra -Wno-unused-parameter
+AM_CFLAGS = -Wall -Wextra -Wno-unused-parameter ${GCC_FVISIBILITY_HIDDEN}

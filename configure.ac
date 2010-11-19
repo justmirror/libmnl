@@ -3,6 +3,7 @@ dnl Process this file with autoconf to create configure.
 AC_INIT([libmnl], [1.0.0-beta0])
 AC_CANONICAL_TARGET
 AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign dist-bzip2 1.6 subdir-objects])
 
 AC_PROG_CC
@@ -10,7 +11,7 @@ AM_PROG_CC_C_O
 AC_EXEEXT
 AC_DISABLE_STATIC
 LT_INIT
-gl_VISIBILITY
+CHECK_GCC_FVISIBILITY
 case $target in 
 *-*-linux*) ;;
 *) AC_MSG_ERROR([Linux only, dude!]);;

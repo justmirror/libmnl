@@ -11,6 +11,7 @@
 #include <string.h>
 #include <values.h>	/* for INT_MAX */
 #include <errno.h>
+#include "internal.h"
 
 /**
  * \defgroup attr Netlink attribute helpers
@@ -35,7 +36,7 @@
  *
  * This function returns the attribute type.
  */
-uint16_t mnl_attr_get_type(const struct nlattr *attr)
+EXPORT_SYMBOL uint16_t mnl_attr_get_type(const struct nlattr *attr)
 {
 	return attr->nla_type & NLA_TYPE_MASK;
 }
@@ -47,7 +48,7 @@ uint16_t mnl_attr_get_type(const struct nlattr *attr)
  * This function returns the attribute length that is the attribute header
  * plus the attribute payload.
  */
-uint16_t mnl_attr_get_len(const struct nlattr *attr)
+EXPORT_SYMBOL uint16_t mnl_attr_get_len(const struct nlattr *attr)
 {
 	return attr->nla_len;
 }
@@ -58,7 +59,7 @@ uint16_t mnl_attr_get_len(const struct nlattr *attr)
  *
  * This function returns the attribute payload-value length.
  */
-uint16_t mnl_attr_get_payload_len(const struct nlattr *attr)
+EXPORT_SYMBOL uint16_t mnl_attr_get_payload_len(const struct nlattr *attr)
 {
 	return attr->nla_len - MNL_ATTR_HDRLEN;
 }
@@ -69,7 +70,7 @@ uint16_t mnl_attr_get_payload_len(const struct nlattr *attr)
  *
  * This function return a pointer to the attribute payload.
  */
-void *mnl_attr_get_payload(const struct nlattr *attr)
+EXPORT_SYMBOL void *mnl_attr_get_payload(const struct nlattr *attr)
 {
 	return (void *)attr + MNL_ATTR_HDRLEN;
 }
@@ -90,7 +91,7 @@ void *mnl_attr_get_payload(const struct nlattr *attr)
  * The len parameter may be negative in the case of malformed messages during
  * attribute iteration, that is why we use a signed integer.
  */
-bool mnl_attr_ok(const struct nlattr *attr, int len)
+EXPORT_SYMBOL bool mnl_attr_ok(const struct nlattr *attr, int len)
 {
 	return len >= (int)sizeof(struct nlattr) &&
 	       attr->nla_len >= sizeof(struct nlattr) &&
@@ -106,7 +107,7 @@ bool mnl_attr_ok(const struct nlattr *attr, int len)
  * as parameter. You have to use mnl_attr_ok() to ensure that the next
  * attribute is valid.
  */
-struct nlattr *mnl_attr_next(const struct nlattr *attr)
+EXPORT_SYMBOL struct nlattr *mnl_attr_next(const struct nlattr *attr)
 {
 	return (struct nlattr *)((void *)attr + MNL_ALIGN(attr->nla_len));
 }
@@ -125,7 +126,7 @@ struct nlattr *mnl_attr_next(const struct nlattr *attr)
  * This leads to backward compatibility breakages in user-space. Better check
  * if you support an attribute, if not, skip it.
  */
-int mnl_attr_type_valid(const struct nlattr *attr, uint16_t max)
+EXPORT_SYMBOL int mnl_attr_type_valid(const struct nlattr *attr, uint16_t max)
 {
 	if (mnl_attr_get_type(attr) > max) {
 		errno = EOPNOTSUPP;
@@ -204,7 +205,8 @@ static const size_t mnl_attr_data_type_len[MNL_TYPE_MAX] = {
  * integers (u8, u16, u32 and u64) have enough room for them. This function
  * returns -1 in case of error, and errno is explicitly set.
  */
-int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
+EXPORT_SYMBOL int
+mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
 {
 	int exp_len;
 
@@ -226,8 +228,9 @@ int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
  * whose size is variable. If the size of the attribute is not what we expect,
  * this functions returns -1 and errno is explicitly set.
  */
-int mnl_attr_validate2(const struct nlattr *attr, 
-		       enum mnl_attr_data_type type, size_t exp_len)
+EXPORT_SYMBOL int
+mnl_attr_validate2(const struct nlattr *attr, enum mnl_attr_data_type type,
+		   size_t exp_len)
 {
 	if (type >= MNL_TYPE_MAX) {
 		errno = EINVAL;
@@ -251,8 +254,9 @@ int mnl_attr_validate2(const struct nlattr *attr,
  * This function propagates the return value of the callback, which can be
  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
  */
-int mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
-		   mnl_attr_cb_t cb, void *data)
+EXPORT_SYMBOL int
+mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
+	       mnl_attr_cb_t cb, void *data)
 {
 	int ret = MNL_CB_OK;
 	const struct nlattr *attr;
@@ -277,8 +281,9 @@ int mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
  * This function propagates the return value of the callback, which can be
  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
  */
-int mnl_attr_parse_nested(const struct nlattr *nested,
-			  mnl_attr_cb_t cb, void *data)
+EXPORT_SYMBOL int
+mnl_attr_parse_nested(const struct nlattr *nested, mnl_attr_cb_t cb,
+		      void *data)
 {
 	int ret = MNL_CB_OK;
 	const struct nlattr *attr;
@@ -295,7 +300,7 @@ int mnl_attr_parse_nested(const struct nlattr *nested,
  *
  * This function returns the 8-bit value of the attribute payload.
  */
-uint8_t mnl_attr_get_u8(const struct nlattr *attr)
+EXPORT_SYMBOL uint8_t mnl_attr_get_u8(const struct nlattr *attr)
 {
 	return *((uint8_t *)mnl_attr_get_payload(attr));
 }
@@ -306,7 +311,7 @@ uint8_t mnl_attr_get_u8(const struct nlattr *attr)
  *
  * This function returns the 16-bit value of the attribute payload.
  */
-uint16_t mnl_attr_get_u16(const struct nlattr *attr)
+EXPORT_SYMBOL uint16_t mnl_attr_get_u16(const struct nlattr *attr)
 {
 	return *((uint16_t *)mnl_attr_get_payload(attr));
 }
@@ -317,7 +322,7 @@ uint16_t mnl_attr_get_u16(const struct nlattr *attr)
  *
  * This function returns the 32-bit value of the attribute payload.
  */
-uint32_t mnl_attr_get_u32(const struct nlattr *attr)
+EXPORT_SYMBOL uint32_t mnl_attr_get_u32(const struct nlattr *attr)
 {
 	return *((uint32_t *)mnl_attr_get_payload(attr));
 }
@@ -330,7 +335,7 @@ uint32_t mnl_attr_get_u32(const struct nlattr *attr)
  * function is align-safe, since accessing 64-bit Netlink attributes is a
  * common source of alignment issues.
  */
-uint64_t mnl_attr_get_u64(const struct nlattr *attr)
+EXPORT_SYMBOL uint64_t mnl_attr_get_u64(const struct nlattr *attr)
 {
 	uint64_t tmp;
 	memcpy(&tmp, mnl_attr_get_payload(attr), sizeof(tmp));
@@ -343,7 +348,7 @@ uint64_t mnl_attr_get_u64(const struct nlattr *attr)
  *
  * This function returns the payload of string attribute value.
  */
-const char *mnl_attr_get_str(const struct nlattr *attr)
+EXPORT_SYMBOL const char *mnl_attr_get_str(const struct nlattr *attr)
 {
 	return mnl_attr_get_payload(attr);
 }
@@ -358,8 +363,8 @@ const char *mnl_attr_get_str(const struct nlattr *attr)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put(struct nlmsghdr *nlh, uint16_t type,
-		  size_t len, const void *data)
+EXPORT_SYMBOL void
+mnl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data)
 {
 	struct nlattr *attr = mnl_nlmsg_get_payload_tail(nlh);
 	uint16_t payload_len = MNL_ALIGN(sizeof(struct nlattr)) + len;
@@ -380,7 +385,8 @@ void mnl_attr_put(struct nlmsghdr *nlh, uint16_t type,
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data)
+EXPORT_SYMBOL void
+mnl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint8_t), &data);
 }
@@ -394,7 +400,8 @@ void mnl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data)
+EXPORT_SYMBOL void
+mnl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint16_t), &data);
 }
@@ -408,7 +415,8 @@ void mnl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data)
+EXPORT_SYMBOL void
+mnl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint32_t), &data);
 }
@@ -422,7 +430,8 @@ void mnl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data)
+EXPORT_SYMBOL void
+mnl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint64_t), &data);
 }
@@ -436,7 +445,8 @@ void mnl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const char *data)
+EXPORT_SYMBOL void
+mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const char *data)
 {
 	mnl_attr_put(nlh, type, strlen(data), data);
 }
@@ -453,7 +463,8 @@ void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const char *data)
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
-void mnl_attr_put_strz(struct nlmsghdr *nlh, uint16_t type, const char *data)
+EXPORT_SYMBOL void
+mnl_attr_put_strz(struct nlmsghdr *nlh, uint16_t type, const char *data)
 {
 	mnl_attr_put(nlh, type, strlen(data)+1, data);
 }
@@ -467,7 +478,8 @@ void mnl_attr_put_strz(struct nlmsghdr *nlh, uint16_t type, const char *data)
  * an attribute nest. This function always returns a valid pointer to the
  * beginning of the nest.
  */
-struct nlattr *mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type)
+EXPORT_SYMBOL struct nlattr *
+mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type)
 {
 	struct nlattr *start = mnl_nlmsg_get_payload_tail(nlh);
 
@@ -485,7 +497,8 @@ struct nlattr *mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type)
  *
  * This function updates the attribute header that identifies the nest.
  */
-void mnl_attr_nest_end(struct nlmsghdr *nlh, struct nlattr *start)
+EXPORT_SYMBOL void
+mnl_attr_nest_end(struct nlmsghdr *nlh, struct nlattr *start)
 {
 	start->nla_len = mnl_nlmsg_get_payload_tail(nlh) - (void *)start;
 }

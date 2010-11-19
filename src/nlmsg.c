@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <string.h>
 #include <libmnl/libmnl.h>
+#include "internal.h"
 
 /**
  * \defgroup nlmsg Netlink message helpers
@@ -49,7 +50,7 @@
  * This function returns the size of a netlink message (header plus payload)
  * without alignment.
  */
-size_t mnl_nlmsg_size(size_t len)
+EXPORT_SYMBOL size_t mnl_nlmsg_size(size_t len)
 {
 	return len + MNL_NLMSG_HDRLEN;
 }
@@ -73,7 +74,7 @@ size_t mnl_nlmsg_aligned_size(size_t len)
  * This function returns the Length of the netlink payload, ie. the length
  * of the full message minus the size of the Netlink header.
  */
-size_t mnl_nlmsg_get_payload_len(const struct nlmsghdr *nlh)
+EXPORT_SYMBOL size_t mnl_nlmsg_get_payload_len(const struct nlmsghdr *nlh)
 {
 	return nlh->nlmsg_len - MNL_NLMSG_HDRLEN;
 }
@@ -87,7 +88,7 @@ size_t mnl_nlmsg_get_payload_len(const struct nlmsghdr *nlh)
  * initializes the nlmsg_len field to the size of the Netlink header. This
  * function returns a pointer to the Netlink header structure.
  */
-struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
+EXPORT_SYMBOL struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
 {
 	int len = MNL_ALIGN(sizeof(struct nlmsghdr));
 	struct nlmsghdr *nlh = buf;
@@ -108,7 +109,8 @@ struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
  * you call this function. This function returns a pointer to the extra
  * header.
  */
-void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size)
+EXPORT_SYMBOL void *
+mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size)
 {
 	char *ptr = (char *)nlh + nlh->nlmsg_len;
 	nlh->nlmsg_len += MNL_ALIGN(size);
@@ -122,7 +124,7 @@ void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size)
  *
  * This function returns a pointer to the payload of the netlink message.
  */
-void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh)
+EXPORT_SYMBOL void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh)
 {
 	return (void *)nlh + MNL_NLMSG_HDRLEN;
 }
@@ -135,7 +137,8 @@ void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh)
  * This function returns a pointer to the payload of the netlink message plus
  * a given offset.
  */
-void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset)
+EXPORT_SYMBOL void *
+mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset)
 {
 	return (void *)nlh + MNL_NLMSG_HDRLEN + MNL_ALIGN(offset);
 }
@@ -156,7 +159,7 @@ void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset)
  * The len parameter may become negative in malformed messages during message
  * iteration, that is why we use a signed integer.
  */
-bool mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len)
+EXPORT_SYMBOL bool mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len)
 {
 	return len >= (int)sizeof(struct nlmsghdr) &&
 	       nlh->nlmsg_len >= sizeof(struct nlmsghdr) &&
@@ -176,7 +179,8 @@ bool mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len)
  * You have to use mnl_nlmsg_ok() to check if the next Netlink message is
  * valid.
  */
-struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
+EXPORT_SYMBOL struct nlmsghdr *
+mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
 {
 	*len -= MNL_ALIGN(nlh->nlmsg_len);
 	return (struct nlmsghdr *)((void *)nlh + MNL_ALIGN(nlh->nlmsg_len));
@@ -190,7 +194,7 @@ struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
  * to build a message since we continue adding attributes at the end of the
  * message.
  */
-void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh)
+EXPORT_SYMBOL void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh)
 {
 	return (void *)nlh + MNL_ALIGN(nlh->nlmsg_len);
 }
@@ -209,7 +213,8 @@ void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh)
  * socket to send commands to kernel-space (that we want to track) and to
  * listen to events (that we do not track).
  */
-bool mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
+EXPORT_SYMBOL bool
+mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
 {
 	return nlh->nlmsg_seq && seq ? nlh->nlmsg_seq == seq : true;
 }
@@ -228,7 +233,8 @@ bool mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
  * to kernel-space (that we want to track) and to listen to events (that we
  * do not track).
  */
-bool mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
+EXPORT_SYMBOL bool
+mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
 {
 	return nlh->nlmsg_pid && portid ? nlh->nlmsg_pid == portid : true;
 }
@@ -362,8 +368,9 @@ mnl_nlmsg_fprintf_payload(FILE *fd, const struct nlmsghdr *nlh,
  * - N, that indicates that NLA_F_NESTED is set.
  * - B, that indicates that NLA_F_NET_BYTEORDER is set.
  */
-void mnl_nlmsg_fprintf(FILE *fd, const void *data,
-		       size_t datalen, size_t extra_header_size)
+EXPORT_SYMBOL void
+mnl_nlmsg_fprintf(FILE *fd, const void *data, size_t datalen,
+		  size_t extra_header_size)
 {
 	const struct nlmsghdr *nlh = data;
 	int len = datalen;
