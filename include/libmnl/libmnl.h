@@ -96,6 +96,7 @@ extern void mnl_attr_put_strz(struct nlmsghdr *nlh, uint16_t type, const char *d
 /* TLV attribute nesting */
 extern struct nlattr *mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type);
 extern void mnl_attr_nest_end(struct nlmsghdr *nlh, struct nlattr *start);
+extern void mnl_attr_nest_cancel(struct nlmsghdr *nlh, struct nlattr *start);
 
 /* TLV validation */
 extern int mnl_attr_type_valid(const struct nlattr *attr, uint16_t maxtype);

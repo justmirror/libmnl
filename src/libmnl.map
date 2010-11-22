@@ -11,6 +11,7 @@ global:
   mnl_attr_get_u8;
   mnl_attr_nest_end;
   mnl_attr_nest_start;
+  mnl_attr_nest_cancel;
   mnl_attr_next;
   mnl_attr_ok;
   mnl_attr_parse;

@@ -504,5 +504,18 @@ mnl_attr_nest_end(struct nlmsghdr *nlh, struct nlattr *start)
 }
 
 /**
+ * mnl_attr_nest_cancel - cancel an attribute nest
+ * \param nlh pointer to the netlink message
+ * \param start pointer to the attribute nest returned by mnl_attr_nest_start()
+ *
+ * This function updates the attribute header that identifies the nest.
+ */
+EXPORT_SYMBOL void
+mnl_attr_nest_cancel(struct nlmsghdr *nlh, struct nlattr *start)
+{
+	nlh->nlmsg_len -= mnl_nlmsg_get_payload_tail(nlh) - (void *)start;
+}
+
+/**
  * @}
  */
