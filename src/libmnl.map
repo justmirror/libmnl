@@ -48,6 +48,14 @@ global:
   mnl_nlmsg_put_header;
   mnl_nlmsg_seq_ok;
   mnl_nlmsg_size;
+  mnl_nlmsg_batch_start;
+  mnl_nlmsg_batch_stop;
+  mnl_nlmsg_batch_next;
+  mnl_nlmsg_batch_size;
+  mnl_nlmsg_batch_reset;
+  mnl_nlmsg_batch_current;
+  mnl_nlmsg_batch_head;
+  mnl_nlmsg_batch_is_empty;
   mnl_socket_bind;
   mnl_socket_close;
   mnl_socket_get_fd;

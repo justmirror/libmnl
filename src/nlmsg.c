@@ -8,6 +8,7 @@
  */
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <errno.h>
 #include <string.h>
@@ -368,6 +369,190 @@ mnl_nlmsg_fprintf(FILE *fd, const void *data, size_t datalen,
 		mnl_nlmsg_fprintf_payload(fd, nlh, extra_header_size);
 		nlh = mnl_nlmsg_next(nlh, &len);
 	}
+}
+
+/**
+ * \defgroup batch Netlink message batch helpers
+ *
+ * This library provides helpers to batch several messages into one single
+ * datagram. These helpers do not perform strict memory boundary checkings.
+ *
+ * The following figure represents a Netlink message batch:
+ *
+ *   |<-------------- MNL_SOCKET_BUFFER_SIZE ------------->|
+ *   |<-------------------- batch ------------------>|     |
+ *   |-----------|-----------|-----------|-----------|-----------|
+ *   |<- nlmsg ->|<- nlmsg ->|<- nlmsg ->|<- nlmsg ->|<- nlmsg ->|
+ *   |-----------|-----------|-----------|-----------|-----------|
+ *                                             ^           ^
+ *                                             |           |
+ *                                        message N   message N+1
+ *
+ * To start the batch, you have to call mnl_nlmsg_batch_start() and you can
+ * use mnl_nlmsg_batch_stop() to release it.
+ *
+ * You have to invoke mnl_nlmsg_batch_next() to get room for a new message
+ * in the batch. If this function returns NULL, it means that the last
+ * message that was added (message N+1 in the figure above) does not fit the
+ * batch. Thus, you have to send the batch (which includes until message N)
+ * and, then, you have to call mnl_nlmsg_batch_reset() to re-initialize
+ * the batch (this moves message N+1 to the head of the buffer). For that
+ * reason, the buffer that you have to use to store the batch must be double
+ * of MNL_SOCKET_BUFFER_SIZE to ensure that the last message (message N+1)
+ * that did not fit into the batch is written inside valid memory boundaries.
+ *
+ * @{
+ */
+
+struct mnl_nlmsg_batch {
+	/* the buffer that is used to store the batch. */
+	void *buf;
+	size_t limit;
+	size_t buflen;
+	/* the current netlink message in the batch. */
+	void *cur;
+	bool overflow;
+};
+
+/**
+ * mnl_nlmsg_batch_start - initialize a batch
+ * \param buf pointer to the buffer that will store this batch
+ * \param limit maximum size of the batch (should be MNL_SOCKET_BUFFER_SIZE).
+ *
+ * The buffer that you pass must be double of MNL_SOCKET_BUFFER_SIZE. The
+ * limit must be half of the buffer size, otherwise expect funny memory
+ * corruptions 8-).
+ *
+ * You can allocate the buffer that you use to store the batch in the stack or
+ * the heap, no restrictions in this regard. This function returns NULL on
+ * error.
+ */
+EXPORT_SYMBOL struct mnl_nlmsg_batch *
+mnl_nlmsg_batch_start(void *buf, size_t limit)
+{
+	struct mnl_nlmsg_batch *b;
+
+	b = malloc(sizeof(struct mnl_nlmsg_batch));
+	if (b == NULL)
+		return NULL;
+
+	b->buf = buf;
+	b->limit = limit;
+	b->buflen = 0;
+	b->cur = buf;
+	b->overflow = false;
+
+	return b;
+}
+
+/**
+ * mnl_nlmsg_batch_stop - release a batch
+ * \param b pointer to batch
+ *
+ * This function returns the amount of data that is part of this batch.
+ */
+EXPORT_SYMBOL void
+mnl_nlmsg_batch_stop(struct mnl_nlmsg_batch *b)
+{
+	free(b);
+}
+
+/**
+ * mnl_nlmsg_batch_next - get room for the next message in the batch
+ * \param b pointer to batch
+ *
+ * This function returns a pointer to the beginning of the new Netlink message
+ * in the batch. It returns false if the last message did not fit into the
+ * batch.
+ *
+ * You have to put at least one message in the batch before calling this
+ * function, otherwise your application is likely to crash.
+ */
+EXPORT_SYMBOL bool
+mnl_nlmsg_batch_next(struct mnl_nlmsg_batch *b)
+{
+	struct nlmsghdr *nlh = b->cur;
+
+	if (b->buflen + nlh->nlmsg_len > b->limit) {
+		b->overflow = true;
+		return false;
+	}
+	b->cur = b->buf + b->buflen + nlh->nlmsg_len;
+	b->buflen += nlh->nlmsg_len;
+	return true;
+}
+
+/**
+ * mnl_nlmsg_batch_reset - reset the batch
+ * \param b pointer to batch
+ *
+ * This function allows to reset a batch, so you can reuse it to create a
+ * new one. This function moves the last message which does not fit the
+ * batch to the head of the buffer, if any.
+ */
+EXPORT_SYMBOL void
+mnl_nlmsg_batch_reset(struct mnl_nlmsg_batch *b)
+{
+	if (b->overflow) {
+		struct nlmsghdr *nlh = b->cur;
+		memcpy(b->buf, b->cur, nlh->nlmsg_len);
+		b->buflen = nlh->nlmsg_len;
+		b->cur = b->buf + b->buflen;
+		b->overflow = false;
+	} else {
+		b->buflen = 0;
+		b->cur = b->buf;
+	}
+}
+
+/**
+ * mnl_nlmsg_batch_size - get current size of the batch
+ * \param b pointer to batch
+ *
+ * This function returns the current size of the batch.
+ */
+EXPORT_SYMBOL size_t
+mnl_nlmsg_batch_size(struct mnl_nlmsg_batch *b)
+{
+	return b->buflen;
+}
+
+/**
+ * mnl_nlmsg_batch_head - get head of this batch
+ * \param b pointer to batch
+ *
+ * This function returns a pointer to the head of the batch, which is the
+ * beginning of the buffer that is used.
+ */
+EXPORT_SYMBOL void *
+mnl_nlmsg_batch_head(struct mnl_nlmsg_batch *b)
+{
+	return b->buf;
+}
+
+/**
+ * mnl_nlmsg_batch_current - returns current position in the batch
+ * \param b pointer to batch
+ *
+ * This function returns a pointer to the current position in the buffer
+ * that is used to store the batch.
+ */
+EXPORT_SYMBOL void *
+mnl_nlmsg_batch_current(struct mnl_nlmsg_batch *b)
+{
+	return b->cur;
+}
+
+/**
+ * mnl_nlmsg_batch_is_empty - check if there is any message in the batch
+ * \param b pointer to batch
+ *
+ * This function returns true if the batch is empty.
+ */
+EXPORT_SYMBOL bool
+mnl_nlmsg_batch_is_empty(struct mnl_nlmsg_batch *b)
+{
+	return b->buflen == 0;
 }
 
 /**

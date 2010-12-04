@@ -68,6 +68,17 @@ extern void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh);
 /* Netlink message printer */
 extern void mnl_nlmsg_fprintf(FILE *fd, const void *data, size_t datalen, size_t extra_header_size);
 
+/* Message batch helpers */
+struct mnl_nlmsg_batch;
+extern struct mnl_nlmsg_batch *mnl_nlmsg_batch_start(void *buf, size_t bufsiz);
+extern bool mnl_nlmsg_batch_next(struct mnl_nlmsg_batch *b);
+extern void mnl_nlmsg_batch_stop(struct mnl_nlmsg_batch *b);
+extern size_t mnl_nlmsg_batch_size(struct mnl_nlmsg_batch *b);
+extern void mnl_nlmsg_batch_reset(struct mnl_nlmsg_batch *b);
+extern void *mnl_nlmsg_batch_head(struct mnl_nlmsg_batch *b);
+extern void *mnl_nlmsg_batch_current(struct mnl_nlmsg_batch *b);
+extern bool mnl_nlmsg_batch_is_empty(struct mnl_nlmsg_batch *b);
+
 /*
  * Netlink attributes API
  */
