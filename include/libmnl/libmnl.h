@@ -164,6 +164,10 @@ extern int mnl_cb_run2(const void *buf, size_t numbytes, unsigned int seq,
 #define SOL_NETLINK	270
 #endif
 
+#ifndef MNL_ARRAY_SIZE
+#define MNL_ARRAY_SIZE(a) (sizeof(a)/sizeof((a)[0]))
+#endif
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
