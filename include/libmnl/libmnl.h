@@ -21,7 +21,7 @@ extern "C" {
  */
 
 #define MNL_SOCKET_AUTOPID	0
-#define MNL_SOCKET_BUFFER_SIZE	8192UL	/* see linux/netlink.h */
+#define MNL_SOCKET_BUFFER_SIZE getpagesize() < 8192UL ? getpagesize() : 8192UL
 
 struct mnl_socket;
 
