@@ -45,40 +45,10 @@ static const mnl_cb_t default_cb_array[NLMSG_MIN_TYPE] = {
 	[NLMSG_OVERRUN]	= mnl_cb_noop,
 };
 
-/**
- * \defgroup callback Callback helpers
- * @{
- */
-
-/**
- * mnl_cb_run2 - callback runqueue for netlink messages
- * \param buf buffer that contains the netlink messages
- * \param numbytes number of bytes stored in the buffer
- * \param seq sequence number that we expect to receive
- * \param portid Netlink PortID that we expect to receive
- * \param cb_data callback handler for data messages
- * \param data pointer to data that will be passed to the data callback handler
- * \param cb_ctl_array array of custom callback handlers from control messages
- * \param cb_ctl_array_len array length of custom control callback handlers
- *
- * You can set the cb_ctl_array to NULL if you want to use the default control
- * callback handlers, in that case, the parameter cb_ctl_array_len is not
- * checked.
- *
- * Your callback may return three possible values:
- * 	- MNL_CB_ERROR (<=-1): an error has occurred. Stop callback runqueue.
- * 	- MNL_CB_STOP (=0): stop callback runqueue.
- * 	- MNL_CB_OK (>=1): no problem has occurred.
- *
- * This function propagates the callback return value. On error, it returns
- * -1 and errno is explicitly set. If the portID is not the expected, errno
- * is set to ESRCH. If the sequence number is not the expected, errno is set
- * to EPROTO.
- */
-EXPORT_SYMBOL int
-mnl_cb_run2(const void *buf, size_t numbytes, unsigned int seq,
-	    unsigned int portid, mnl_cb_t cb_data, void *data,
-	    mnl_cb_t *cb_ctl_array, unsigned int cb_ctl_array_len)
+static inline int
+__mnl_cb_run(const void *buf, size_t numbytes, unsigned int seq,
+	     unsigned int portid, mnl_cb_t cb_data, void *data,
+	     mnl_cb_t *cb_ctl_array, unsigned int cb_ctl_array_len)
 {
 	int ret = MNL_CB_OK, len = numbytes;
 	const struct nlmsghdr *nlh = buf;
@@ -120,6 +90,45 @@ out:
 }
 
 /**
+ * \defgroup callback Callback helpers
+ * @{
+ */
+
+/**
+ * mnl_cb_run2 - callback runqueue for netlink messages
+ * \param buf buffer that contains the netlink messages
+ * \param numbytes number of bytes stored in the buffer
+ * \param seq sequence number that we expect to receive
+ * \param portid Netlink PortID that we expect to receive
+ * \param cb_data callback handler for data messages
+ * \param data pointer to data that will be passed to the data callback handler
+ * \param cb_ctl_array array of custom callback handlers from control messages
+ * \param cb_ctl_array_len array length of custom control callback handlers
+ *
+ * You can set the cb_ctl_array to NULL if you want to use the default control
+ * callback handlers, in that case, the parameter cb_ctl_array_len is not
+ * checked.
+ *
+ * Your callback may return three possible values:
+ * 	- MNL_CB_ERROR (<=-1): an error has occurred. Stop callback runqueue.
+ * 	- MNL_CB_STOP (=0): stop callback runqueue.
+ * 	- MNL_CB_OK (>=1): no problem has occurred.
+ *
+ * This function propagates the callback return value. On error, it returns
+ * -1 and errno is explicitly set. If the portID is not the expected, errno
+ * is set to ESRCH. If the sequence number is not the expected, errno is set
+ * to EPROTO.
+ */
+EXPORT_SYMBOL int
+mnl_cb_run2(const void *buf, size_t numbytes, unsigned int seq,
+	    unsigned int portid, mnl_cb_t cb_data, void *data,
+	    mnl_cb_t *cb_ctl_array, unsigned int cb_ctl_array_len)
+{
+	return __mnl_cb_run(buf, numbytes, seq, portid, cb_data, data,
+			    cb_ctl_array, cb_ctl_array_len);
+}
+
+/**
  * mnl_cb_run - callback runqueue for netlink messages (simplified version)
  * \param buf buffer that contains the netlink messages
  * \param numbytes number of bytes stored in the buffer
@@ -142,7 +151,7 @@ EXPORT_SYMBOL int
 mnl_cb_run(const void *buf, size_t numbytes, unsigned int seq,
 	   unsigned int portid, mnl_cb_t cb_data, void *data)
 {
-	return mnl_cb_run2(buf, numbytes, seq, portid, cb_data, data, NULL, 0);
+	return __mnl_cb_run(buf, numbytes, seq, portid, cb_data, data, NULL, 0);
 }
 
 /**
