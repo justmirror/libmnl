@@ -31,8 +31,8 @@
  *
  * The acronym libmnl stands for LIBrary Minimalistic NetLink.
  *
- * (temporary) libmnl homepage is:
- *      http://1984.lsi.us.es/projects/libmnl/
+ * libmnl homepage is:
+ *      http://www.netfilter.org/projects/libmnl/
  *
  * \section features Main Features
  * - Small: the shared library requires around 30KB for an x86-based computer.
