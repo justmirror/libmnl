@@ -491,6 +491,180 @@ mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type)
 }
 
 /**
+ * mnl_attr_put_check - add an attribute to netlink message
+ * \param nlh pointer to the netlink message
+ * \param buflen size of buffer which stores the message
+ * \param type netlink attribute type that you want to add
+ * \param len netlink attribute payload length
+ * \param data pointer to the data that will be stored by the new attribute
+ *
+ * This function first checks that the data can be added to the message
+ * (fits into the buffer) and then updates the length field of the Netlink
+ * message (nlmsg_len) by adding the size (header + payload) of the new
+ * attribute. The function returns true if the attribute could be added
+ * to the message, otherwise false is returned.
+ */
+EXPORT_SYMBOL bool
+mnl_attr_put_check(struct nlmsghdr *nlh, size_t buflen,
+		   uint16_t type, size_t len, const void *data)
+{
+	if (nlh->nlmsg_len + MNL_ATTR_HDRLEN + MNL_ALIGN(len) > buflen)
+		return false;
+	mnl_attr_put(nlh, type, len, data);
+	return true;
+}
+
+/**
+ * mnl_attr_put_u8_check - add 8-bit unsigned int attribute to netlink message
+ * \param nlh pointer to the netlink message
+ * \param buflen size of buffer which stores the message
+ * \param type netlink attribute type
+ * \param len netlink attribute payload size
+ * \param data 8-bit unsigned integer data that is stored by the new attribute
+ *
+ * This function first checks that the data can be added to the message
+ * (fits into the buffer) and then updates the length field of the Netlink
+ * message (nlmsg_len) by adding the size (header + payload) of the new
+ * attribute. The function returns true if the attribute could be added
+ * to the message, otherwise false is returned.
+ */
+EXPORT_SYMBOL bool
+mnl_attr_put_u8_check(struct nlmsghdr *nlh, size_t buflen,
+		      uint16_t type, uint8_t data)
+{
+	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint8_t), &data);
+}
+
+/**
+ * mnl_attr_put_u16_check - add 16-bit unsigned int attribute to netlink message
+ * \param nlh pointer to the netlink message
+ * \param buflen size of buffer which stores the message
+ * \param type netlink attribute type
+ * \param data 16-bit unsigned integer data that is stored by the new attribute
+ *
+ * This function first checks that the data can be added to the message
+ * (fits into the buffer) and then updates the length field of the Netlink
+ * message (nlmsg_len) by adding the size (header + payload) of the new
+ * attribute. The function returns true if the attribute could be added
+ * to the message, otherwise false is returned.
+ * This function updates the length field of the Netlink message (nlmsg_len)
+ * by adding the size (header + payload) of the new attribute.
+ */
+EXPORT_SYMBOL bool
+mnl_attr_put_u16_check(struct nlmsghdr *nlh, size_t buflen,
+		       uint16_t type, uint16_t data)
+{
+	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint16_t), &data);
+}
+
+/**
+ * mnl_attr_put_u32_check - add 32-bit unsigned int attribute to netlink message
+ * \param nlh pointer to the netlink message
+ * \param buflen size of buffer which stores the message
+ * \param type netlink attribute type
+ * \param data 32-bit unsigned integer data that is stored by the new attribute
+ *
+ * This function first checks that the data can be added to the message
+ * (fits into the buffer) and then updates the length field of the Netlink
+ * message (nlmsg_len) by adding the size (header + payload) of the new
+ * attribute. The function returns true if the attribute could be added
+ * to the message, otherwise false is returned.
+ * This function updates the length field of the Netlink message (nlmsg_len)
+ * by adding the size (header + payload) of the new attribute.
+ */
+EXPORT_SYMBOL bool
+mnl_attr_put_u32_check(struct nlmsghdr *nlh, size_t buflen,
+		       uint16_t type, uint32_t data)
+{
+	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint32_t), &data);
+}
+
+/**
+ * mnl_attr_put_u64_check - add 64-bit unsigned int attribute to netlink message
+ * \param nlh pointer to the netlink message
+ * \param buflen size of buffer which stores the message
+ * \param type netlink attribute type
+ * \param data 64-bit unsigned integer data that is stored by the new attribute
+ *
+ * This function first checks that the data can be added to the message
+ * (fits into the buffer) and then updates the length field of the Netlink
+ * message (nlmsg_len) by adding the size (header + payload) of the new
+ * attribute. The function returns true if the attribute could be added
+ * to the message, otherwise false is returned.
+ * This function updates the length field of the Netlink message (nlmsg_len)
+ * by adding the size (header + payload) of the new attribute.
+ */
+EXPORT_SYMBOL bool
+mnl_attr_put_u64_check(struct nlmsghdr *nlh, size_t buflen,
+		       uint16_t type, uint64_t data)
+{
+	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint64_t), &data);
+}
+
+/**
+ * mnl_attr_put_str_check - add string attribute to netlink message
+ * \param nlh  pointer to the netlink message
+ * \param buflen size of buffer which stores the message
+ * \param type netlink attribute type
+ * \param data pointer to string data that is stored by the new attribute
+ *
+ * This function first checks that the data can be added to the message
+ * (fits into the buffer) and then updates the length field of the Netlink
+ * message (nlmsg_len) by adding the size (header + payload) of the new
+ * attribute. The function returns true if the attribute could be added
+ * to the message, otherwise false is returned.
+ * This function updates the length field of the Netlink message (nlmsg_len)
+ * by adding the size (header + payload) of the new attribute.
+ */
+EXPORT_SYMBOL bool
+mnl_attr_put_str_check(struct nlmsghdr *nlh, size_t buflen,
+		       uint16_t type, const char *data)
+{
+	return mnl_attr_put_check(nlh, buflen, type, strlen(data), data);
+}
+
+/**
+ * mnl_attr_put_strz_check - add string attribute to netlink message
+ * \param nlh pointer to the netlink message
+ * \param buflen size of buffer which stores the message
+ * \param type netlink attribute type
+ * \param data pointer to string data that is stored by the new attribute
+ *
+ * This function is similar to mnl_attr_put_str, but it includes the
+ * NUL/zero ('\0') terminator at the end of the string.
+ *
+ * This function first checks that the data can be added to the message
+ * (fits into the buffer) and then updates the length field of the Netlink
+ * message (nlmsg_len) by adding the size (header + payload) of the new
+ * attribute. The function returns true if the attribute could be added
+ * to the message, otherwise false is returned.
+ */
+EXPORT_SYMBOL bool
+mnl_attr_put_strz_check(struct nlmsghdr *nlh, size_t buflen,
+			uint16_t type, const char *data)
+{
+	return mnl_attr_put_check(nlh, buflen, type, strlen(data)+1, data);
+}
+
+/**
+ * mnl_attr_nest_start_check - start an attribute nest
+ * \param buflen size of buffer which stores the message
+ * \param nlh pointer to the netlink message
+ * \param type netlink attribute type
+ *
+ * This function adds the attribute header that identifies the beginning of
+ * an attribute nest. If the nested attribute cannot be added then NULL,
+ * otherwise valid pointer to the beginning of the nest is returned.
+ */
+EXPORT_SYMBOL struct nlattr *
+mnl_attr_nest_start_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type)
+{
+	if (nlh->nlmsg_len + MNL_ATTR_HDRLEN > buflen)
+		return NULL;
+	return mnl_attr_nest_start(nlh, type);
+}
+
+/**
  * mnl_attr_nest_end - end an attribute nest
  * \param nlh pointer to the netlink message
  * \param start pointer to the attribute nest returned by mnl_attr_nest_start()

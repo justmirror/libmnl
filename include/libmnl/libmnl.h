@@ -93,8 +93,18 @@ extern void mnl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data)
 extern void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const char *data);
 extern void mnl_attr_put_strz(struct nlmsghdr *nlh, uint16_t type, const char *data);
 
+/* TLV attribute putters with buffer boundary checkings */
+extern bool mnl_attr_put_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type, size_t len, const void *data);
+extern bool mnl_attr_put_u8_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint8_t data);
+extern bool mnl_attr_put_u16_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint16_t data);
+extern bool mnl_attr_put_u32_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint32_t data);
+extern bool mnl_attr_put_u64_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type, uint64_t data);
+extern bool mnl_attr_put_str_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type, const char *data);
+extern bool mnl_attr_put_strz_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type, const char *data);
+
 /* TLV attribute nesting */
 extern struct nlattr *mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type);
+extern struct nlattr *mnl_attr_nest_start_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type);
 extern void mnl_attr_nest_end(struct nlmsghdr *nlh, struct nlattr *start);
 extern void mnl_attr_nest_cancel(struct nlmsghdr *nlh, struct nlattr *start);
 
