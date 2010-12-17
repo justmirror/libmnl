@@ -217,9 +217,9 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	if (mnl_socket_bind(nl, NFNLGRP_CONNTRACK_NEW |
-				NFNLGRP_CONNTRACK_UPDATE |
-				NFNLGRP_CONNTRACK_DESTROY,
+	if (mnl_socket_bind(nl, NF_NETLINK_CONNTRACK_NEW |
+				NF_NETLINK_CONNTRACK_UPDATE |
+				NF_NETLINK_CONNTRACK_DESTROY,
 				MNL_SOCKET_AUTOPID) < 0) {
 		perror("mnl_socket_bind");
 		exit(EXIT_FAILURE);
