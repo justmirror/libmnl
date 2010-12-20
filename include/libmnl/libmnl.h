@@ -9,6 +9,7 @@
 #	include <stdio.h>
 #	include <stdint.h>
 #endif
+#include <unistd.h>
 #include <sys/socket.h> /* for sa_family_t */
 #include <linux/netlink.h>
 
