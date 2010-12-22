@@ -1,1 +1,1 @@
-SUBDIRS = libmnl
+SUBDIRS = libmnl linux
