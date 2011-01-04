@@ -178,6 +178,7 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 		printf("grps:\n");
 		parse_genl_mc_grps(tb[CTRL_ATTR_MCAST_GROUPS]);
 	}
+	printf("\n");
 	return MNL_CB_OK;
 }
 
@@ -190,7 +191,7 @@ int main(int argc, char *argv[])
 	int ret;
 	unsigned int seq, portid;
 
-	if (argc != 2) {
+	if (argc > 2) {
 		printf("%s [family name]\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
@@ -205,7 +206,10 @@ int main(int argc, char *argv[])
 	genl->version = 1;
 
 	mnl_attr_put_u32(nlh, CTRL_ATTR_FAMILY_ID, GENL_ID_CTRL);
-	mnl_attr_put_strz(nlh, CTRL_ATTR_FAMILY_NAME, argv[1]);
+	if (argc >= 2)
+		mnl_attr_put_strz(nlh, CTRL_ATTR_FAMILY_NAME, argv[1]);
+	else
+		nlh->nlmsg_flags |= NLM_F_DUMP;
 
 	nl = mnl_socket_open(NETLINK_GENERIC);
 	if (nl == NULL) {
