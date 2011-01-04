@@ -169,12 +169,13 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 		printf("maxattr=%u\t",
 			mnl_attr_get_u32(tb[CTRL_ATTR_MAXATTR]));
 	}
+	printf("\n");
 	if (tb[CTRL_ATTR_OPS]) {
-		printf("\nops:\n");
+		printf("ops:\n");
 		parse_genl_family_ops(tb[CTRL_ATTR_OPS]);
 	}
 	if (tb[CTRL_ATTR_MCAST_GROUPS]) {
-		printf("\ngrps:\n");
+		printf("grps:\n");
 		parse_genl_mc_grps(tb[CTRL_ATTR_MCAST_GROUPS]);
 	}
 	return MNL_CB_OK;
