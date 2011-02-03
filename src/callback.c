@@ -119,7 +119,7 @@ out:
  * is set to ESRCH. If the sequence number is not the expected, errno is set
  * to EPROTO.
  */
-EXPORT_SYMBOL int
+int
 mnl_cb_run2(const void *buf, size_t numbytes, unsigned int seq,
 	    unsigned int portid, mnl_cb_t cb_data, void *data,
 	    mnl_cb_t *cb_ctl_array, unsigned int cb_ctl_array_len)
@@ -127,6 +127,7 @@ mnl_cb_run2(const void *buf, size_t numbytes, unsigned int seq,
 	return __mnl_cb_run(buf, numbytes, seq, portid, cb_data, data,
 			    cb_ctl_array, cb_ctl_array_len);
 }
+EXPORT_SYMBOL(mnl_cb_run2);
 
 /**
  * mnl_cb_run - callback runqueue for netlink messages (simplified version)
@@ -147,12 +148,13 @@ mnl_cb_run2(const void *buf, size_t numbytes, unsigned int seq,
  *
  * This function propagates the callback return value.
  */
-EXPORT_SYMBOL int
+int
 mnl_cb_run(const void *buf, size_t numbytes, unsigned int seq,
 	   unsigned int portid, mnl_cb_t cb_data, void *data)
 {
 	return __mnl_cb_run(buf, numbytes, seq, portid, cb_data, data, NULL, 0);
 }
+EXPORT_SYMBOL(mnl_cb_run);
 
 /**
  * @}

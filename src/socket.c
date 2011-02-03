@@ -82,10 +82,11 @@ struct mnl_socket {
  *
  * This function returns the file descriptor of a given netlink socket.
  */
-EXPORT_SYMBOL int mnl_socket_get_fd(const struct mnl_socket *nl)
+int mnl_socket_get_fd(const struct mnl_socket *nl)
 {
 	return nl->fd;
 }
+EXPORT_SYMBOL(mnl_socket_get_fd);
 
 /**
  * mnl_socket_get_portid - obtain Netlink PortID from netlink socket
@@ -96,10 +97,11 @@ EXPORT_SYMBOL int mnl_socket_get_fd(const struct mnl_socket *nl)
  * which is not always true. This is the case if you open more than one
  * socket that is binded to the same Netlink subsystem from the same process.
  */
-EXPORT_SYMBOL unsigned int mnl_socket_get_portid(const struct mnl_socket *nl)
+unsigned int mnl_socket_get_portid(const struct mnl_socket *nl)
 {
 	return nl->addr.nl_pid;
 }
+EXPORT_SYMBOL(mnl_socket_get_portid);
 
 /**
  * mnl_socket_open - open a netlink socket
@@ -108,7 +110,7 @@ EXPORT_SYMBOL unsigned int mnl_socket_get_portid(const struct mnl_socket *nl)
  * On error, it returns -1 and errno is appropriately set. Otherwise, it
  * returns a valid pointer to the mnl_socket structure.
  */
-EXPORT_SYMBOL struct mnl_socket *mnl_socket_open(int bus)
+struct mnl_socket *mnl_socket_open(int bus)
 {
 	struct mnl_socket *nl;
 
@@ -124,6 +126,7 @@ EXPORT_SYMBOL struct mnl_socket *mnl_socket_open(int bus)
 
 	return nl;
 }
+EXPORT_SYMBOL(mnl_socket_open);
 
 /**
  * mnl_socket_bind - bind netlink socket
@@ -135,8 +138,7 @@ EXPORT_SYMBOL struct mnl_socket *mnl_socket_open(int bus)
  * success, 0 is returned. You can use MNL_SOCKET_AUTOPID which is 0 for
  * automatic port ID selection.
  */
-EXPORT_SYMBOL int
-mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
+int mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
 {
 	int ret;
 	socklen_t addr_len;
@@ -164,6 +166,7 @@ mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
 	}
 	return 0;
 }
+EXPORT_SYMBOL(mnl_socket_bind);
 
 /**
  * mnl_socket_sendto - send a netlink message of a certain size
@@ -174,7 +177,7 @@ mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
  * On error, it returns -1 and errno is appropriately set. Otherwise, it 
  * returns the number of bytes sent.
  */
-EXPORT_SYMBOL ssize_t
+ssize_t
 mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
 {
 	static const struct sockaddr_nl snl = {
@@ -183,6 +186,7 @@ mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
 	return sendto(nl->fd, buf, len, 0, 
 		      (struct sockaddr *) &snl, sizeof(snl));
 }
+EXPORT_SYMBOL(mnl_socket_sendto);
 
 /**
  * mnl_socket_recvfrom - receive a netlink message
@@ -198,7 +202,7 @@ mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
  * buffer size ensures that your buffer is big enough to store the netlink
  * message without truncating it.
  */
-EXPORT_SYMBOL ssize_t
+ssize_t
 mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
 {
 	ssize_t ret;
@@ -230,6 +234,7 @@ mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
 	}
 	return ret;
 }
+EXPORT_SYMBOL(mnl_socket_recvfrom);
 
 /**
  * mnl_socket_close - close a given netlink socket
@@ -238,12 +243,13 @@ mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
  * On error, this function returns -1 and errno is appropriately set.
  * On success, it returns 0.
  */
-EXPORT_SYMBOL int mnl_socket_close(struct mnl_socket *nl)
+int mnl_socket_close(struct mnl_socket *nl)
 {
 	int ret = close(nl->fd);
 	free(nl);
 	return ret;
 }
+EXPORT_SYMBOL(mnl_socket_close);
 
 /**
  * mnl_socket_setsockopt - set Netlink socket option
@@ -270,11 +276,12 @@ EXPORT_SYMBOL int mnl_socket_close(struct mnl_socket *nl)
  *
  * On error, this function returns -1 and errno is appropriately set.
  */
-EXPORT_SYMBOL int mnl_socket_setsockopt(const struct mnl_socket *nl, int type,
-					void *buf, socklen_t len)
+int mnl_socket_setsockopt(const struct mnl_socket *nl, int type,
+			  void *buf, socklen_t len)
 {
 	return setsockopt(nl->fd, SOL_NETLINK, type, buf, len);
 }
+EXPORT_SYMBOL(mnl_socket_setsockopt);
 
 /**
  * mnl_socket_getsockopt - get a Netlink socket option
@@ -285,11 +292,12 @@ EXPORT_SYMBOL int mnl_socket_setsockopt(const struct mnl_socket *nl, int type,
  *
  * On error, this function returns -1 and errno is appropriately set.
  */
-EXPORT_SYMBOL int mnl_socket_getsockopt(const struct mnl_socket *nl, int type,
-					void *buf, socklen_t *len)
+int mnl_socket_getsockopt(const struct mnl_socket *nl, int type,
+			  void *buf, socklen_t *len)
 {
 	return getsockopt(nl->fd, SOL_NETLINK, type, buf, len);
 }
+EXPORT_SYMBOL(mnl_socket_getsockopt);
 
 /**
  * @}
