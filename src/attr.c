@@ -6,10 +6,9 @@
  * by the Free Software Foundation; either version 2.1 of the License, or
  * (at your option) any later version.
  */
-
+#include <limits.h>	/* for INT_MAX */
 #include <libmnl/libmnl.h>
 #include <string.h>
-#include <values.h>	/* for INT_MAX */
 #include <errno.h>
 #include "internal.h"
 
