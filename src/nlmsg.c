@@ -473,9 +473,9 @@ EXPORT_SYMBOL(mnl_nlmsg_batch_stop);
  * mnl_nlmsg_batch_next - get room for the next message in the batch
  * \param b pointer to batch
  *
- * This function returns a pointer to the beginning of the new Netlink message
- * in the batch. It returns false if the last message did not fit into the
- * batch.
+ * This function returns false if the last message did not fit into the
+ * batch. Otherwise, it prepares the batch to provide room for the new
+ * Netlink message in the batch and returns true.
  *
  * You have to put at least one message in the batch before calling this
  * function, otherwise your application is likely to crash.
