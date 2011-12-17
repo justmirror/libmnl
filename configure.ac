@@ -1,6 +1,7 @@
 dnl Process this file with autoconf to create configure.
 
 AC_INIT([libmnl], [1.0.1])
+AC_CONFIG_AUX_DIR([build-aux])
 AC_CANONICAL_HOST
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
