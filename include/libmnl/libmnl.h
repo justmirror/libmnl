@@ -156,11 +156,17 @@ extern struct nlattr *mnl_attr_next(const struct nlattr *attr);
 	     mnl_attr_ok((attr), (char *)mnl_attr_get_payload(nest) + mnl_attr_get_payload_len(nest) - (char *)(attr)); \
 	     (attr) = mnl_attr_next(attr))
 
+#define mnl_attr_for_each_payload(payload, payload_size) \
+	for ((attr) = (payload); \
+	     mnl_attr_ok((attr), (char *)(payload) + payload_size - (char *)(attr)); \
+	     (attr) = mnl_attr_next(attr))
+
 /* TLV callback-based attribute parsers */
 typedef int (*mnl_attr_cb_t)(const struct nlattr *attr, void *data);
 
 extern int mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset, mnl_attr_cb_t cb, void *data);
 extern int mnl_attr_parse_nested(const struct nlattr *attr, mnl_attr_cb_t cb, void *data);
+extern int mnl_attr_parse_payload(const void *payload, size_t payload_len, mnl_attr_cb_t cb, void *data);
 
 /*
  * callback API

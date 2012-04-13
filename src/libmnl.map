@@ -69,6 +69,6 @@ global:
 local: *;
 };
 
-#LIBMNL_1.1 {
-#  mnl_my_new_func;
-#} LIBMNL_1.0;
+LIBMNL_1.1 {
+  mnl_attr_parse_payload;
+} LIBMNL_1.0;

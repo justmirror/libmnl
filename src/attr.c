@@ -1,5 +1,5 @@
 /*
- * (C) 2008-2010 by Pablo Neira Ayuso <pablo@netfilter.org>
+ * (C) 2008-2012 by Pablo Neira Ayuso <pablo@netfilter.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -302,6 +302,39 @@ mnl_attr_parse_nested(const struct nlattr *nested, mnl_attr_cb_t cb,
 	return ret;
 }
 EXPORT_SYMBOL(mnl_attr_parse_nested);
+
+/**
+ * mnl_attr_parse_payload - parse attributes in payload of Netlink message
+ * \param payload pointer to payload of the Netlink message
+ * \param payload_len payload length that contains the attributes
+ * \param cb callback function that is called for each attribute
+ * \param data pointer to data that is passed to the callback function
+ *
+ * This function takes a pointer to the area that contains the attributes,
+ * commonly known as the payload of the Netlink message. Thus, you have to
+ * pass a pointer to the Netlink message payload, instead of the entire
+ * message.
+ *
+ * This function allows you to iterate over the sequence of attributes that are
+ * located at some payload offset. You can then put the attributes in one array
+ * as usual, or you can use any other data structure (such as lists or trees).
+ *
+ * This function propagates the return value of the callback, which can be
+ * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
+ */
+int
+mnl_attr_parse_payload(const void *payload, size_t payload_len,
+		       mnl_attr_cb_t cb, void *data)
+{
+	int ret = MNL_CB_OK;
+	const struct nlattr *attr;
+
+	mnl_attr_for_each_payload(payload, payload_len)
+		if ((ret = cb(attr, data)) <= MNL_CB_STOP)
+			return ret;
+	return ret;
+}
+EXPORT_SYMBOL(mnl_attr_parse_payload);
 
 /**
  * mnl_attr_get_u8 - returns 8-bit unsigned integer attribute payload
