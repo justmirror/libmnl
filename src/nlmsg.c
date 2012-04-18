@@ -105,8 +105,9 @@ void *
 mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size)
 {
 	char *ptr = (char *)nlh + nlh->nlmsg_len;
-	nlh->nlmsg_len += MNL_ALIGN(size);
-	memset(ptr, 0, size);
+	size_t len = MNL_ALIGN(size);
+	nlh->nlmsg_len += len;
+	memset(ptr, 0, len);
 	return ptr;
 }
 EXPORT_SYMBOL(mnl_nlmsg_put_extra_header);
