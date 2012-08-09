@@ -1,6 +1,7 @@
 /* This example is placed in the public domain. */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <time.h>
 #include <arpa/inet.h>
@@ -66,7 +67,58 @@ static void attributes_show_ipv4(struct nlattr *tb[])
 	printf("\n");
 }
 
-static int data_attr_cb(const struct nlattr *attr, void *data)
+/* like inet_ntoa(), not reentrant */
+static const char *inet6_ntoa(struct in6_addr in6)
+{
+	static char buf[INET6_ADDRSTRLEN];
+
+	return inet_ntop(AF_INET6, &in6.s6_addr, buf, sizeof(buf));
+}
+
+static void attributes_show_ipv6(struct nlattr *tb[])
+{
+	if (tb[RTA_TABLE]) {
+		printf("table=%u ", mnl_attr_get_u32(tb[RTA_TABLE]));
+	}
+	if (tb[RTA_DST]) {
+		struct in6_addr *addr = mnl_attr_get_payload(tb[RTA_DST]);
+		printf("dst=%s ", inet6_ntoa(*addr));
+	}
+	if (tb[RTA_SRC]) {
+		struct in6_addr *addr = mnl_attr_get_payload(tb[RTA_SRC]);
+		printf("src=%s ", inet6_ntoa(*addr));
+	}
+	if (tb[RTA_OIF]) {
+		printf("oif=%u ", mnl_attr_get_u32(tb[RTA_OIF]));
+	}
+	if (tb[RTA_FLOW]) {
+		printf("flow=%u ", mnl_attr_get_u32(tb[RTA_FLOW]));
+	}
+	if (tb[RTA_PREFSRC]) {
+		struct in6_addr *addr = mnl_attr_get_payload(tb[RTA_PREFSRC]);
+		printf("prefsrc=%s ", inet6_ntoa(*addr));
+	}
+	if (tb[RTA_GATEWAY]) {
+		struct in6_addr *addr = mnl_attr_get_payload(tb[RTA_GATEWAY]);
+		printf("gw=%s ", inet6_ntoa(*addr));
+	}
+	if (tb[RTA_METRICS]) {
+		int i;
+		struct nlattr *tbx[RTAX_MAX+1] = {};
+
+		mnl_attr_parse_nested(tb[RTA_METRICS], data_attr_cb2, tbx);
+
+		for (i=0; i<RTAX_MAX; i++) {
+			if (tbx[i]) {
+				printf("metrics[%d]=%u ",
+					i, mnl_attr_get_u32(tbx[i]));
+			}
+		}
+	}
+	printf("\n");
+}
+
+static int data_ipv4_attr_cb(const struct nlattr *attr, void *data)
 {
 	const struct nlattr **tb = data;
 	int type = mnl_attr_get_type(attr);
@@ -84,6 +136,45 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 	case RTA_PREFSRC:
 	case RTA_GATEWAY:
 		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	case RTA_METRICS:
+		if (mnl_attr_validate(attr, MNL_TYPE_NESTED) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	}
+	tb[type] = attr;
+	return MNL_CB_OK;
+}
+
+static int data_ipv6_attr_cb(const struct nlattr *attr, void *data)
+{
+	const struct nlattr **tb = data;
+	int type = mnl_attr_get_type(attr);
+
+	/* skip unsupported attribute in user-space */
+	if (mnl_attr_type_valid(attr, RTA_MAX) < 0)
+		return MNL_CB_OK;
+
+	switch(type) {
+	case RTA_TABLE:
+	case RTA_OIF:
+	case RTA_FLOW:
+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
+			perror("mnl_attr_validate");
+			return MNL_CB_ERROR;
+		}
+		break;
+	case RTA_DST:
+	case RTA_SRC:
+	case RTA_PREFSRC:
+	case RTA_GATEWAY:
+		if (mnl_attr_validate2(attr, MNL_TYPE_BINARY,
+					sizeof(struct in6_addr)) < 0) {
 			perror("mnl_attr_validate");
 			return MNL_CB_ERROR;
 		}
@@ -180,18 +271,21 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 	 */
 	printf("flags=%x\n", rm->rtm_flags);
 
-	mnl_attr_parse(nlh, sizeof(*rm), data_attr_cb, tb);
-
 	switch(rm->rtm_family) {
 	case AF_INET:
+		mnl_attr_parse(nlh, sizeof(*rm), data_ipv4_attr_cb, tb);
 		attributes_show_ipv4(tb);
+		break;
+	case AF_INET6:
+		mnl_attr_parse(nlh, sizeof(*rm), data_ipv6_attr_cb, tb);
+		attributes_show_ipv6(tb);
 		break;
 	}
 
 	return MNL_CB_OK;
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	struct mnl_socket *nl;
 	char buf[MNL_SOCKET_BUFFER_SIZE];
@@ -200,12 +294,21 @@ int main(void)
 	int ret;
 	unsigned int seq, portid;
 
+	if (argc != 2) {
+		fprintf(stderr, "Usage: %s <inet|inet6>\n", argv[0]);
+		exit(EXIT_FAILURE);
+	}
+
 	nlh = mnl_nlmsg_put_header(buf);
 	nlh->nlmsg_type = RTM_GETROUTE;
 	nlh->nlmsg_flags = NLM_F_REQUEST | NLM_F_DUMP;
 	nlh->nlmsg_seq = seq = time(NULL);
 	rtm = mnl_nlmsg_put_extra_header(nlh, sizeof(struct rtmsg));
-	rtm->rtm_family = AF_INET;
+
+	if (strcmp(argv[1], "inet") == 0)
+		rtm->rtm_family = AF_INET;
+	else if (strcmp(argv[1], "inet6") == 0)
+		rtm->rtm_family = AF_INET6;
 
 	nl = mnl_socket_open(NETLINK_ROUTE);
 	if (nl == NULL) {
