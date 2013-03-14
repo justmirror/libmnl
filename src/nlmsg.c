@@ -222,7 +222,7 @@ EXPORT_SYMBOL(mnl_nlmsg_seq_ok);
 /**
  * mnl_nlmsg_portid_ok - perform portID origin check
  * \param nlh current netlink message that we are handling
- * \param seq netlink portid that we want to check
+ * \param portid netlink portid that we want to check
  *
  * This functions returns true if the origin is fulfilled, otherwise
  * false is returned. We skip the tracking for netlink message whose portID
