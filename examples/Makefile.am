@@ -1,1 +1,1 @@
-SUBDIRS = genl netfilter rtnl
+SUBDIRS = genl kobject netfilter rtnl
