@@ -65,6 +65,12 @@ __mnl_cb_run(const void *buf, size_t numbytes, unsigned int seq,
 			return -1;
 		}
 
+		/* dump was interrupted */
+		if (nlh->nlmsg_flags & NLM_F_DUMP_INTR) {
+			errno = EINTR;
+			return -1;
+		}
+
 		/* netlink data message handling */
 		if (nlh->nlmsg_type >= NLMSG_MIN_TYPE) { 
 			if (cb_data){
@@ -117,7 +123,8 @@ out:
  * This function propagates the callback return value. On error, it returns
  * -1 and errno is explicitly set. If the portID is not the expected, errno
  * is set to ESRCH. If the sequence number is not the expected, errno is set
- * to EPROTO.
+ * to EPROTO. If the dump was interrupted, errno is set to EINTR and you should
+ * request a new fresh dump again.
  */
 int
 mnl_cb_run2(const void *buf, size_t numbytes, unsigned int seq,
