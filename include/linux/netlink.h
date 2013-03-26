@@ -1,14 +1,14 @@
 #ifndef __LINUX_NETLINK_H
 #define __LINUX_NETLINK_H
 
-#include <linux/socket.h> /* for sa_family_t */
+#include <linux/socket.h> /* for __kernel_sa_family_t */
 #include <linux/types.h>
 
 #define NETLINK_ROUTE		0	/* Routing/device hook				*/
 #define NETLINK_UNUSED		1	/* Unused number				*/
 #define NETLINK_USERSOCK	2	/* Reserved for user mode socket protocols 	*/
-#define NETLINK_FIREWALL	3	/* Firewalling hook				*/
-#define NETLINK_INET_DIAG	4	/* INET socket monitoring			*/
+#define NETLINK_FIREWALL	3	/* Unused number, formerly ip_queue		*/
+#define NETLINK_SOCK_DIAG	4	/* socket monitoring				*/
 #define NETLINK_NFLOG		5	/* netfilter/iptables ULOG */
 #define NETLINK_XFRM		6	/* ipsec */
 #define NETLINK_SELINUX		7	/* SELinux event notifications */
@@ -24,11 +24,15 @@
 /* leave room for NETLINK_DM (DM Events) */
 #define NETLINK_SCSITRANSPORT	18	/* SCSI Transports */
 #define NETLINK_ECRYPTFS	19
+#define NETLINK_RDMA		20
+#define NETLINK_CRYPTO		21	/* Crypto layer */
+
+#define NETLINK_INET_DIAG	NETLINK_SOCK_DIAG
 
 #define MAX_LINKS 32		
 
 struct sockaddr_nl {
-	sa_family_t	nl_family;	/* AF_NETLINK	*/
+	__kernel_sa_family_t	nl_family;	/* AF_NETLINK	*/
 	unsigned short	nl_pad;		/* zero		*/
 	__u32		nl_pid;		/* port ID	*/
        	__u32		nl_groups;	/* multicast groups mask */
@@ -48,6 +52,7 @@ struct nlmsghdr {
 #define NLM_F_MULTI		2	/* Multipart message, terminated by NLMSG_DONE */
 #define NLM_F_ACK		4	/* Reply with ack, with zero or error code */
 #define NLM_F_ECHO		8	/* Echo this request 		*/
+#define NLM_F_DUMP_INTR		16	/* Dump was inconsistent due to sequence change */
 
 /* Modifiers to GET request */
 #define NLM_F_ROOT	0x100	/* specify tree	root	*/
@@ -145,4 +150,4 @@ struct nlattr {
 #define NLA_HDRLEN		((int) NLA_ALIGN(sizeof(struct nlattr)))
 
 
-#endif	/* __LINUX_NETLINK_H */
+#endif /* __LINUX_NETLINK_H */
