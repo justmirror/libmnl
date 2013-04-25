@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 		if (family == AF_INET)
 			mnl_attr_put_u32(nlh, RTA_GATEWAY, gw.ip);
 		else {
-			mnl_attr_put(nlh, RTA_DST, sizeof(struct in6_addr),
+			mnl_attr_put(nlh, RTA_GATEWAY, sizeof(struct in6_addr),
 					&gw.ip6);
 		}
 	}
