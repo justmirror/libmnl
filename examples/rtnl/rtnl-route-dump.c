@@ -51,6 +51,9 @@ static void attributes_show_ipv4(struct nlattr *tb[])
 		struct in_addr *addr = mnl_attr_get_payload(tb[RTA_GATEWAY]);
 		printf("gw=%s ", inet_ntoa(*addr));
 	}
+	if (tb[RTA_PRIORITY]) {
+		printf("prio=%u ", mnl_attr_get_u32(tb[RTA_PRIORITY]));
+	}
 	if (tb[RTA_METRICS]) {
 		int i;
 		struct nlattr *tbx[RTAX_MAX+1] = {};
