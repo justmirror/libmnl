@@ -1,14 +1,9 @@
 #ifndef _LIBMNL_H_
 #define _LIBMNL_H_
 
-#ifdef __cplusplus
-#	include <cstdio>
-#	include <cstdint>
-#else
-#	include <stdbool.h> /* not in C++ */
-#	include <stdio.h>
-#	include <stdint.h>
-#endif
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <sys/socket.h> /* for sa_family_t */
 #include <linux/netlink.h>
