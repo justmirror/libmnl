@@ -17,7 +17,7 @@ AC_DISABLE_STATIC
 LT_INIT
 CHECK_GCC_FVISIBILITY
 case "$host" in
-*-*-linux*) ;;
+*-*-linux* | *-*-uclinux*) ;;
 *) AC_MSG_ERROR([Linux only, dude!]);;
 esac
 
