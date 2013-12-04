@@ -107,7 +107,7 @@ EXPORT_SYMBOL(mnl_socket_get_portid);
  * mnl_socket_open - open a netlink socket
  * \param bus the netlink socket bus ID (see NETLINK_* constants)
  *
- * On error, it returns -1 and errno is appropriately set. Otherwise, it
+ * On error, it returns NULL and errno is appropriately set. Otherwise, it
  * returns a valid pointer to the mnl_socket structure.
  */
 struct mnl_socket *mnl_socket_open(int bus)
