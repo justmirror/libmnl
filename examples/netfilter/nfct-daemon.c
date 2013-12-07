@@ -293,10 +293,8 @@ int main(int argc, char *argv[])
 	 * b) if the user-space process does not pull messages from the
 	 *    receiver buffer so often.
 	 */
-	setsockopt(mnl_socket_get_fd(nl), SOL_NETLINK,
-		   NETLINK_BROADCAST_ERROR, &on, sizeof(int));
-	setsockopt(mnl_socket_get_fd(nl), SOL_NETLINK, NETLINK_NO_ENOBUFS,
-		   &on, sizeof(int));
+	mnl_socket_setsockopt(nl, NETLINK_BROADCAST_ERROR, &on, sizeof(int));
+	mnl_socket_setsockopt(nl, NETLINK_NO_ENOBUFS, &on, sizeof(int));
 
 	nlh = mnl_nlmsg_put_header(buf);
 	/* Counters are atomically zeroed in each dump */
