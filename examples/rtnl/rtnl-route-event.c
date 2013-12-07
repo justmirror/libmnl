@@ -13,6 +13,8 @@
 
 static int data_attr_cb2(const struct nlattr *attr, void *data)
 {
+	const struct nlattr **tb = data;
+
 	/* skip unsupported attribute in user-space */
 	if (mnl_attr_type_valid(attr, RTAX_MAX) < 0)
 		return MNL_CB_OK;
@@ -21,6 +23,8 @@ static int data_attr_cb2(const struct nlattr *attr, void *data)
 		perror("mnl_attr_validate");
 		return MNL_CB_ERROR;
 	}
+
+	tb[mnl_attr_get_type(attr)] = attr;
 	return MNL_CB_OK;
 }
 
