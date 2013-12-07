@@ -178,7 +178,7 @@ static int data_ipv6_attr_cb(const struct nlattr *attr, void *data)
 	case RTA_GATEWAY:
 		if (mnl_attr_validate2(attr, MNL_TYPE_BINARY,
 					sizeof(struct in6_addr)) < 0) {
-			perror("mnl_attr_validate");
+			perror("mnl_attr_validate2");
 			return MNL_CB_ERROR;
 		}
 		break;

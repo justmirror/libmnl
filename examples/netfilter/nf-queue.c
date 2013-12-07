@@ -39,14 +39,14 @@ static int parse_attr_cb(const struct nlattr *attr, void *data)
 	case NFQA_TIMESTAMP:
 		if (mnl_attr_validate2(attr, MNL_TYPE_UNSPEC,
 		    sizeof(struct nfqnl_msg_packet_timestamp)) < 0) {
-			perror("mnl_attr_validate");
+			perror("mnl_attr_validate2");
 			return MNL_CB_ERROR;
 		}
 		break;
 	case NFQA_HWADDR:
 		if (mnl_attr_validate2(attr, MNL_TYPE_UNSPEC,
 		    sizeof(struct nfqnl_msg_packet_hw)) < 0) {
-			perror("mnl_attr_validate");
+			perror("mnl_attr_validate2");
 			return MNL_CB_ERROR;
 		}
 		break;
@@ -188,28 +188,28 @@ int main(int argc, char *argv[])
 	nlh = nfq_build_cfg_pf_request(buf, NFQNL_CFG_CMD_PF_UNBIND);
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-		perror("mnl_socket_send");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 
 	nlh = nfq_build_cfg_pf_request(buf, NFQNL_CFG_CMD_PF_BIND);
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-		perror("mnl_socket_send");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 
 	nlh = nfq_build_cfg_request(buf, NFQNL_CFG_CMD_BIND, queue_num);
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-		perror("mnl_socket_send");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 
 	nlh = nfq_build_cfg_params(buf, NFQNL_COPY_PACKET, 0xFFFF, queue_num);
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-		perror("mnl_socket_send");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 
@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
 		id = ret - MNL_CB_OK;
 		nlh = nfq_build_verdict(buf, id, queue_num, NF_ACCEPT);
 		if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-			perror("mnl_socket_send");
+			perror("mnl_socket_sendto");
 			exit(EXIT_FAILURE);
 		}
 

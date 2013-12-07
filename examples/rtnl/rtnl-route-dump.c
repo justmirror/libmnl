@@ -182,7 +182,7 @@ static int data_ipv6_attr_cb(const struct nlattr *attr, void *data)
 	case RTA_GATEWAY:
 		if (mnl_attr_validate2(attr, MNL_TYPE_BINARY,
 					sizeof(struct in6_addr)) < 0) {
-			perror("mnl_attr_validate");
+			perror("mnl_attr_validate2");
 			return MNL_CB_ERROR;
 		}
 		break;
@@ -330,7 +330,7 @@ int main(int argc, char *argv[])
 	portid = mnl_socket_get_portid(nl);
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-		perror("mnl_socket_send");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 

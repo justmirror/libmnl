@@ -39,14 +39,14 @@ static int parse_attr_cb(const struct nlattr *attr, void *data)
 	case NFULA_TIMESTAMP:
 		if (mnl_attr_validate2(attr, MNL_TYPE_UNSPEC,
 		    sizeof(struct nfulnl_msg_packet_timestamp)) < 0) {
-			perror("mnl_attr_validate");
+			perror("mnl_attr_validate2");
 			return MNL_CB_ERROR;
 		}
 		break;
 	case NFULA_HWADDR:
 		if (mnl_attr_validate2(attr, MNL_TYPE_UNSPEC,
 		    sizeof(struct nfulnl_msg_packet_hw)) < 0) {
-			perror("mnl_attr_validate");
+			perror("mnl_attr_validate2");
 			return MNL_CB_ERROR;
 		}
 		break;
@@ -174,28 +174,28 @@ int main(int argc, char *argv[])
 	nlh = nflog_build_cfg_pf_request(buf, NFULNL_CFG_CMD_PF_UNBIND);
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-		perror("mnl_socket_send");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 
 	nlh = nflog_build_cfg_pf_request(buf, NFULNL_CFG_CMD_PF_BIND);
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-		perror("mnl_socket_send");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 
 	nlh = nflog_build_cfg_request(buf, NFULNL_CFG_CMD_BIND, qnum);
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-		perror("mnl_socket_send");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 
 	nlh = nflog_build_cfg_params(buf, NFULNL_COPY_PACKET, 0xFFFF, qnum);
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-		perror("mnl_socket_send");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 

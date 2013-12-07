@@ -62,19 +62,19 @@ int main(int argc, char *argv[])
 			  sizeof(struct ifinfomsg));
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-		perror("mnl_socket_send");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 
 	ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));
 	if (ret == -1) {
-		perror("read");
+		perror("mnl_socket_recvfrom");
 		exit(EXIT_FAILURE);
 	}
 
 	ret = mnl_cb_run(buf, ret, seq, portid, NULL, NULL);
 	if (ret == -1){
-		perror("callback");
+		perror("mnl_cb_run");
 		exit(EXIT_FAILURE);
 	}
 

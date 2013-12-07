@@ -87,7 +87,7 @@ send_batch(struct mnl_socket *nl, struct mnl_nlmsg_batch *b, int portid)
 
 	ret = mnl_socket_sendto(nl, mnl_nlmsg_batch_head(b), len);
 	if (ret == -1) {
-		perror("mnl_socket_recvfrom");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 
@@ -116,7 +116,7 @@ send_batch(struct mnl_socket *nl, struct mnl_nlmsg_batch *b, int portid)
 				  NULL, NULL, cb_ctl_array,
 				  MNL_ARRAY_SIZE(cb_ctl_array));
 		if (ret == -1) {
-			perror("mnl_cb_run");
+			perror("mnl_cb_run2");
 			exit(EXIT_FAILURE);
 		}
 

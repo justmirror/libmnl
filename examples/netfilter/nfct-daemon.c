@@ -87,7 +87,7 @@ static int parse_ip_cb(const struct nlattr *attr, void *data)
 	case CTA_IP_V6_DST:
 		if (mnl_attr_validate2(attr, MNL_TYPE_BINARY,
 				       sizeof(struct in6_addr)) < 0) {
-			perror("mnl_attr_validate");
+			perror("mnl_attr_validate2");
 			return MNL_CB_ERROR;
 		}
 		break;
@@ -322,7 +322,7 @@ int main(int argc, char *argv[])
 			/* ... request a fresh dump of the table from kernel */
 			ret = mnl_socket_sendto(nl, nlh, nlh->nlmsg_len);
 			if (ret == -1) {
-				perror("mnl_socket_recvfrom");
+				perror("mnl_socket_sendto");
 				return -1;
 			}
 			tv.tv_sec = secs;

@@ -26,7 +26,7 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 		break;
 	case IFLA_IFNAME:
 		if (mnl_attr_validate(attr, MNL_TYPE_STRING) < 0) {
-			perror("mnl_attr_validate2");
+			perror("mnl_attr_validate");
 			return MNL_CB_ERROR;
 		}
 		break;

@@ -25,7 +25,7 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 		break;
 	case IFLA_IFNAME:
 		if (mnl_attr_validate(attr, MNL_TYPE_STRING) < 0) {
-			perror("mnl_attr_validate2");
+			perror("mnl_attr_validate");
 			return MNL_CB_ERROR;
 		}
 		printf("name=%s ", mnl_attr_get_str(attr));
@@ -81,7 +81,7 @@ int main(void)
 	portid = mnl_socket_get_portid(nl);
 
 	if (mnl_socket_sendto(nl, nlh, nlh->nlmsg_len) < 0) {
-		perror("mnl_socket_send");
+		perror("mnl_socket_sendto");
 		exit(EXIT_FAILURE);
 	}
 
