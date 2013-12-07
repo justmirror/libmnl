@@ -200,6 +200,7 @@ static const size_t mnl_attr_data_type_len[MNL_TYPE_MAX] = {
 	[MNL_TYPE_U16]		= sizeof(uint16_t),
 	[MNL_TYPE_U32]		= sizeof(uint32_t),
 	[MNL_TYPE_U64]		= sizeof(uint64_t),
+	[MNL_TYPE_MSECS]	= sizeof(uint64_t),
 };
 
 /**
