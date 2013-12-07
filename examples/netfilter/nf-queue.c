@@ -67,9 +67,10 @@ static int queue_cb(const struct nlmsghdr *nlh, void *data)
 	if (tb[NFQA_PACKET_HDR]) {
 		ph = mnl_attr_get_payload(tb[NFQA_PACKET_HDR]);
 		id = ntohl(ph->packet_id);
+
+		printf("packet received (id=%u hw=0x%04x hook=%u)\n",
+		       id, ntohs(ph->hw_protocol), ph->hook);
 	}
-	printf("packet received (id=%u hw=0x%04x hook=%u)\n",
-		id, ntohs(ph->hw_protocol), ph->hook);
 
 	return MNL_CB_OK + id;
 }
