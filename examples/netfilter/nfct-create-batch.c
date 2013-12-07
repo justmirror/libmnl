@@ -67,7 +67,7 @@ static void put_msg(char *buf, uint16_t i, int seq)
 
 static int cb_err(const struct nlmsghdr *nlh, void *data)
 {
-	struct nlmsgerr *err = (void *)(nlh + 1);
+	struct nlmsgerr *err = mnl_nlmsg_get_payload(nlh);
 	if (err->error != 0)
 		printf("message with seq %u has failed: %s\n",
 			nlh->nlmsg_seq, strerror(-err->error));
