@@ -114,7 +114,7 @@ struct mnl_socket *mnl_socket_open(int bus)
 {
 	struct mnl_socket *nl;
 
-	nl = calloc(sizeof(struct mnl_socket), 1);
+	nl = calloc(1, sizeof(struct mnl_socket));
 	if (nl == NULL)
 		return NULL;
 
