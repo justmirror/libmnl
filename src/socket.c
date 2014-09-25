@@ -129,6 +129,40 @@ struct mnl_socket *mnl_socket_open(int bus)
 EXPORT_SYMBOL(mnl_socket_open);
 
 /**
+ * mnl_socket_fdopen - associates a mnl_socket object with pre-existing socket.
+ * \param fd pre-existing socket descriptor.
+ *
+ * On error, it returns NULL and errno is appropriately set. Otherwise, it
+ * returns a valid pointer to the mnl_socket structure. It also sets the portID
+ * if the socket fd is already bound and it is AF_NETLINK.
+ *
+ * Note that mnl_socket_get_portid() returns 0 if this function is used with
+ * non-netlink socket.
+ */
+struct mnl_socket *mnl_socket_fdopen(int fd)
+{
+	int ret;
+	struct mnl_socket *nl;
+	struct sockaddr_nl addr;
+	socklen_t addr_len = sizeof(struct sockaddr_nl);
+
+	ret = getsockname(fd, (struct sockaddr *) &addr, &addr_len);
+	if (ret == -1)
+		return NULL;
+
+	nl = calloc(1, sizeof(struct mnl_socket));
+	if (nl == NULL)
+		return NULL;
+
+	nl->fd = fd;
+	if (addr.nl_family == AF_NETLINK)
+		nl->addr = addr;
+
+	return nl;
+}
+EXPORT_SYMBOL(mnl_socket_fdopen);
+
+/**
  * mnl_socket_bind - bind netlink socket
  * \param nl netlink socket obtained via mnl_socket_open()
  * \param groups the group of message you're interested in
