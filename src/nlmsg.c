@@ -150,7 +150,7 @@ EXPORT_SYMBOL(mnl_nlmsg_get_payload_offset);
  * truncated.
  *
  * This function does not set errno in case of error since it is intended
- * for iterations. Thus, it returns 1 on success and 0 on error.
+ * for iterations. Thus, it returns true on success and false on error.
  *
  * The len parameter may become negative in malformed messages during message
  * iteration, that is why we use a signed integer.
@@ -462,7 +462,7 @@ EXPORT_SYMBOL(mnl_nlmsg_batch_start);
  * mnl_nlmsg_batch_stop - release a batch
  * \param b pointer to batch
  *
- * This function returns the amount of data that is part of this batch.
+ * This function releases the batch allocated by mnl_nlmsg_batch_start().
  */
 void mnl_nlmsg_batch_stop(struct mnl_nlmsg_batch *b)
 {
