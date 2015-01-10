@@ -105,7 +105,6 @@ EXPORT_SYMBOL(mnl_attr_ok);
 /**
  * mnl_attr_next - get the next attribute in the payload of a netlink message
  * \param attr pointer to the current attribute
- * \param len length of the remaining bytes in the buffer (passed by reference).
  *
  * This function returns a pointer to the next attribute after the one passed
  * as parameter. You have to use mnl_attr_ok() to ensure that the next
