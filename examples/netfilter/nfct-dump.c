@@ -1,4 +1,5 @@
 /* This example is placed in the public domain. */
+#include <endian.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
