@@ -9,11 +9,6 @@
 #include <libmnl/libmnl.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter/nfnetlink.h>
-
-#ifndef aligned_be64
-#define aligned_be64 u_int64_t __attribute__((aligned(8)))
-#endif
-
 #include <linux/netfilter/nfnetlink_queue.h>
 
 static int parse_attr_cb(const struct nlattr *attr, void *data)
