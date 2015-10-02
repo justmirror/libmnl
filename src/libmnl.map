@@ -74,5 +74,6 @@ LIBMNL_1.1 {
 } LIBMNL_1.0;
 
 LIBMNL_1.2 {
+  mnl_socket_open2;
   mnl_socket_fdopen;
 } LIBMNL_1.1;
