@@ -35,11 +35,11 @@
  *
  * This function returns the attribute type.
  */
+EXPORT_SYMBOL(mnl_attr_get_type);
 uint16_t mnl_attr_get_type(const struct nlattr *attr)
 {
 	return attr->nla_type & NLA_TYPE_MASK;
 }
-EXPORT_SYMBOL(mnl_attr_get_type);
 
 /**
  * mnl_attr_get_len - get length of netlink attribute
@@ -48,11 +48,11 @@ EXPORT_SYMBOL(mnl_attr_get_type);
  * This function returns the attribute length that is the attribute header
  * plus the attribute payload.
  */
+EXPORT_SYMBOL(mnl_attr_get_len);
 uint16_t mnl_attr_get_len(const struct nlattr *attr)
 {
 	return attr->nla_len;
 }
-EXPORT_SYMBOL(mnl_attr_get_len);
 
 /**
  * mnl_attr_get_payload_len - get the attribute payload-value length
@@ -60,11 +60,11 @@ EXPORT_SYMBOL(mnl_attr_get_len);
  *
  * This function returns the attribute payload-value length.
  */
+EXPORT_SYMBOL(mnl_attr_get_payload_len);
 uint16_t mnl_attr_get_payload_len(const struct nlattr *attr)
 {
 	return attr->nla_len - MNL_ATTR_HDRLEN;
 }
-EXPORT_SYMBOL(mnl_attr_get_payload_len);
 
 /**
  * mnl_attr_get_payload - get pointer to the attribute payload
@@ -72,11 +72,11 @@ EXPORT_SYMBOL(mnl_attr_get_payload_len);
  *
  * This function return a pointer to the attribute payload.
  */
+EXPORT_SYMBOL(mnl_attr_get_payload);
 void *mnl_attr_get_payload(const struct nlattr *attr)
 {
 	return (void *)attr + MNL_ATTR_HDRLEN;
 }
-EXPORT_SYMBOL(mnl_attr_get_payload);
 
 /**
  * mnl_attr_ok - check if there is room for an attribute in a buffer
@@ -94,13 +94,13 @@ EXPORT_SYMBOL(mnl_attr_get_payload);
  * The len parameter may be negative in the case of malformed messages during
  * attribute iteration, that is why we use a signed integer.
  */
+EXPORT_SYMBOL(mnl_attr_ok);
 bool mnl_attr_ok(const struct nlattr *attr, int len)
 {
 	return len >= (int)sizeof(struct nlattr) &&
 	       attr->nla_len >= sizeof(struct nlattr) &&
 	       (int)attr->nla_len <= len;
 }
-EXPORT_SYMBOL(mnl_attr_ok);
 
 /**
  * mnl_attr_next - get the next attribute in the payload of a netlink message
@@ -110,11 +110,11 @@ EXPORT_SYMBOL(mnl_attr_ok);
  * as parameter. You have to use mnl_attr_ok() to ensure that the next
  * attribute is valid.
  */
+EXPORT_SYMBOL(mnl_attr_next);
 struct nlattr *mnl_attr_next(const struct nlattr *attr)
 {
 	return (struct nlattr *)((void *)attr + MNL_ALIGN(attr->nla_len));
 }
-EXPORT_SYMBOL(mnl_attr_next);
 
 /**
  * mnl_attr_type_valid - check if the attribute type is valid
@@ -130,6 +130,7 @@ EXPORT_SYMBOL(mnl_attr_next);
  * This leads to backward compatibility breakages in user-space. Better check
  * if you support an attribute, if not, skip it.
  */
+EXPORT_SYMBOL(mnl_attr_type_valid);
 int mnl_attr_type_valid(const struct nlattr *attr, uint16_t max)
 {
 	if (mnl_attr_get_type(attr) > max) {
@@ -138,7 +139,6 @@ int mnl_attr_type_valid(const struct nlattr *attr, uint16_t max)
 	}
 	return 1;
 }
-EXPORT_SYMBOL(mnl_attr_type_valid);
 
 static int __mnl_attr_validate(const struct nlattr *attr,
 			       enum mnl_attr_data_type type, size_t exp_len)
@@ -211,6 +211,7 @@ static const size_t mnl_attr_data_type_len[MNL_TYPE_MAX] = {
  * integers (u8, u16, u32 and u64) have enough room for them. This function
  * returns -1 in case of error, and errno is explicitly set.
  */
+EXPORT_SYMBOL(mnl_attr_validate);
 int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
 {
 	int exp_len;
@@ -222,7 +223,6 @@ int mnl_attr_validate(const struct nlattr *attr, enum mnl_attr_data_type type)
 	exp_len = mnl_attr_data_type_len[type];
 	return __mnl_attr_validate(attr, type, exp_len);
 }
-EXPORT_SYMBOL(mnl_attr_validate);
 
 /**
  * mnl_attr_validate2 - validate netlink attribute (extended version)
@@ -234,6 +234,7 @@ EXPORT_SYMBOL(mnl_attr_validate);
  * whose size is variable. If the size of the attribute is not what we expect,
  * this functions returns -1 and errno is explicitly set.
  */
+EXPORT_SYMBOL(mnl_attr_validate2);
 int
 mnl_attr_validate2(const struct nlattr *attr, enum mnl_attr_data_type type,
 		   size_t exp_len)
@@ -244,7 +245,6 @@ mnl_attr_validate2(const struct nlattr *attr, enum mnl_attr_data_type type,
 	}
 	return __mnl_attr_validate(attr, type, exp_len);
 }
-EXPORT_SYMBOL(mnl_attr_validate2);
 
 /**
  * mnl_attr_parse - parse attributes
@@ -261,6 +261,7 @@ EXPORT_SYMBOL(mnl_attr_validate2);
  * This function propagates the return value of the callback, which can be
  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
  */
+EXPORT_SYMBOL(mnl_attr_parse);
 int
 mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
 	       mnl_attr_cb_t cb, void *data)
@@ -273,7 +274,6 @@ mnl_attr_parse(const struct nlmsghdr *nlh, unsigned int offset,
 			return ret;
 	return ret;
 }
-EXPORT_SYMBOL(mnl_attr_parse);
 
 /**
  * mnl_attr_parse_nested - parse attributes inside a nest
@@ -289,6 +289,7 @@ EXPORT_SYMBOL(mnl_attr_parse);
  * This function propagates the return value of the callback, which can be
  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
  */
+EXPORT_SYMBOL(mnl_attr_parse_nested);
 int
 mnl_attr_parse_nested(const struct nlattr *nested, mnl_attr_cb_t cb,
 		      void *data)
@@ -301,7 +302,6 @@ mnl_attr_parse_nested(const struct nlattr *nested, mnl_attr_cb_t cb,
 			return ret;
 	return ret;
 }
-EXPORT_SYMBOL(mnl_attr_parse_nested);
 
 /**
  * mnl_attr_parse_payload - parse attributes in payload of Netlink message
@@ -322,6 +322,7 @@ EXPORT_SYMBOL(mnl_attr_parse_nested);
  * This function propagates the return value of the callback, which can be
  * MNL_CB_ERROR, MNL_CB_OK or MNL_CB_STOP.
  */
+EXPORT_SYMBOL(mnl_attr_parse_payload);
 int
 mnl_attr_parse_payload(const void *payload, size_t payload_len,
 		       mnl_attr_cb_t cb, void *data)
@@ -334,7 +335,6 @@ mnl_attr_parse_payload(const void *payload, size_t payload_len,
 			return ret;
 	return ret;
 }
-EXPORT_SYMBOL(mnl_attr_parse_payload);
 
 /**
  * mnl_attr_get_u8 - returns 8-bit unsigned integer attribute payload
@@ -342,11 +342,11 @@ EXPORT_SYMBOL(mnl_attr_parse_payload);
  *
  * This function returns the 8-bit value of the attribute payload.
  */
+EXPORT_SYMBOL(mnl_attr_get_u8);
 uint8_t mnl_attr_get_u8(const struct nlattr *attr)
 {
 	return *((uint8_t *)mnl_attr_get_payload(attr));
 }
-EXPORT_SYMBOL(mnl_attr_get_u8);
 
 /**
  * mnl_attr_get_u16 - returns 16-bit unsigned integer attribute payload
@@ -354,11 +354,11 @@ EXPORT_SYMBOL(mnl_attr_get_u8);
  *
  * This function returns the 16-bit value of the attribute payload.
  */
+EXPORT_SYMBOL(mnl_attr_get_u16);
 uint16_t mnl_attr_get_u16(const struct nlattr *attr)
 {
 	return *((uint16_t *)mnl_attr_get_payload(attr));
 }
-EXPORT_SYMBOL(mnl_attr_get_u16);
 
 /**
  * mnl_attr_get_u32 - returns 32-bit unsigned integer attribute payload
@@ -366,11 +366,11 @@ EXPORT_SYMBOL(mnl_attr_get_u16);
  *
  * This function returns the 32-bit value of the attribute payload.
  */
+EXPORT_SYMBOL(mnl_attr_get_u32);
 uint32_t mnl_attr_get_u32(const struct nlattr *attr)
 {
 	return *((uint32_t *)mnl_attr_get_payload(attr));
 }
-EXPORT_SYMBOL(mnl_attr_get_u32);
 
 /**
  * mnl_attr_get_u64 - returns 64-bit unsigned integer attribute.
@@ -380,13 +380,13 @@ EXPORT_SYMBOL(mnl_attr_get_u32);
  * function is align-safe, since accessing 64-bit Netlink attributes is a
  * common source of alignment issues.
  */
+EXPORT_SYMBOL(mnl_attr_get_u64);
 uint64_t mnl_attr_get_u64(const struct nlattr *attr)
 {
 	uint64_t tmp;
 	memcpy(&tmp, mnl_attr_get_payload(attr), sizeof(tmp));
 	return tmp;
 }
-EXPORT_SYMBOL(mnl_attr_get_u64);
 
 /**
  * mnl_attr_get_str - returns pointer to string attribute.
@@ -394,11 +394,11 @@ EXPORT_SYMBOL(mnl_attr_get_u64);
  *
  * This function returns the payload of string attribute value.
  */
+EXPORT_SYMBOL(mnl_attr_get_str);
 const char *mnl_attr_get_str(const struct nlattr *attr)
 {
 	return mnl_attr_get_payload(attr);
 }
-EXPORT_SYMBOL(mnl_attr_get_str);
 
 /**
  * mnl_attr_put - add an attribute to netlink message
@@ -410,6 +410,7 @@ EXPORT_SYMBOL(mnl_attr_get_str);
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
+EXPORT_SYMBOL(mnl_attr_put);
 void
 mnl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data)
 {
@@ -421,7 +422,6 @@ mnl_attr_put(struct nlmsghdr *nlh, uint16_t type, size_t len, const void *data)
 	memcpy(mnl_attr_get_payload(attr), data, len);
 	nlh->nlmsg_len += MNL_ALIGN(payload_len);
 }
-EXPORT_SYMBOL(mnl_attr_put);
 
 /**
  * mnl_attr_put_u8 - add 8-bit unsigned integer attribute to netlink message
@@ -432,11 +432,11 @@ EXPORT_SYMBOL(mnl_attr_put);
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
+EXPORT_SYMBOL(mnl_attr_put_u8);
 void mnl_attr_put_u8(struct nlmsghdr *nlh, uint16_t type, uint8_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint8_t), &data);
 }
-EXPORT_SYMBOL(mnl_attr_put_u8);
 
 /**
  * mnl_attr_put_u16 - add 16-bit unsigned integer attribute to netlink message
@@ -447,11 +447,11 @@ EXPORT_SYMBOL(mnl_attr_put_u8);
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
+EXPORT_SYMBOL(mnl_attr_put_u16);
 void mnl_attr_put_u16(struct nlmsghdr *nlh, uint16_t type, uint16_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint16_t), &data);
 }
-EXPORT_SYMBOL(mnl_attr_put_u16);
 
 /**
  * mnl_attr_put_u32 - add 32-bit unsigned integer attribute to netlink message
@@ -462,11 +462,11 @@ EXPORT_SYMBOL(mnl_attr_put_u16);
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
+EXPORT_SYMBOL(mnl_attr_put_u32);
 void mnl_attr_put_u32(struct nlmsghdr *nlh, uint16_t type, uint32_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint32_t), &data);
 }
-EXPORT_SYMBOL(mnl_attr_put_u32);
 
 /**
  * mnl_attr_put_u64 - add 64-bit unsigned integer attribute to netlink message
@@ -477,11 +477,11 @@ EXPORT_SYMBOL(mnl_attr_put_u32);
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
+EXPORT_SYMBOL(mnl_attr_put_u64);
 void mnl_attr_put_u64(struct nlmsghdr *nlh, uint16_t type, uint64_t data)
 {
 	mnl_attr_put(nlh, type, sizeof(uint64_t), &data);
 }
-EXPORT_SYMBOL(mnl_attr_put_u64);
 
 /**
  * mnl_attr_put_str - add string attribute to netlink message
@@ -492,11 +492,11 @@ EXPORT_SYMBOL(mnl_attr_put_u64);
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
+EXPORT_SYMBOL(mnl_attr_put_str);
 void mnl_attr_put_str(struct nlmsghdr *nlh, uint16_t type, const char *data)
 {
 	mnl_attr_put(nlh, type, strlen(data), data);
 }
-EXPORT_SYMBOL(mnl_attr_put_str);
 
 /**
  * mnl_attr_put_strz - add string attribute to netlink message
@@ -510,11 +510,11 @@ EXPORT_SYMBOL(mnl_attr_put_str);
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
+EXPORT_SYMBOL(mnl_attr_put_strz);
 void mnl_attr_put_strz(struct nlmsghdr *nlh, uint16_t type, const char *data)
 {
 	mnl_attr_put(nlh, type, strlen(data)+1, data);
 }
-EXPORT_SYMBOL(mnl_attr_put_strz);
 
 /**
  * mnl_attr_nest_start - start an attribute nest
@@ -525,6 +525,7 @@ EXPORT_SYMBOL(mnl_attr_put_strz);
  * an attribute nest. This function always returns a valid pointer to the
  * beginning of the nest.
  */
+EXPORT_SYMBOL(mnl_attr_nest_start);
 struct nlattr *mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type)
 {
 	struct nlattr *start = mnl_nlmsg_get_payload_tail(nlh);
@@ -535,7 +536,6 @@ struct nlattr *mnl_attr_nest_start(struct nlmsghdr *nlh, uint16_t type)
 
 	return start;
 }
-EXPORT_SYMBOL(mnl_attr_nest_start);
 
 /**
  * mnl_attr_put_check - add an attribute to netlink message
@@ -551,6 +551,7 @@ EXPORT_SYMBOL(mnl_attr_nest_start);
  * attribute. The function returns true if the attribute could be added
  * to the message, otherwise false is returned.
  */
+EXPORT_SYMBOL(mnl_attr_put_check);
 bool
 mnl_attr_put_check(struct nlmsghdr *nlh, size_t buflen,
 		   uint16_t type, size_t len, const void *data)
@@ -560,7 +561,6 @@ mnl_attr_put_check(struct nlmsghdr *nlh, size_t buflen,
 	mnl_attr_put(nlh, type, len, data);
 	return true;
 }
-EXPORT_SYMBOL(mnl_attr_put_check);
 
 /**
  * mnl_attr_put_u8_check - add 8-bit unsigned int attribute to netlink message
@@ -575,13 +575,13 @@ EXPORT_SYMBOL(mnl_attr_put_check);
  * attribute. The function returns true if the attribute could be added
  * to the message, otherwise false is returned.
  */
+EXPORT_SYMBOL(mnl_attr_put_u8_check);
 bool
 mnl_attr_put_u8_check(struct nlmsghdr *nlh, size_t buflen,
 		      uint16_t type, uint8_t data)
 {
 	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint8_t), &data);
 }
-EXPORT_SYMBOL(mnl_attr_put_u8_check);
 
 /**
  * mnl_attr_put_u16_check - add 16-bit unsigned int attribute to netlink message
@@ -598,13 +598,13 @@ EXPORT_SYMBOL(mnl_attr_put_u8_check);
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
+EXPORT_SYMBOL(mnl_attr_put_u16_check);
 bool
 mnl_attr_put_u16_check(struct nlmsghdr *nlh, size_t buflen,
 		       uint16_t type, uint16_t data)
 {
 	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint16_t), &data);
 }
-EXPORT_SYMBOL(mnl_attr_put_u16_check);
 
 /**
  * mnl_attr_put_u32_check - add 32-bit unsigned int attribute to netlink message
@@ -621,13 +621,13 @@ EXPORT_SYMBOL(mnl_attr_put_u16_check);
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
+EXPORT_SYMBOL(mnl_attr_put_u32_check);
 bool
 mnl_attr_put_u32_check(struct nlmsghdr *nlh, size_t buflen,
 		       uint16_t type, uint32_t data)
 {
 	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint32_t), &data);
 }
-EXPORT_SYMBOL(mnl_attr_put_u32_check);
 
 /**
  * mnl_attr_put_u64_check - add 64-bit unsigned int attribute to netlink message
@@ -644,13 +644,13 @@ EXPORT_SYMBOL(mnl_attr_put_u32_check);
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
+EXPORT_SYMBOL(mnl_attr_put_u64_check);
 bool
 mnl_attr_put_u64_check(struct nlmsghdr *nlh, size_t buflen,
 		       uint16_t type, uint64_t data)
 {
 	return mnl_attr_put_check(nlh, buflen, type, sizeof(uint64_t), &data);
 }
-EXPORT_SYMBOL(mnl_attr_put_u64_check);
 
 /**
  * mnl_attr_put_str_check - add string attribute to netlink message
@@ -667,13 +667,13 @@ EXPORT_SYMBOL(mnl_attr_put_u64_check);
  * This function updates the length field of the Netlink message (nlmsg_len)
  * by adding the size (header + payload) of the new attribute.
  */
+EXPORT_SYMBOL(mnl_attr_put_str_check);
 bool
 mnl_attr_put_str_check(struct nlmsghdr *nlh, size_t buflen,
 		       uint16_t type, const char *data)
 {
 	return mnl_attr_put_check(nlh, buflen, type, strlen(data), data);
 }
-EXPORT_SYMBOL(mnl_attr_put_str_check);
 
 /**
  * mnl_attr_put_strz_check - add string attribute to netlink message
@@ -691,13 +691,13 @@ EXPORT_SYMBOL(mnl_attr_put_str_check);
  * attribute. The function returns true if the attribute could be added
  * to the message, otherwise false is returned.
  */
+EXPORT_SYMBOL(mnl_attr_put_strz_check);
 bool
 mnl_attr_put_strz_check(struct nlmsghdr *nlh, size_t buflen,
 			uint16_t type, const char *data)
 {
 	return mnl_attr_put_check(nlh, buflen, type, strlen(data)+1, data);
 }
-EXPORT_SYMBOL(mnl_attr_put_strz_check);
 
 /**
  * mnl_attr_nest_start_check - start an attribute nest
@@ -709,6 +709,7 @@ EXPORT_SYMBOL(mnl_attr_put_strz_check);
  * an attribute nest. If the nested attribute cannot be added then NULL,
  * otherwise valid pointer to the beginning of the nest is returned.
  */
+EXPORT_SYMBOL(mnl_attr_nest_start_check);
 struct nlattr *
 mnl_attr_nest_start_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type)
 {
@@ -716,7 +717,6 @@ mnl_attr_nest_start_check(struct nlmsghdr *nlh, size_t buflen, uint16_t type)
 		return NULL;
 	return mnl_attr_nest_start(nlh, type);
 }
-EXPORT_SYMBOL(mnl_attr_nest_start_check);
 
 /**
  * mnl_attr_nest_end - end an attribute nest
@@ -725,12 +725,12 @@ EXPORT_SYMBOL(mnl_attr_nest_start_check);
  *
  * This function updates the attribute header that identifies the nest.
  */
+EXPORT_SYMBOL(mnl_attr_nest_end);
 void
 mnl_attr_nest_end(struct nlmsghdr *nlh, struct nlattr *start)
 {
 	start->nla_len = mnl_nlmsg_get_payload_tail(nlh) - (void *)start;
 }
-EXPORT_SYMBOL(mnl_attr_nest_end);
 
 /**
  * mnl_attr_nest_cancel - cancel an attribute nest
@@ -739,12 +739,12 @@ EXPORT_SYMBOL(mnl_attr_nest_end);
  *
  * This function updates the attribute header that identifies the nest.
  */
+EXPORT_SYMBOL(mnl_attr_nest_cancel);
 void
 mnl_attr_nest_cancel(struct nlmsghdr *nlh, struct nlattr *start)
 {
 	nlh->nlmsg_len -= mnl_nlmsg_get_payload_tail(nlh) - (void *)start;
 }
-EXPORT_SYMBOL(mnl_attr_nest_cancel);
 
 /**
  * @}
