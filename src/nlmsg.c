@@ -317,10 +317,10 @@ mnl_nlmsg_fprintf_payload(FILE *fd, const struct nlmsghdr *nlh,
 				0xff & b[i+2],	0xff & b[i+3]);
 			fprintf(fd, "|      data      |");
 			fprintf(fd, "\t %c %c %c %c\n",
-				isalnum(b[i]) ? b[i] : 0,
-				isalnum(b[i+1]) ? b[i+1] : 0,
-				isalnum(b[i+2]) ? b[i+2] : 0,
-				isalnum(b[i+3]) ? b[i+3] : 0);
+				isprint(b[i]) ? b[i] : ' ',
+				isprint(b[i+1]) ? b[i+1] : ' ',
+				isprint(b[i+2]) ? b[i+2] : ' ',
+				isprint(b[i+3]) ? b[i+3] : ' ');
 		}
 	}
 	fprintf(fd, "----------------\t------------------\n");
