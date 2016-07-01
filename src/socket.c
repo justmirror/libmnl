@@ -235,8 +235,8 @@ int mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
  * returns the number of bytes sent.
  */
 EXPORT_SYMBOL(mnl_socket_sendto);
-ssize_t
-mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
+ssize_t mnl_socket_sendto(const struct mnl_socket *nl, const void *buf,
+			  size_t len)
 {
 	static const struct sockaddr_nl snl = {
 		.nl_family = AF_NETLINK
@@ -260,8 +260,8 @@ mnl_socket_sendto(const struct mnl_socket *nl, const void *buf, size_t len)
  * message without truncating it.
  */
 EXPORT_SYMBOL(mnl_socket_recvfrom);
-ssize_t
-mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf, size_t bufsiz)
+ssize_t mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf,
+			    size_t bufsiz)
 {
 	ssize_t ret;
 	struct sockaddr_nl addr;

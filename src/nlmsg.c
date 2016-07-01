@@ -102,8 +102,7 @@ struct nlmsghdr *mnl_nlmsg_put_header(void *buf)
  * header.
  */
 EXPORT_SYMBOL(mnl_nlmsg_put_extra_header);
-void *
-mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size)
+void *mnl_nlmsg_put_extra_header(struct nlmsghdr *nlh, size_t size)
 {
 	char *ptr = (char *)nlh + nlh->nlmsg_len;
 	size_t len = MNL_ALIGN(size);
@@ -133,8 +132,7 @@ void *mnl_nlmsg_get_payload(const struct nlmsghdr *nlh)
  * a given offset.
  */
 EXPORT_SYMBOL(mnl_nlmsg_get_payload_offset);
-void *
-mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset)
+void *mnl_nlmsg_get_payload_offset(const struct nlmsghdr *nlh, size_t offset)
 {
 	return (void *)nlh + MNL_NLMSG_HDRLEN + MNL_ALIGN(offset);
 }
@@ -177,8 +175,7 @@ bool mnl_nlmsg_ok(const struct nlmsghdr *nlh, int len)
  * valid.
  */
 EXPORT_SYMBOL(mnl_nlmsg_next);
-struct nlmsghdr *
-mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
+struct nlmsghdr *mnl_nlmsg_next(const struct nlmsghdr *nlh, int *len)
 {
 	*len -= MNL_ALIGN(nlh->nlmsg_len);
 	return (struct nlmsghdr *)((void *)nlh + MNL_ALIGN(nlh->nlmsg_len));
@@ -213,8 +210,7 @@ void *mnl_nlmsg_get_payload_tail(const struct nlmsghdr *nlh)
  * listen to events (that we do not track).
  */
 EXPORT_SYMBOL(mnl_nlmsg_seq_ok);
-bool
-mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
+bool mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
 {
 	return nlh->nlmsg_seq && seq ? nlh->nlmsg_seq == seq : true;
 }
@@ -234,8 +230,7 @@ mnl_nlmsg_seq_ok(const struct nlmsghdr *nlh, unsigned int seq)
  * do not track).
  */
 EXPORT_SYMBOL(mnl_nlmsg_portid_ok);
-bool
-mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
+bool mnl_nlmsg_portid_ok(const struct nlmsghdr *nlh, unsigned int portid)
 {
 	return nlh->nlmsg_pid && portid ? nlh->nlmsg_pid == portid : true;
 }
@@ -255,9 +250,8 @@ static void mnl_nlmsg_fprintf_header(FILE *fd, const struct nlmsghdr *nlh)
 	fprintf(fd, "----------------\t------------------\n");
 }
 
-static void
-mnl_nlmsg_fprintf_payload(FILE *fd, const struct nlmsghdr *nlh,
-			  size_t extra_header_size)
+static void mnl_nlmsg_fprintf_payload(FILE *fd, const struct nlmsghdr *nlh,
+				      size_t extra_header_size)
 {
 	int rem = 0;
 	unsigned int i;
@@ -370,9 +364,8 @@ mnl_nlmsg_fprintf_payload(FILE *fd, const struct nlmsghdr *nlh,
  * - B, that indicates that NLA_F_NET_BYTEORDER is set.
  */
 EXPORT_SYMBOL(mnl_nlmsg_fprintf);
-void
-mnl_nlmsg_fprintf(FILE *fd, const void *data, size_t datalen,
-		  size_t extra_header_size)
+void mnl_nlmsg_fprintf(FILE *fd, const void *data, size_t datalen,
+		       size_t extra_header_size)
 {
 	const struct nlmsghdr *nlh = data;
 	int len = datalen;
