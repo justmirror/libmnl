@@ -18,7 +18,7 @@
 # set age to 0.
 # </snippet>
 #
-LIBVERSION=1:0:1
+LIBVERSION=2:0:2
 
 AM_CPPFLAGS = ${regular_CPPFLAGS} -I${top_srcdir}/include
 AM_CFLAGS = ${regular_CFLAGS} ${GCC_FVISIBILITY_HIDDEN}
