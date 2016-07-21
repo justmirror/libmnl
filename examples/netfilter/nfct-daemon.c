@@ -13,6 +13,7 @@
 #include <netinet/in.h>
 #include <inttypes.h>
 #include <errno.h>
+#include <sys/select.h>
 
 #include <libmnl/libmnl.h>
 #include <linux/netlink.h>
