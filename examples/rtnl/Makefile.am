@@ -6,7 +6,8 @@ check_PROGRAMS = rtnl-addr-dump \
 		 rtnl-link-set \
 		 rtnl-route-add \
 		 rtnl-route-dump \
-		 rtnl-route-event
+		 rtnl-route-event \
+		 rtnl-neigh-dump
 
 rtnl_addr_dump_SOURCES = rtnl-addr-dump.c
 rtnl_addr_dump_LDADD = ../../src/libmnl.la
@@ -34,3 +35,6 @@ rtnl_route_dump_LDADD = ../../src/libmnl.la
 
 rtnl_route_event_SOURCES = rtnl-route-event.c
 rtnl_route_event_LDADD = ../../src/libmnl.la
+
+rtnl_neigh_dump_SOURCES = rtnl-neigh-dump.c
+rtnl_neigh_dump_LDADD = ../../src/libmnl.la
