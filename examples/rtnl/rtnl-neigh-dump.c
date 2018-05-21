@@ -22,11 +22,6 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 
 	switch(type) {
 	case NDA_DST:
-		if (mnl_attr_validate(attr, MNL_TYPE_BINARY) < 0) {
-			perror("mnl_attr_validate");
-			return MNL_CB_ERROR;
-		}
-		break;
 	case NDA_LLADDR:
 		if (mnl_attr_validate(attr, MNL_TYPE_BINARY) < 0) {
 			perror("mnl_attr_validate");
