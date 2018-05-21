@@ -17,7 +17,7 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 	int type = mnl_attr_get_type(attr);
 
 	/* skip unsupported attribute in user-space */
-	if (mnl_attr_type_valid(attr, IFA_MAX) < 0)
+	if (mnl_attr_type_valid(attr, NDA_MAX) < 0)
 		return MNL_CB_OK;
 
 	switch(type) {
@@ -40,7 +40,7 @@ static int data_attr_cb(const struct nlattr *attr, void *data)
 
 static int data_cb(const struct nlmsghdr *nlh, void *data)
 {
-	struct nlattr *tb[IFA_MAX + 1] = {};
+	struct nlattr *tb[NDA_MAX + 1] = {};
 	struct ndmsg *ndm = mnl_nlmsg_get_payload(nlh);
 
 	printf("index=%d family=%d ", ndm->ndm_ifindex, ndm->ndm_family);
