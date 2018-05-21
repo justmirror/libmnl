@@ -62,7 +62,9 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 		unsigned char lladdr[6] = {0};
 
 		if (memcpy(&lladdr, addr, 6))
-			printf("%02x:%02x:%02x:%02x:%02x:%02x ", lladdr[0], lladdr[1], lladdr[2], lladdr[3], lladdr[4], lladdr[5]);
+			printf("%02x:%02x:%02x:%02x:%02x:%02x ",
+			       lladdr[0], lladdr[1], lladdr[2],
+			       lladdr[3], lladdr[4], lladdr[5]);
 	}
 
 	printf("state=");
